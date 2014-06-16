@@ -52,6 +52,7 @@ class TestTitles(testtools.TestCase):
         self.assertIn('Alternatives', titles[proposed])
         self.assertIn('Data model impact', titles[proposed])
         self.assertIn('REST API impact', titles[proposed])
+        self.assertIn('Upgrade impact', titles[proposed])
         self.assertIn('Security impact', titles[proposed])
         self.assertIn('Notifications impact', titles[proposed])
         self.assertIn('Other end user impact', titles[proposed])

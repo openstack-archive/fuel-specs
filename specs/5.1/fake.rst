@@ -35,6 +35,11 @@ REST API impact
 
 None
 
+Upgrade impact
+--------------
+
+None
+
 Security impact
 ---------------
 

@@ -125,6 +125,15 @@ Each API method which is either added or changed should have the following
 * Discuss any policy changes, and discuss what things a deployer needs to
   think about when defining their policy.
 
+Upgrade impact
+--------------
+
+If this change set concerns any kind of upgrade process, describe how it is
+supposed to deal with that stuff. For example, Fuel currently supports
+upgrading of master node, so it is necessary to describe whether this patch
+set contradicts upgrade process itself or any working feature that we need
+to support.
+
 Security impact
 ---------------
 
