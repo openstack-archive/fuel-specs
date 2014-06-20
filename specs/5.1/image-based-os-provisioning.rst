@@ -288,7 +288,7 @@ None
 Testing
 =======
 
-Functional testing is supposed to follow these steps
+Testing approach
 
 - Create VM or allocate hardware node.
 - Deploy tftp + pxelinux and configure pxelinux with bootstrap ramdisk
@@ -299,6 +299,24 @@ Functional testing is supposed to follow these steps
   comparing obtained state with required one.
 
 Testing is supposed to be implemented according to this document [7]_
+
+Acceptance criteria
+
+- Two bare OS images built from scratch using MOS repositories must be
+  available via http on Fuel master node
+- After master node upgrade Cobbler must have one additional distro
+  bootstrap-2 and one additional profile bootstrap-2 which are supposed to
+  provide ramdisk with built-in fuel agent.
+- It must be possible to choose one of two provisioning options "native" and
+  "image based". It supposed to be configured using nailgun configuration file
+  settings.yaml. By default "native" driver will be used.
+- During image based provisioning fuel agent must make an appropriate
+  partitioning scheme on a node according to the partitioning data, which is
+  supposed to have the same format as it currently has.
+- Once provisioning process is done, cloud-init must perform initial node
+  configuration including at least but not limited to network, ssh,
+  puppet and mcollective.
+
 
 Documentation Impact
 ====================
