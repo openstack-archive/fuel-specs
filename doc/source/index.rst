@@ -19,6 +19,7 @@ Contents:
    :maxdepth: 1
 
    specs/5.1/*
+   specs/6.0/*
 
 ==================
 Indices and tables
