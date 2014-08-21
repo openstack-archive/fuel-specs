@@ -1,0 +1,140 @@
+============================
+Multiple L3 agent in Neutron
+============================
+
+https://blueprints.launchpad.net/fuel/+spec/fuel-multiple-l3-agents
+
+In FUEL 5.1 and before HA network solution was based on one neutron-l3-agent,
+which was switchable between controllers.
+
+This blueprint describes a way of using multiple L3 agents instead of single. 
+It is required for network scalability and neutron performance improvements.
+
+Problem description
+===================
+
+When we create virtual router in Neutron, it's scheduled to the L3-agent 
+(to one of alive if we have multiple agents using random selection). 
+After this Neutron server does not monitor life cycle of agent serving 
+this router. If the L3-agent service stops on a node containing this agent or 
+connectivity was lost, Neutron server does not reschedule this router to 
+another L3-agent. So there was no HA network solution.
+
+Proposed change
+===============
+
+In Juno multiple solutions for this problem were introduced. 
+The easiest solution is to use the internal Neutron routers rescheduling 
+mechanism. In that case Neutron server automatically monitors L3 agents 
+lifecycle. If agent is marked as dead, all routers associated to the dead agent
+will be safely moved to an alive agent on another node and auxiliary resources 
+created by the dead agent, such as additional interfaces and iptables rules, 
+will be removed. 
+There are some cases when auxiliary resources will be kept on the dead node and
+potentially affect connection to instances. For example, when L3 agent is alive
+but lost connection to a message broker. To avoid such problems additional 
+monitoring and clean up mechanism should be added. It must be easily usable 
+by Pacemaker. Current rescheduling script must be modified to match the 
+proposed changes.
+
+This feature allows to have permanent and stable connection to instances
+even in case of failure of one or more L3 agents. Also it allows to 
+effectively distribute routers between all available agents to improve
+network performance.
+
+Alternatives
+------------
+
+In the Juno release DVR L3 agent is introduced. It looks like alternative 
+router solution. This solution serves only VMs with floating IP addresses and 
+doesn't change behavior for VMs without FIP. 
+Also this solution doesn't change behavior of DHCP agents.
+
+In the Kilo release another feature based on VRRP will be introduced. 
+The problem is that this solution doesn't cover situation where both vrrp nodes
+are down. This solution also needs external re-scheduling mechanism.
+
+Data model impact
+-----------------
+
+None
+
+REST API impact
+---------------
+
+None
+
+Upgrade impact
+--------------
+
+None
+
+Security impact
+---------------
+
+None
+
+Notifications impact
+--------------------
+
+None
+
+Other end user impact
+---------------------
+
+None
+
+Performance Impact
+------------------
+
+* Time delays when neutron agents go down will decrease.
+* Network scalability will grow.
+* Load on a separate controller will be decreased.
+* Customers will get a possibility to add any number of nodes with started
+  neutron agents and network scalability will grow.
+
+Other deployer impact
+---------------------
+
+None
+
+Developer impact
+----------------
+
+None
+
+Dependencies
+============
+
+None
+
+
+Documentation Impact
+====================
+
+None
+
+Implementation
+==============
+
+None
+
+Assignee(s)                                                                     
+-----------                                                                     
+                                                                                
+None
+
+Work Items
+-------------
+
+None
+
+References
+==========
+
+None
+
+Testing
+=======
+
+None
