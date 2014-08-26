@@ -13,3 +13,6 @@
 *.egg-info
 
 draft/
+/.testrepository
+/.tox
+/doc/build
