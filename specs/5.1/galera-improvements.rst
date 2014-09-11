@@ -120,8 +120,8 @@ None
 Testing
 =======
 
-Descructive tests are required.
-Manual testing and log verification is required.
+Destructive tests are required.
+Manual testing and log verification are required.
 
 Documentation Impact
 ====================
