@@ -83,6 +83,8 @@ class TestTitles(testtools.TestCase):
     def test_template(self):
         files = ['specs/template.rst'] + glob.glob('specs/*/*')
         for filename in files:
+	# filtering images subdirectory
+	files = filter(lambda x: 'images' not in x, files)
             self.assertTrue(filename.endswith(".rst"),
                             "spec's file must uses 'rst' extension.")
             with open(filename) as f:
