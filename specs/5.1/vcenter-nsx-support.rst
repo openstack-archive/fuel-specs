@@ -132,11 +132,13 @@ https://blueprints.launchpad.net/fuel/+spec/devops-bare-metal-driver
 Testing
 =======
 
-* Additional integration tests for Nailgun (if needed).
-* Additional functional tests for UI.
-* Additional System tests against a stand alone test environment
-  (vCenter + NSX) wrapped up as a separate Jenkins thread job. The baremetal
-  driver support in DevOps framework required.
+Manual acceptance testing according to test cases in
+document (nsx+vcenter tab):
+https://docs.google.com/a/mirantis.com/spreadsheets/d
+12pxHDADqago_6PO4y0VZ1IrwymswqNiuvhMSUoCFaYc/
+edit?pli=1#gid=1778064828
+
+Later will be implemented autotests, based on these test cases.
 
 
 Documentation Impact
