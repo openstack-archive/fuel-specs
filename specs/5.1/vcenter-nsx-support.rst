@@ -4,9 +4,9 @@
 
  http://creativecommons.org/licenses/by/3.0/legalcode
 
-==========================================
+===============================
 Integration of NSX with vCenter
-==========================================
+===============================
 
 https://blueprints.launchpad.net/fuel/+spec/vcenter-nsx-support
 
@@ -132,11 +132,23 @@ https://blueprints.launchpad.net/fuel/+spec/devops-bare-metal-driver
 Testing
 =======
 
-* Additional integration tests for Nailgun (if needed).
-* Additional functional tests for UI.
-* Additional System tests against a stand alone test environment
-  (vCenter + NSX) wrapped up as a separate Jenkins thread job. The baremetal
-  driver support in DevOps framework required.
+Acceptance Criteria:
+* User should be able to deploy environment with parameters:
+  host OS: CentOS / Ubuntu OS;
+  deployment mode: simple, HA;
+  roles: different roles are supported due to vCenter as hypervisor and NSX
+  plugin in simultaneous interrelation with required settings through Fuel UI;
+* For user should be available all operations with environment which
+  are provided through Fuel UI;
+* NSX and vCenter must be stable for all destructive tests that we have
+  for these features;
+* OSTF tests related to these features must be passed: especially 'smoke',
+  'sanity', 'ha' groups;
+* Network connectivity test must be passed;
+* Manual testing is now a high priority part of acceptance testing
+  using checklists according to acceptance criteria above;
+* A set of automatic tests will be implemented for this feature
+  with 50% coverage of system tests.
 
 
 Documentation Impact
@@ -144,8 +156,7 @@ Documentation Impact
 
 The documentation should describe how to set up vCenter and NSX for a simple
 test environment.
-
-A reference architecture of the feature should be described also.
+A reference architecture of the feature should also be described.
 
 
 References
