@@ -1,0 +1,11 @@
+Verified+2: Jenkins
+Code-Review+1: Sergey Vasilenko <svasilenko@mirantis.com>
+Code-Review+1: Evgeniy L <eli@mirantis.com>
+Code-Review+2: Vladimir Kuklin <vkuklin@mirantis.com>
+Workflow+1: Vladimir Kuklin <vkuklin@mirantis.com>
+Code-Review+1: Dmitry Shulyak <dshulyak@mirantis.com>
+Submitted-by: Jenkins
+Submitted-at: Thu, 16 Oct 2014 08:32:50 +0000
+Reviewed-on: https://review.openstack.org/126517
+Project: stackforge/fuel-specs
+Branch: refs/heads/master
