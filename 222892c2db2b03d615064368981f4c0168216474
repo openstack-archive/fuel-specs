@@ -1,0 +1,14 @@
+Verified+2: Jenkins
+Code-Review+2: tatyana-leontovich <tleontovich@mirantis.com>
+Workflow+1: tatyana-leontovich <tleontovich@mirantis.com>
+Code-Review+2: Dmitry Pyzhov <dpyzhov+gerrit@mirantis.com>
+Code-Review+1: Andrey Danin <gcon.monolake@gmail.com>
+Code-Review+1: Andrey Sledzinskiy <asledzinskiy@mirantis.com>
+Code-Review+1: Dennis Dmitriev <ddmitriev@mirantis.com>
+Code-Review+1: Igor Gajsin <igajsin@mirantis.com>
+Code-Review+1: Irina <ipovolotskaya@mirantis.com>
+Submitted-by: Jenkins
+Submitted-at: Thu, 16 Oct 2014 20:48:11 +0000
+Reviewed-on: https://review.openstack.org/125578
+Project: stackforge/fuel-specs
+Branch: refs/heads/master
