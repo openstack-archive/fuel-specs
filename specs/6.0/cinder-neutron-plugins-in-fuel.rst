@@ -169,12 +169,14 @@ Here is detailed description of some of the files:
 
     # Plugin name
     name: fuel_awesome_plugin
+    # Human-readable name for your plugin
+    title: Awesome plugin
     # Plugin version
-    version: 0.1.0
+    version: 1.0.0
     # Description
     description: Enable to use plugin X for Neutron
     # Required fuel version
-    fuel_version: '6.0'
+    fuel_version: ['6.0']
 
     # The plugin is compatible with releases in the list
     releases:
@@ -393,7 +395,8 @@ Returns the list of plugins
             "name": "plugin_name",
             "version": "1.0",
             "description": "Enable to add X plugin to Neutron",
-            "fuel_version": "6.0",
+            "title": "Plugin name",
+            "fuel_version": ["6.0"],
             "package_version": "1",
             "releases": [
                 {
@@ -417,7 +420,8 @@ Returns the list of plugins
         "name": "plugin_name",
         "version": "1.0",
         "description": "Enable to add X plugin to Neutron",
-        "fuel_version": "6.0",
+        "title": "Plugin name",
+        "fuel_version": ["6.0"],
         "package_version": "1",
         "releases": [
             {
@@ -443,7 +447,8 @@ Get the information about specific plugin, where 1 is id of the plugin
         "name": "plugin_name",
         "version": "1.0",
         "description": "Enable to add X plugin to Neutron",
-        "fuel_version": "6.0",
+        "title": "Plugin name",
+        "fuel_version": ["6.0"],
         "package_version": "1",
         "releases": [
             {
@@ -571,7 +576,7 @@ for the scripts
 * if user uses puppet for plugins installation
   he should provide puppet manifests and modules
   in his plugin
-* scripts should not brake anything if they were
+* scripts should not break anything if they were
   run several times
 
 Nailgun implementation
