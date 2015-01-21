@@ -1,0 +1,180 @@
+..
+ This work is licensed under a Creative Commons Attribution 3.0 Unported
+ License.
+
+ http://creativecommons.org/licenses/by/3.0/legalcode
+
+===========================================================
+Update Pacemaker and Corosync infrastructure (Corosync 2.x)
+===========================================================
+
+https://blueprints.launchpad.net/fuel/+spec/corosync-2
+
+A next iteration of Corosync & Pacemaker improvements to meet the scaling
+requirements, better Pacemaker management and support for new operating systems.
+
+Problem description
+===================
+
+The current Pacemaker implementation has some limitations:
+
+* Doesn't allow to deploy a large amount of OpenStack Controllers
+
+* Operations with Cluster Information Base (CIB) utilize almost 100% of CPU on the Controller
+
+* Corosync shutdown process takes a lot of time
+
+* No support of the new operating systems, such as CentOS 7 or Ubuntu 14.04
+
+* Current Fuel Architecture is limited to Corosync 1.x and Pacemaker 1.x
+
+* Pacemaker service can be run only as a plug-in for Corosync service.
+  We cannot restart Pacemaker separately from the Corosync and vice versa.
+
+* Fuel fork of Corosync module contains a lot of tunings for parallel
+  deployment of controllers which cannot be contributed to the upstream yet
+  because of the huge code base divergence
+
+Proposed change
+===============
+
+* Support Fuel Controllers with Corosync 2.3.3 and Pacemaker 1.1.12 packages
+  for CentOS 6.5 and Ubuntu 14.04
+
+* Run Pacemaker service separated from Corosync (ver:1)
+
+* Get the puppet Corosync module from puppetlabs and integrate it. That would
+  allow to install and configure Corosync cluster with Pacemaker without
+  additional resources for the code maintenance.
+
+* Move all custom Fuel changes for Corosync and Pacemaker providers to the
+  separate Pacemaker module. That would allow custom changes to not interfere
+  with the upstream code.
+
+Alternatives
+------------
+
+* Continue to develop and support Fuel fork of Corosync module in order to
+  make it compatible with Corosync 2 without help from the Puppet community
+
+* Leave Corosync 1.x infrastructure as is
+
+Data model impact
+-----------------
+
+None
+
+REST API impact
+---------------
+
+None
+
+Upgrade impact
+--------------
+
+* Corosync 2.x is NOT compatible with the previous versions of Corosync 1.x [0].
+  Please make sure that you upgrade all nodes at once. See `Upgrading Fuel <http://docs.mirantis.com/openstack/fuel/fuel-6.0/user-guide.html#upgrading-and-updating-from-earlier-releases>`_.
+
+Security impact
+---------------
+
+None
+
+Notifications impact
+--------------------
+
+None
+
+Other end user impact
+---------------------
+
+* If Corosync service is started/restarted, Pacemaker service should then be
+  (re)started as well. Otherwise, the inter-service communication
+  layer will be broken.
+
+* Corosync service cannot be stopped gracefully prior to the Pacemaker
+  service. When shutting down, Pacemaker service should be turned off first.
+
+Performance Impact
+------------------
+
+* Deployment process will be improved and will require less time as CIB
+  operations will not consume 100% CPU time
+
+* Corosync 2 has a lot of improvements that allow to have up to 100
+  Controllers. Corosync 1.0 scales up to 10-16 nodes
+
+Other deployer impact
+---------------------
+
+None
+
+Developer impact
+----------------
+
+* All changes for custom Pacemaker providers should go to the separate
+  Pacemaker module.
+
+* Any changes not related to the providers should be done for Corosync module
+  and contributed to the upstream as well.
+
+Implementation
+==============
+
+Assignee(s)
+-----------
+
+Primary assignee:
+* sgolovatiuk@mirantis.com
+* bdobrelya@mirantis.com
+
+Other contributors:
+* dilyin@mirantis.com
+
+Work Items
+----------
+
+* Replace Corosync 1.x infrastructure with Corosync 2.3.3 and Pacemaker 1.1.12
+  at the staging mirrors
+
+* Adapt puppet modules for Corosync and Pacemaker for Corosync 2.x
+
+* Synchronize Corosync manifest with puppetlabs as well
+
+* Push staging mirrors to the public ones once the manifests are ready
+
+Dependencies
+============
+
+* Corosync 2.3.3 and Pacemaker 1.1.12 packages with dependency libraries
+
+Testing
+=======
+
+* Standard swarm testing is required.
+
+* Manual HA testing is required.
+
+* Rally testing is preffered, but not mandatory.
+
+Acceptance criteria
+-------------------
+
+* Openstack clouds deployed by Fuel pass OSTF tests with
+  Corosync 2 successfully.
+
+Documentation Impact
+====================
+
+* High Availability guide should be reviewed. For Ubuntu, crm tool stays
+  as is, but the documentation should be improved with pcs
+  equivalent for CentOS
+
+* Upgrade/Patching impact should be described - upgrading to Corosync 2.x
+  assumes full downtime for the cloud
+
+References
+==========
+
+.. [0] http://lists.corosync.org/pipermail/discuss/2012-April/001456.html
+
