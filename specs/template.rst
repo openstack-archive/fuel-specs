@@ -203,6 +203,21 @@ Examples of things to consider here include:
 * Will the change include any locking, and if so what considerations are there
   on holding the lock?
 
+Plugin impact
+-------------
+
+Discuss how this will affect the plugin framework. Every new feature should
+determine how they interact with the plugin framework and if they should be
+exposed to plugins and how that will work. Some areas to cover:
+
+* Should plugins be able to interact with the feature?
+
+* How will plugins be able to interact with this feature?
+
+* How might this change the current plugin framwork?
+
+** How will existing plugins interact with the feature?
+
 Other deployer impact
 ---------------------
 
