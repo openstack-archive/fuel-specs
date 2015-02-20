@@ -362,6 +362,9 @@ Fuel QA impact
      in cluster creation API call. It SHOULD be retrieved from Jenkins
      job, since different Fuel releases have different mirrors.
 
+   * The system tests HAVE TO be able to add extra repos in order to
+     test packages.
+
 
 Implementation
 ==============
