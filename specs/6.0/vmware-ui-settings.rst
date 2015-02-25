@@ -104,12 +104,13 @@ REST API impact
 
 There is a new REST API URL added:
 
-======  ===================================  =======
-method  URL                                  action
-======  ===================================  =======
-GET     /api/v1/vmware/:cluster_id/settings  Get all cluster settings
-PUT     /api/v1/vmware/:cluster_id/settings  Write updated clusted settings
-======  ===================================  =======
+======  ========================================================  ======
+method  URL                                                       action
+======  ========================================================  ======
+GET     /api/v1/clusters/:cluster_id/vmware_attributes            Get all cluster vmware settings
+PUT     /api/v1/clusters/:cluster_id/vmware_attributes            Write updated vmware clusted settings
+GET     /api/v1/clusters/:cluster_id/vmware_attributes/defaults/  Get default vmware settings
+======  ========================================================  ======
 
 GET returns JSON with the following structure
 
