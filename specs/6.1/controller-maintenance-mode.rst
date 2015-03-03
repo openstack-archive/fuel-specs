@@ -149,9 +149,8 @@ some “unexpected” reboot during established time.
 Delivery details
 ++++++++++++++++
 
-Individual packet will be built for each operating system. This packet will
-provide unified umm utility plus specific implementation for each OS. Then, we
-will modify puppet manifests to install this package by default.
+Full set of needed files will be provided as a single puppet class. Also we will
+modify puppet manifests to install this utility by default on all controllers.
 
 
 
