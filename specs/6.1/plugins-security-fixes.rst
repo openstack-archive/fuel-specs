@@ -49,8 +49,8 @@ updates plugin's repositories, and user can performs packages updates.
 
 If user uses fuel client to install rpm, it performs installation with
 yum, and registers the plugins in Nailgun, if user uses yum to install
-the plugin **fuel plugins --register plugin_name==1.0.3** command should
-be used to register the plugin.
+the plugin he should manually register the plugin with register command,
+e.g. **fuel plugins --register plugin_name==1.0.3**.
 
 Backend (Nailgun)
 -----------------
@@ -299,15 +299,44 @@ Dependencies
 Testing
 =======
 
-The changes can be tested with the next test case
+Unit and System tests are required.
 
-* install plugin with version 1.0.0
+Acceptance Criteria
+-------------------
 
-* deploy the cluster with enabled plugin
+* fpb should be able to build .fp plugins for plugins with
+  package version '1.0.0'
 
-* update plugin package to 1.0.1 version
+* fpb should be able to build .rpm plugins for plugins with
+  package version '2.0.0'
 
-* check that new plugin related packages are available on OpenStack nodes
+* by default fpb should generate '2.0.0' package version plugin template
+
+* fuel client should be able to **install** .fp plugins
+
+* fuel client should be able to **install** .rpm plugins
+
+* fuel client should be able to **remove** plugins
+
+* fuel client should be able to **update** the plugin to higher version
+  of the plugin with the same name and with the same major version
+  (1.0.0 -> 1.0.1). Plugin which is installed and plugin for update
+  should have package version 2.0.0.
+
+* fuel client should be able to **downgrade** the plugin to lower version
+  of the plugin with the same name and with the same major version
+  (1.0.1 -> 1.0.0). Plugin which is installed and plugin for downgrade
+  should have package version 2.0.0.
+
+* with fuel client user should be able to **register** plugin in Nailgun
+  if it was installed with yum
+
+* also user should be able to remove plugin from Nailgun
+  (**unregister** action) if it was removed manually
+
+* fuel client should show error message if user tries to update the plugin
+  in old format (package version 1.0.0) to the plugin in new format
+  (package version 2.0.0)
 
 Documentation Impact
 ====================
