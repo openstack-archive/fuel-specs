@@ -40,6 +40,7 @@ Some notes about using this template:
   having to look at additional files which can not be viewed in gerrit.  It
   will also allow inline feedback on the diagram itself.
 
+
 Problem description
 ===================
 
@@ -249,6 +250,34 @@ such as:
 
 * If the blueprint proposes a change to the driver API, discussion of how
   drivers would implement the feature is required.
+
+Infrastructure impact
+---------------------
+
+Explain what changes in project infrastructure will be required to support the
+proposed change. Consider the following:
+
+* Will it increase the load on CI infrastructure by making build or test jobs
+  consume more CPU, network, or storage capacity? Will it increase the number
+  of scheduled jobs?
+
+* Will it require new workflows or changes in existing workflows implemented in
+  CI, packaging, source code management, code review, or software artefact
+  publishing tools?
+
+  * Will it require new tools or services to be deployed on project
+    infrastructure?
+
+  * Will it require new types of Jenkins jobs?
+
+  * Will it affect git branch management strategies?
+
+  * Will it introduce new release artefacts?
+
+* Will it require changes in build environments of any existing CI jobs? Would
+  such changes be backwards compatible with previous Fuel releases currently
+  supported by project infrastructure?
+
 
 Implementation
 ==============
