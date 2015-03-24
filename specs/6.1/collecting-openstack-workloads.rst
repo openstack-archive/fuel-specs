@@ -110,9 +110,13 @@ Set of collected data
 |          |  "encrypted_flag": False, "bootable_flag": True, |               |
 |          |  "status": "st", "volume_type": "t", "size": 1,  |               |
 |          |  "tenant_id": "fe63", "host": "dde3",            |               |
-|          |  "snapshot_id": "d3e", "attachments": [{}]}      |               |
+|          |  "snapshot_id": "d3e", "attachments": [{         |               |
+|          |  "device": "b", "server_id": "084", "id": "95}]} |               |
 +----------+--------------------------------------------------+---------------+
 | Tenant   | {"id": "ge3", "enabled_flag": True}              | 15 min        |
++----------+--------------------------------------------------+---------------+
+| Keystone | {"id": "kkt", "enabled_flag": True,              | 15 min        |
+| User     |  "tenant_id": "x1_dd"}                           |               |
 +----------+--------------------------------------------------+---------------+
 
 Alternatives
@@ -136,8 +140,15 @@ Input is validated by JSON schema.
 Normal http response codes: 200.
 Expected error http response code: 400 - on schema validation error.
 
-For export OSWLs to CSV to fuel-stats analytics added url:
-/api/v1/csv/{resource_type}.
+CSV export urls mapping:
+
+- export OSWLs to CSV: /api/v1/csv/{resource_type},
+- export clusters info: /api/v1/csv/clusters,
+- export plugins info: /api/v1/csv/plugins,
+- export all CSVs as zip archive: /api/v1/csv/all
+
+All CSV export urls handle filtering parameters from_date, to_date in
+format 'YYYY-MM-DD'.
 
 Upgrade impact
 --------------
