@@ -4,73 +4,109 @@
 
  http://creativecommons.org/licenses/by/3.0/legalcode
 
-=======================
-Consume External Ubuntu
-=======================
+=============================
+Consume External Repositories
+=============================
 
 https://blueprints.launchpad.net/fuel/+spec/consume-external-ubuntu
 
-Before using Ubuntu release a cloud operator should specify both
-Ubuntu and OpenStack mirrors.
-
+A Cloud Operator should specify Upstream OS mirror and MOS mirror in order to
+install MOS to selected OS from mirrors created by nested bluprint [2]_
+In this blueprint the focus will be on Debian based OS (Ubuntu).
+RedHat based OS will be covered in future release cycles.
 
 Problem description
 ===================
 
-Currently, it's hard to provide Ubuntu's upstream updates, since we don't
-fetch them from official mirrors. Therefore, users are vulnerable for
-security issues for a long time.
-
-This spec provides a detail plan how to solve this problem.
-
+Problems have been described at [2]_
 
 Proposed change
 ===============
 
-#. Set both Ubuntu and OpenStack mirrors per cluster.
+Set both Ubuntu and OpenStack mirrors per cluster
+-------------------------------------------------
 
-   Once users have created an environment on Ubuntu, they SHOULD be able to
-   provide both Ubuntu and OpenStack repos as well as additional repos on
-   the "Settings" tab. By default, Canonical repo for Ubuntu and Fuel repo
-   for OpenStack SHOULD be used.
+Once users have created an environment on Ubuntu, they SHOULD be able to
+provide both Ubuntu and MOS repositories as well as additional repositories in
+the "Settings" tab. By default, Canonical repo for Ubuntu and Fuel repo for
+OpenStack SHOULD be used.
 
-   The repos SHOULD be specified using Debian format:
+The repository SHOULD be specified using Debian format:
 
-   .. code::
+.. code::
 
-       deb http://archive.ubuntu.com/ubuntu/ trusty main universe
-       deb-src http://pl.archive.ubuntu.com/ubuntu/ trusty main multiverse
+    deb http://archive.ubuntu.com/ubuntu/ trusty main universe
+    deb-src http://pl.archive.ubuntu.com/ubuntu/ trusty main multiverse
 
-   All Ubuntu packages SHOULD be removed from the Fuel ISO and provided
-   mirrors SHOULD be used for environment deployment.
+All Ubuntu packages SHOULD be removed from the Fuel ISO and provided mirrors
+SHOULD be used for environment deployment.
 
-   .. note:: It'd be great to have format validation for provided repos
-             on both backend and UI.
+.. note:: It'd be great to have format validation for provided repositories
+          on both backend and UI.
 
-   .. note:: We SHOULD NOT use ``mirror://`` protocol for default repos,
-             because we won't know which repos were used and hence
-             debugging will be painful.
+.. note:: We SHOULD NOT use ``mirror://`` protocol by default,
+          because we won't know which repositories were used and hence
+          debugging will be painful.
 
-   See "Data model impact", "UX impact" and "Developer impact" for details.
+See "Data model impact", "UX impact" and "Developer impact" for details.
 
-#. **OPTIONAL**: Check that provided repos contain all required packages.
+Repository priorities
+---------------------
 
-   We SHOULD check that all required packages are available and therefore
-   successful deployment is possible.
+For Debian, APT pinning [4]_ priorities for MOS repositories must be set above
+1000, which causes a version of the package from repo to be installed even
+if this constitutes a downgrade of the package, and will prevent installation
+of newer versions of the package from Upstream OS repositories as long as any
+version of the package is available from MOS repository.
 
-   Since Nailgun knows nothing about required packages and this information
-   SHOULD NOT be hardcoded (it's a dynamic), we obviously HAVE TO do it
-   by executing some asynchronous task. The task SHOULD:
+The following default values will be used for setting APT pinning priorities
+via Fuel UI:
 
-   * retrieve a list of required packages;
-   * check their availability;
-   * report result back to Nailgun.
+* Upstream OS repositories (including base, updates, security) - no priority
+* Extra repositories specified by customer - no priority
+* MOS repositories (base, updates, security, proposed) - 1050
+* MOS holdback repository - 1200
+* Developer repositories - 1300>
 
-   .. note:: Since we're moving toward declarative tasks, the task
-             will be executed inside MCollective container. So the
-             container HAVE TO be ready for doing this.
+For CentOS, there's no special meaning of priorities. Unlike APT, Yum selects
+the repository with lowest priority value wins, and the allowed range of
+priorities is 1 to 99.
 
-#. Generate provisioning images per cluster.
+The following default values will be used for Yum repository priorities:
+
+* Upstream OS repositories (including base, updates, security) - 70
+* Extra repositories specified by customer - 70
+* MOS repositories (base, updates, and security, fasttrack) - 50
+* MOS holdback repository - 30
+* Developer repositories - <20
+
+To handle a case when customer or developers need to override MOS packages,
+there must be an option to specify extra repository priority explicitly when
+adding it via Fuel UI or CLI.
+
+.. note:: The general concept is specified for all supported OSes, though
+          Debian based OSes are targeted to this release.
+
+(OPTIONAL) Check that provided repos contain all required packages
+------------------------------------------------------------------
+
+We SHOULD check that all required packages are available and therefore
+successful deployment is possible.
+
+Since Nailgun knows nothing about required packages and this information SHOULD
+NOT be hardcoded (it's a dynamic), we obviously HAVE TO do it by executing some
+asynchronous task. The task SHOULD:
+
+#. retrieve a list of required packages;
+#. check their availability;
+#. report result back to Nailgun.
+
+.. note:: Since we're moving toward declarative tasks, the task will be
+          executed inside MCollective container. So the container HAVE TO be
+          ready for doing this.
+
+Generate provisioning images per cluster
+----------------------------------------
 
    Since we're going to specify mirrors per cluster, different clusters may
    have different set of mirrors. Therefore, we SHOULD generate provisioning
@@ -88,7 +124,8 @@ Proposed change
 
    See "Data model impact" and "RPC impact" for details.
 
-#. Check that there is connectivity to provided repos.
+Check that there is connectivity to provided repos
+--------------------------------------------------
 
    We SHOULD check whether repos are reachable or not, and in case it's not
    we HAVE TO warn user about it. The check SHOULD be implemented as
@@ -413,14 +450,9 @@ Work Items
 Dependencies
 ============
 
-* `Ubuntu 14.04 support
-  <https://blueprints.launchpad.net/fuel/+spec/support-ubuntu-trusty>`_
-
-* `Separate MOS from Linux repos
-  <https://blueprints.launchpad.net/fuel/+spec/separate-mos-from-linux>`_
-
-* `Building target images with Ubuntu on master node
-  <https://blueprints.launchpad.net/fuel/+spec/ibp-build-ubuntu-images>`_
+#. [1]_
+#. [2]_
+#. [3]_
 
 
 Testing
@@ -430,7 +462,6 @@ Testing
 
 * The slaves MUST use priority pinning that are specified in cluster's
   attributes.
-
 
 Documentation Impact
 ====================
@@ -442,4 +473,11 @@ for deploying clusters on Ubuntu.
 References
 ==========
 
-* #fuel-dev on freenode
+.. [1] `Ubuntu 14.04 support
+        <https://blueprints.launchpad.net/fuel/+spec/support-ubuntu-trusty>`_
+.. [2] `Separate MOS from Linux repositories
+        <https://blueprints.launchpad.net/fuel/+spec/separate-mos-from-linux>`_
+.. [3] `Building target images with Ubuntu on master node
+        <https://blueprints.launchpad.net/fuel/+spec/ibp-build-ubuntu-images>`_
+.. [4] `apt_preferences(5)
+       <http://manpages.debian.org/man/5/apt_preferences>`_
