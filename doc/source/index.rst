@@ -36,6 +36,14 @@ Contents:
 
    specs/6.1/*
 
+7.0 approved specs:
+
+.. toctree::
+   :glob:
+   :maxdepth: 1
+
+   specs/7.0/*
+
 ==================
 Indices and tables
 ==================
