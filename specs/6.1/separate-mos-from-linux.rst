@@ -366,6 +366,10 @@ distro vendor's trademarks, and including target distribution version::
     qemu_2.1.0-1           -> qemu_2.1.0-1~u14.04+mos1
     ohai_6.14.0-2.3ubuntu4 -> ohai_6.14.0-2.3~u14.04+mos1
 
+.. note:: Do not use the "0" revision to avoid possible dependency problems!
+          Adding the "~something" suffix makes the version *LOWER* than the
+          corresponding upstream version!
+
 Subrevision numbering starts from 1. Subsequent revisions of a package using
 the same upstream version and based on the upstream package with the same
 debian revision should increment the subrevision::
