@@ -70,9 +70,9 @@ Pre and post deployment ranges:
 
 * 4000 - 4999 - network configuration
 
-* 6000 - 6999 - reserved for future uses
-
 * 5000 - 5999 - software deployment
+
+* 6000 - 6999 - reserved for future uses
 
 * 7000 - 7999 - reserved for future uses
 
