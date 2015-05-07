@@ -69,7 +69,7 @@ class TestTitles(testtools.TestCase):
             if "http://" in line or "https://" in line:
                 continue
             self.assertTrue(
-                len(line) < 80,
+                len(line.decode("utf-8")) < 80,
                 msg="%s:%d: Line limited to a maximum of 79 characters." %
                 (tpl, i+1))
 
