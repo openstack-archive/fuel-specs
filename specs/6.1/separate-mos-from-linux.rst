@@ -355,9 +355,9 @@ Debian revision of a MOS package should use the following format::
 
     <revision>~<base-distro-release>+mos<subrevision>
 
-In MOS specific packages, revision must always be "0"::
+In MOS specific packages, revision must always be "1"::
 
-    fuel-nailgun_6.1-0~u14.04+mos1
+    fuel-nailgun_6.1-1~u14.04+mos1
 
 In *divergent* packages, revision should include as much of the debian revision
 of the corresponding *upstream* package as possible while excluding the base
@@ -365,6 +365,17 @@ distro vendor's trademarks, and including target distribution version::
 
     qemu_2.1.0-1           -> qemu_2.1.0-1~u14.04+mos1
     ohai_6.14.0-2.3ubuntu4 -> ohai_6.14.0-2.3~u14.04+mos1
+
+.. note:: Do not start the debian revision with "0~" since it makes the package
+          version *LOWER* than the corresponding upstream version. For example,
+          qemu_2.1.0-0~u14.04+mos1 does not satisfy a "Depends: qemu >= 2.1.0"
+          requirement.
+
+.. attention:: In case of Ubuntu specific packages named as 0ubuntuX it would
+               be not enough to just bump the revision by the scheme described
+               above, as the resulting version still will be lower than the
+               original one. You should change it the following way:
+               0ubuntuX -> 0u~u14.04+mos
 
 Subrevision numbering starts from 1. Subsequent revisions of a package using
 the same upstream version and based on the upstream package with the same
