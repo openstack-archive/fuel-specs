@@ -16,3 +16,6 @@ draft/
 /.testrepository
 /.tox
 /doc/build
+
+ChangeLog
+AUTHORS
