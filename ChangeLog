@@ -1,0 +1,87 @@
+CHANGES
+=======
+
+* [WiP] Reduce time to publish packages
+* Blueprint: separate-mos-from-linux
+* Fix ranges in the plugins deployment order spec
+* virtual routers for env nodes
+* Blueprint: separate-mos-from-linux
+* Add "Infrastructure impact" section
+* Plugins deployment order
+* Ubuntu 14.04 Support Specification
+* Implement provider for native linux briges support
+* Add acceptance criteria for plugins updates
+* Specs for neutron-agents-local-reports
+* Fix for MM
+* Refactor Nailgun and UI to support native linux briges and bonds
+* Plugin developer can specify major version in release dependencies
+* Programable API for role entity
+* Groups for plugins
+* IBP: build Ubuntu images specification
+* Security fixes for Fuel plugins
+* Change urls for API
+* Collecting OpenStack workloads statistics
+* consume-external-ubuntu: extend qa tasks
+* Consume External Ubuntu
+* blueprint fuel-master-separate-logs
+* Add blueprint for Fuel Library modularization
+* Add connection tracking to fuel-agent specification
+* Granular deployment
+* 'Reboot' action for plugins in fuel
+* Blueprint corosync-2
+* 200 nodes support
+* Add plugin section to spec template
+* Blueprint - controller maintenance mode
+* Blueprint: support-infiniband-network
+* VmWare UI Settings Tab for FuelWeb
+* Blueprint: ceilometer-central-agent-ha
+* Node removal task
+* Move ml2-neutron to 6.0
+* proposal of support Keystone with LDAP identity backend
+* Add a blueprint about cinder-vmdk-role
+* VMware: dual hypervisor support (KVM/QEMU + vCenter)
+* Multiple Neutron DHCP agents
+* Blueprint: ceilometer-support-for-vcenter
+* Blueprint: external-mongodb-support
+* Re-thinking Fuel Client
+* Nailgun code testing improvements specification
+* Workflow documentation is now in infra-manual
+* Blueprint: sahara-create-default-templates
+* OpenStack public endpoints need to operate over SSL
+* Specification for sending statistics
+* Add a spec for reducing tarball size
+* Several fixes for Cinder/Neutron plugins spec
+* Cinder/Neutron plugins in fuel
+* Blueprint: fuel-multiple-l3-agents
+* 100 nodes support
+* Spec with test cases to extend HA testing
+* Copied and updated image based provisioning spec
+* blueprint: vcenter-vlan-manager
+* Add spec for nsx and vcenter autotests
+* Dry run deploy
+* Updated testing creteria for vcenter-nsx-support
+* blueprint fuel-master-ci-tests
+* Blueprint: multiple-cluster-networks
+* Fuel master access control improvements
+* Use vSphere Datastore backend for Glance with vCenter
+* 1-1 mapping between nova-compute instance and vsphere cluster
+* Specification for pacemaker-improvements
+* Fix index page for specs
+* Fixing typos in galera-improvements blueprint
+* Blueprint: refactoring-for-fuelclient
+* Compress upgrade tarball with lrzip
+* Blueprint: galera-improvements
+* Blueprint: ml2-neutron
+* Bluprint: reliable-galera-ocf-script
+* An initial proposal of NSX + vCenter integration
+* Loss of .gitignore file
+* Blueprint: secure-fuel-master-services
+* Blueprint: openstack-from-master
+* Added acceptance criteria to image based spec
+* Blueprint: feature-groups
+* Blueprint: backup-master-node
+* Blueprint: access-control-master-node
+* Added image based provisioning spec
+* Added upgrade impact section
+* Initial commit
+* Added .gitreview
