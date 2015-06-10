@@ -1,11 +1,12 @@
-==========================================
-Support SSL for OpenStack endpoints
-==========================================
+=========================================================
+Support SSL for OpenStack endpoints and Fuel Master node
+=========================================================
 
 https://blueprints.launchpad.net/fuel/+spec/ssl-endpoints
 
 OpenStack public endpoints that provide APIs on public networks need to
-operate over SSL.
+operate over SSL. Also some components on master node need to operate
+over SSL.
 
 Problem description
 ===================
@@ -16,6 +17,9 @@ untrusted, encryption is required to ensure confidentiality.
 
 We achieve this by implementing Secure Sockets Layer as recommended in the
 OpenStack security guide.
+
+Fuel master node after installation also operates via unsecure protocols only.
+We can achieve more security using access to Fuel UI via SSL.
 
 Proposed change
 ===============
@@ -77,12 +81,12 @@ endpoints:
   SSL is available since this version. As it is not available in Ubuntu (and
   probably it is the same for CentOS) we will need to rebuild it.
   https://bugs.launchpad.net/fuel/+bug/1346365/
+  https://review.openstack.org/#/c/147858/
+  https://review.openstack.org/#/c/147860/
 
 - Configure HAProxy to manage SSL connections and to forward the request to
-  the corresponding service.
-
-- Configure Keystone public endpoints.
-  https://review.openstack.org/#/c/114909/
+  the corresponding service. Also configure Keystone over https
+  https://review.openstack.org/#/c/186498/
 
 - When an OpenStack service queries another OpenStack service it must use the
   internal API endpoint. If it's not possible, the service needs to be
@@ -95,7 +99,12 @@ endpoints:
   have to provide it before deploying the cluster. And to generate the
   certificate, the customer needs to know the public VIP address (or name).
   We will use openssl to manage them so that means that we will add a
-  dependency to openssl if it is not already the case.
+  dependency to openssl if it is not already the case. So, we need a field
+  in UI page to which user can put DNS name for CN field in certificate.
+
+- We need self-sign keys generation code
+  https://review.openstack.org/#/c/186035/
+  https://review.openstack.org/#/c/186015/
 
 - As we are using a self-signed certificate we need to ensure that OpenStack
   services behave in the same way with a self-signed certificate and a
@@ -109,20 +118,30 @@ endpoints:
   certificate. By default we will enable SSL but must give the possibility to
   the user to disable it. It can be a checkbox in Fuel UI to "disable SSL for
   public endpoints" that needs to be checked to disable SSL.
+  https://review.openstack.org/#/c/186706/
 
-- According to the previous point we should alert the user that a self-signed
-  certificate is used for SSL encryption.
+- After cluster deployment we should provide to the user right link to Horizon
+  if it was deployed with https support
 
 - In case of "real" HA where several HAProxy are deployed. We need to be able
   to distribute the certificate. The self-signed certificate will be generated
-  by *nailgun* and stored somewhere on the fuel master. Then the
+  by *astute* prehook  and stored somewhere on the fuel master. Then the
   certificate will be distributed to all nodes that run HAProxy through a
   mechanism like *upload_file*. The certificate is related to a cluster
   because it is valid for a given virtual IP. So if a controller is added to
   the cluster we just reuse the certificate already generated at the creation
-  of the cluster and stored on the fuel master node. In case of our
-  self-signed certificate we will use the VIP because we cannot manage the
-  DNS name for the user.
+  of the cluster and stored on the fuel master node.
+
+- As SSL certificates are sensitive data we should be certain that they are not
+  stored in logs or in a database in case of diagnostic snapshot.
+
+- OTSF tests shoud be fixed to operate over SSL
+
+
+Fuel master node should operate over SSL. To achieve this, we should point
+UI web server to operate over HTTPS. Also some master components can use
+SSL by default.
+
 
 Alternatives
 ------------
@@ -156,15 +175,6 @@ specification.
 Upgrade impact
 --------------
 
-The main problem is how can we support the upgrade of an environment that has
-been deployed without the support for SSL. To manage cluster deployed before
-the update, nailgun uses previous version of manifests. That means that there
-will be one version of puppet manifest without SSL support and the new version
-with SSL support. Both should work with last version of HAProxy since the
-version build by fuel OSCI team supports the declaration of several
-configuration files into a directory (that is not the case for the upstream
-version of HAProxy). See https://bugs.launchpad.net/fuel/+bug/1346365
-
 If the updated environment does not use SSL before the update, it will not
 use SSL after the update.
 
@@ -176,9 +186,6 @@ Security impact
 By using SSL/TLS over HTTP services, we will be able to provide a secure
 system with authentication (but it is not the case currently since you need
 a certificate generated by a CA) and confidentiality.
-
-As SSL certificates are sensitive data we should be certain that they are not
-stored in logs or in a database in case of diagnostic snapshot.
 
 Notifications impact
 --------------------
@@ -230,8 +237,8 @@ everything will work fine with the self-signed certificate.
 Developer impact
 ----------------
 
-Maybe OSTF team (health check team) is going to be affected by changing
-OpenStack endpoints. Need to be checked.
+OSTF team (health check team) is going to be affected by changing
+OpenStack endpoints.
 
 Implementation
 ==============
@@ -240,7 +247,7 @@ Assignee(s)
 -----------
 
 Primary assignee:
-- guillaume-thouvenin
+- sbogatkin
 
 Feature Lead:
 - assignee of this blueprint
@@ -250,7 +257,7 @@ Mandatory Design Reviewers:
 
 Developers:
 - Stanislaw Bogatkin
-- Guillaume Thouvenin
+
 
 QA: ?
 
@@ -260,8 +267,8 @@ Work Items
 stage 1
 ~~~~~~~
 
-- Generate a certificate from Fuel (probably by Nailgun) that will be used
-  for authentication. It can be self-signed or we can generate a CA authority.
+- Generate a certificate from Fuel that will be used for authentication.
+  It can be self-signed.
 
 - We need to provide the possibility to the user to deactivate SSL if he
   doesn't want to use the one generated by Fuel.
@@ -284,27 +291,21 @@ stage 1
     - nova
     - sahara
     - swift
-    - zabbix
-    - *other? ...*
 
-- Also check internal stuff:
+- If the user want to use its own certificate we need to give him such
+  ability. Also we should provide a document about how he can manually
+  install his own certificate for SSL endpoints.
 
-    - osnailyfacter
-    - *other? ...*
-
-- If the user want to use its own certificate we need to provide a document
-  about how he can manually install its own certificate for SSL endpoints.
+- Generate SSL keypair for master node nginx and apply it. Plain HTTP
+  mode should be retained for backward compatibility.
 
 stage 2
 ~~~~~~~
 
-- The user can upload its own certificate. If the user chooses to upload its
-  own certificate it is up to her/him to check the expiration date. This will
-  be implemented in the following blueprint:
-  https://blueprints.launchpad.net/fuel/+spec/user-uploads-its-certificate
-
 - Use a PKI described in the following blueprint:
   https://blueprints.launchpad.net/fuel/+spec/ca-deployment
+
+- Wrap Keystone and RabbitMQ on master over SSL
 
 Dependencies
 ============
