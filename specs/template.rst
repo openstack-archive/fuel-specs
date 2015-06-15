@@ -297,6 +297,9 @@ Primary assignee:
 Other contributors:
   <launchpad-id or None>
 
+Mandatory design review:
+  <launchpad-id or None>
+
 Work Items
 ----------
 
@@ -329,6 +332,11 @@ to add more functional tests would need to be included.
 Is this untestable in gate given current limitations (specific hardware /
 software configurations available)? If so, are there mitigation plans (3rd
 party testing, gate enhancements, etc).
+
+Acceptance criteria
+-------------------
+
+Please specify clearly defined acceptance criteria for proposed changes.
 
 
 Documentation Impact
