@@ -13,6 +13,7 @@
 
 import sys
 import os
+import re
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -163,6 +164,31 @@ html_use_index = False
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'Fuel-Specsdoc'
 
+with open('./header.rst.template') as f:
+    header = f.read()
+
+with open('./footer.rst.template') as f:
+    footer = f.read()
+
+with open('./index.rst', 'w') as f:
+    f.write(header)
+
+for specdir in os.listdir('./specs'):
+    with open('./index.rst','a') as f:
+        if re.match("^\d.\d(.\d)?$", specdir):
+            f.write("""
+{0} approved specs:
+
+.. toctree::
+   :glob:
+   :maxdepth: 1
+
+   specs/{0}/*
+
+""".format(str(specdir)))
+
+with open('./index.rst', 'a') as f:
+    f.write(footer)
 
 # -- Options for LaTeX output --------------------------------------------------
 
