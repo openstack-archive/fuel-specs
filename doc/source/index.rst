@@ -37,6 +37,7 @@ Contents:
    specs/6.1/*
 
 7.0 approved specs:
+=======
 
 .. toctree::
    :glob:
