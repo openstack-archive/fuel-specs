@@ -12,14 +12,17 @@ Include the URL of your launchpad blueprint:
 
 https://blueprints.launchpad.net/fuel/+spec/example
 
-Introduction paragraph -- why are we doing anything? A single paragraph of
-prose that operators can understand.
+Introduction paragraph -- why is it necessary to do anything?
+A single paragraph of prose that reviewers can understand.
 
 Some notes about using this template:
 
 * Your spec should be in ReSTructured text, like this template.
 
 * Please wrap text at 79 columns.
+
+* The specification should be depersonalized and written in a impersonal
+  and gender-free form.
 
 * The filename in the git repository should match the launchpad URL, for
   example a URL of: https://blueprints.launchpad.net/fuel/+spec/awesome-thing
@@ -33,28 +36,30 @@ Some notes about using this template:
 * To test out your formatting, build the docs using tox, or see:
   http://rst.ninjs.org
 
-* If you would like to provide a diagram with your spec, ascii diagrams are
+* If you would like to provide a diagram with your spec, ASCII diagrams are
   required.  http://asciiflow.com/ is a very nice tool to assist with making
-  ascii diagrams.  The reason for this is that the tool used to review specs is
+  ASCII diagrams.  The reason for this is that the tool used to review specs is
   based purely on plain text.  Plain text will allow review to proceed without
-  having to look at additional files which can not be viewed in gerrit.  It
-  will also allow inline feedback on the diagram itself.
+  having to look at additional files which can not be viewed in Gerrit.  It
+  will also allow in-line feedback on the diagram itself.
 
 
+--------------------
 Problem description
-===================
+--------------------
 
 A detailed description of the problem:
 
 * For a new feature this might be use cases. Ensure you are clear about the
-  actors in each use case: End User vs Deployer
+  actors in each use case: End User vs Deploy engineer
 
 * For a major reworking of something existing it would describe the
   problems in that feature that are being addressed.
 
 
-Proposed change
-===============
+----------------
+Proposed changes
+----------------
 
 Here is where you cover the change you propose to make in detail. How do you
 propose to solve this problem?
@@ -62,15 +67,24 @@ propose to solve this problem?
 If this is one part of a larger effort make it clear where this piece ends. In
 other words, what's the scope of this effort?
 
-Alternatives
-------------
+Web UI
+======
 
-What other ways could we do this thing? Why aren't we using those? This doesn't
-have to be a full literature review, but it should demonstrate that thought has
-been put into why the proposed solution is an appropriate one.
+If the proposed changes require changing the web UI please describe in details:
 
-Data model impact
------------------
+* How existing controls or representation is going to be changed
+
+* What changes are required for underlying engines
+
+
+Nailgun
+=======
+
+General changes to the architecture, tasks and encapsulated business logic
+should be described here.
+
+Data model
+----------
 
 Changes which require modifications to the data model often have a wider impact
 on the system.  The community often has strong opinions on how the data model
@@ -89,8 +103,9 @@ Questions which need to be addressed by this section include:
   need to take into account existing instances, or modify other existing data
   describe how that will work.
 
-REST API impact
----------------
+
+REST API
+--------
 
 Each API method which is either added or changed should have the following
 
@@ -101,20 +116,20 @@ Each API method which is either added or changed should have the following
 
   * Method type (POST/PUT/GET/DELETE)
 
-  * Normal http response code(s)
+  * Normal HTTP response code(s)
 
-  * Expected error http response code(s)
+  * Expected error HTTP response code(s)
 
     * A description for each possible error code should be included
       describing semantic errors which can cause it such as
       inconsistent parameters supplied to the method, or when an
       instance is not in an appropriate state for the request to
       succeed. Errors caused by syntactic problems covered by the JSON
-      schema defintion do not need to be included.
+      schema definition do not need to be included.
 
   * URL for the resource
 
-  * Parameters which can be passed via the url
+  * Parameters which can be passed via the URL
 
   * JSON schema definition for the body data if allowed
 
@@ -123,18 +138,103 @@ Each API method which is either added or changed should have the following
 * Example use case including typical API samples for both data supplied
   by the caller and the response
 
-* Discuss any policy changes, and discuss what things a deployer needs to
-  think about when defining their policy.
+* Discuss any policy changes, and discuss what things a deploy engineer needs
+  to think about when defining their policy.
 
+
+Orchestration
+=============
+
+General changes to the logic of orchestration should be described in details
+in this section.
+
+
+RPC Protocol
+------------
+
+RPC protocol is another crucial part of inter-component communication in Fuel.
+Thus it's very important to describe in details at least the following:
+
+* How messaging between Nailgun and Astute will be changed in order to
+  implement this specification.
+
+* What input data is required and what format of results should be expected
+
+* If changes assume performing operations of nodes, a description of messaging
+  protocol, input and output data should be also described.
+
+
+Fuel Client
+===========
+
+Fuel Client is a tiny but important part of the ecosystem. The most important
+is that it is used by other people as a CLI tool and as a library.
+
+This section should describe whether there are any changes to:
+
+* HTTP client and library
+
+* CLI parser, commands and renderer
+
+* Environment
+
+It's important to describe the above-mentioned in details so it can be fit
+into both user's and developer's manuals.
+
+
+Plugins
+=======
+
+Plugins are ofter made by third-party teams. Please describe how these changes
+will affect the plugin framework. Every new feature should determine how it
+interacts with the plugin framework and if it should be exposed to plugins and
+how that will work:
+
+* Should plugins be able to interact with the feature?
+
+* How will plugins be able to interact with this feature?
+
+* There is something that should be changed in existing plugins to be
+  compatible with the proposed changes
+
+* The proposed changes enable or disable something for new plugins
+
+This section should be also described in details and then be put into the
+developer's manual.
+
+
+Fuel Library
+============
+
+Are some changes required to Fuel Library? Please describe in details:
+
+* Changes to Puppet manifests
+
+* Supporting scripts
+
+* Components packaging
+
+
+------------
+Alternatives
+------------
+
+What are other ways of achieving the same results? Why aren't they followed?
+This doesn't have to be a full literature review, but it should demonstrate
+that thought has been put into why the proposed solution is an appropriate one.
+
+
+--------------
 Upgrade impact
 --------------
 
 If this change set concerns any kind of upgrade process, describe how it is
 supposed to deal with that stuff. For example, Fuel currently supports
 upgrading of master node, so it is necessary to describe whether this patch
-set contradicts upgrade process itself or any working feature that we need
-to support.
+set contradicts upgrade process itself or any supported working feature that.
 
+
+---------------
 Security impact
 ---------------
 
@@ -164,14 +264,18 @@ guidelines are a work in progress and are designed to help you identify
 security best practices.  For further information, feel free to reach out
 to the OpenStack Security Group at openstack-security@lists.openstack.org.
 
+
+--------------------
 Notifications impact
 --------------------
 
 Please specify any changes to notifications. Be that an extra notification,
 changes to an existing notification, or removing a notification.
 
-Other end user impact
----------------------
+
+---------------
+End user impact
+---------------
 
 Aside from the API, are there other ways a user will interact with this
 feature?
@@ -179,7 +283,9 @@ feature?
 * Does this change have an impact on python-fuelclient? What does the user
   interface there look like?
 
-Performance Impact
+
+------------------
+Performance impact
 ------------------
 
 Describe any potential performance impact on the system, for example
@@ -204,28 +310,15 @@ Examples of things to consider here include:
 * Will the change include any locking, and if so what considerations are there
   on holding the lock?
 
-Plugin impact
--------------
 
-Discuss how this will affect the plugin framework. Every new feature should
-determine how it intearcts with the plugin framework and if it should be
-exposed to plugins and how that will work. Some areas to cover:
-
-* Should plugins be able to interact with the feature?
-
-* How will plugins be able to interact with this feature?
-
-* How might this change the current plugin framwork?
-
-  * How will existing plugins interact with the feature?
-
-Other deployer impact
----------------------
+-----------------
+Deployment impact
+-----------------
 
 Discuss things that will affect how you deploy and configure Fuel
 that have not already been mentioned, such as:
 
-* What config options are being added? Should they be more generic than
+* What configuration options are being added? Should they be more generic than
   proposed? Are the default values ones which will work well in
   real deployments?
 
@@ -236,12 +329,14 @@ that have not already been mentioned, such as:
 
 * Please state anything that those doing continuous deployment, or those
   upgrading from the previous release, need to be aware of. Also describe
-  any plans to deprecate configuration values or features.  For example, if we
-  change the directory name that instances are stored in, how do we handle
-  instance directories created before the change landed?  Do we move them?  Do
-  we have a special case in the code? Do we assume that the operator will
+  any plans to deprecate configuration values or features.  For example, if a
+  directory with instances changes its name, how are instance directories
+  created before the change handled?  Are they get moved them? Is there
+  a special case in the code? Is it assumed that operators will
   recreate all the instances in their cloud?
 
+
+----------------
 Developer impact
 ----------------
 
@@ -251,8 +346,10 @@ such as:
 * If the blueprint proposes a change to the driver API, discussion of how
   drivers would implement the feature is required.
 
-Infrastructure impact
----------------------
+
+--------------------------------
+Infrastructure/operations impact
+--------------------------------
 
 Explain what changes in project infrastructure will be required to support the
 proposed change. Consider the following:
@@ -261,8 +358,8 @@ proposed change. Consider the following:
   consume more CPU, network, or storage capacity? Will it increase the number
   of scheduled jobs?
 
-* Will it require new workflows or changes in existing workflows implemented in
-  CI, packaging, source code management, code review, or software artefact
+* Will it require new work-flows or changes in existing work-flows implemented
+  in CI, packaging, source code management, code review, or software artifact
   publishing tools?
 
   * Will it require new or upgraded tools or services to be deployed on project
@@ -272,18 +369,42 @@ proposed change. Consider the following:
 
   * Will it affect git branch management strategies?
 
-  * Will it introduce new release artefacts?
+  * Will it introduce new release artifacts?
 
 * Will it require changes in build environments of any existing CI jobs? Would
   such changes be backwards compatible with previous Fuel releases currently
   supported by project infrastructure?
 
 
+--------------------
+Documentation impact
+--------------------
+
+What is the impact on the docs team of this change? Some changes might require
+donating resources to the docs team to have the documentation updated. Don't
+repeat details discussed above, but please reference them here.
+
+
+--------------------
+Expected OSCI impact
+--------------------
+
+Expected and known impact to OSCI should be described here. Please mention
+whether:
+
+* There are new packages that should be added to the mirror
+
+* Version for some packages should be changed
+
+* Some changes to the mirror itself are required
+
+
+--------------
 Implementation
-==============
+--------------
 
 Assignee(s)
------------
+===========
 
 Who is leading the writing of the code? Or is this a blueprint where you're
 throwing it out there to see who picks it up?
@@ -300,8 +421,9 @@ Other contributors:
 Mandatory design review:
   <launchpad-id or None>
 
+
 Work Items
-----------
+==========
 
 Work items or tasks -- break the feature up into the things that need to be
 done to implement it. Those parts might end up being done by different people,
@@ -321,34 +443,25 @@ Dependencies
   included in Fuel? Or does it depend on a specific version of library?
 
 
-Testing
-=======
+------------
+Testing, QA
+------------
 
 Please discuss how the change will be tested. It is assumed that unit test
-coverage will be added so that doesn't need to be mentioned explicitly,
-but discussion of why you think unit tests are sufficient and we don't need
-to add more functional tests would need to be included.
+coverage will be added so that doesn't need to be mentioned explicitly.
 
-Is this untestable in gate given current limitations (specific hardware /
-software configurations available)? If so, are there mitigation plans (3rd
-party testing, gate enhancements, etc).
+If there are firm reasons not to add any other tests, please indicate them.
+
 
 Acceptance criteria
--------------------
+===================
 
 Please specify clearly defined acceptance criteria for proposed changes.
 
 
-Documentation Impact
-====================
-
-What is the impact on the docs team of this change? Some changes might require
-donating resources to the docs team to have the documentation updated. Don't
-repeat details discussed above, but please reference them here.
-
-
+----------
 References
-==========
+----------
 
 Please add any useful references here. You are not required to have any
 reference. Moreover, this specification should still make sense when your
