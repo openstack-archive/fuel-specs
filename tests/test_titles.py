@@ -64,6 +64,9 @@ class TestTitles(testtools.TestCase):
         self.assertIn('Assignee(s)', titles[impl])
         self.assertIn('Work Items', titles[impl])
 
+        testing = 'Testing'
+        self.assertIn('Acceptance criteria', titles[testing])
+
     def _check_lines_wrapping(self, tpl, raw):
         for i, line in enumerate(raw.split("\n")):
             if "http://" in line or "https://" in line:
