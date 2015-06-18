@@ -10,6 +10,13 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+"""
+    WARNING: This file is only used to check old specifications
+             for versions up to 6.1.
+
+             DO NOT MODIFY!
+"""
+
 import glob
 import re
 
@@ -39,38 +46,30 @@ class TestTitles(testtools.TestCase):
         return titles
 
     def _check_titles(self, fname, titles):
-        expected_titles = ('Problem description', 'Proposed changes',
-                           'Alternatives', 'Upgrade impact', 'Security impact',
-                           'End user impact', 'Performance impact',
-                           'Deployment impact', 'Developer impact',
-                           'Infrastructure/operations impact',
-                           'Notifications impact',
-                           'Documentation impact', 'Expected OSCI impact',
-                           'Implementation', 'Testing, QA', 'References')
+        expected_titles = ('Problem description', 'Proposed change',
+                           'Implementation', 'Dependencies',
+                           'Testing', 'Documentation Impact',
+                           'References')
+        self.assertEqual(
+            sorted(expected_titles),
+            sorted(titles.keys()),
+            'Expected titles not found in document %s' % fname)
 
-        self.assertEqual(sorted(expected_titles),
-                         sorted(titles.keys()),
-                         'Expected titles not found in document %s' % fname)
-
-        proposed = 'Proposed changes'
-        self.assertIn('Web UI', titles[proposed])
-        self.assertIn('Nailgun', titles[proposed])
-        self.assertIn('Orchestration', titles[proposed])
-        self.assertIn('Fuel Client', titles[proposed])
-        self.assertIn('Plugins', titles[proposed])
-        self.assertIn('Fuel Library', titles[proposed])
+        proposed = 'Proposed change'
+        self.assertIn('Alternatives', titles[proposed])
+        self.assertIn('Data model impact', titles[proposed])
+        self.assertIn('REST API impact', titles[proposed])
+        self.assertIn('Upgrade impact', titles[proposed])
+        self.assertIn('Security impact', titles[proposed])
+        self.assertIn('Notifications impact', titles[proposed])
+        self.assertIn('Other end user impact', titles[proposed])
+        self.assertIn('Performance Impact', titles[proposed])
+        self.assertIn('Other deployer impact', titles[proposed])
+        self.assertIn('Developer impact', titles[proposed])
 
         impl = 'Implementation'
         self.assertIn('Assignee(s)', titles[impl])
-        self.assertIn('Dependencies', titles[impl])
         self.assertIn('Work Items', titles[impl])
-
-        test = 'Testing, QA'
-        self.assertIn('Acceptance criteria', titles[test])
-
-        # Check required subtopics for Nailgun, Orchestration
-        #nailgun = proposed['Nailgun']
-
 
     def _check_lines_wrapping(self, tpl, raw):
         for i, line in enumerate(raw.split('\n')):
@@ -89,8 +88,8 @@ class TestTitles(testtools.TestCase):
             (len(matches), tpl))
 
     def test_template(self):
-        files = ['specs/template.rst']
-        versions = ('7.0',)
+        files = []
+        versions = ('5.1', '6.0', '6.1')
 
         for v in versions:
             files.extend(glob.glob('specs/%s/*' % v))
