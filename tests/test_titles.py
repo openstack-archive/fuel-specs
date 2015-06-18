@@ -18,55 +18,63 @@ import testtools
 
 
 class TestTitles(testtools.TestCase):
-    def _get_title(self, section_tree):
-        section = {
-            'subtitles': [],
-        }
-        for node in section_tree:
-            if node.tagname == 'title':
-                section['name'] = node.rawsource
-            elif node.tagname == 'section':
-                subsection = self._get_title(node)
-                section['subtitles'].append(subsection['name'])
-        return section
 
-    def _get_titles(self, spec):
-        titles = {}
+    def _build_structure(self, spec):
+        section = {}
+        name = ''
+
         for node in spec:
-            if node.tagname == 'section':
-                section = self._get_title(node)
-                titles[section['name']] = section['subtitles']
-        return titles
+            if node.tagname == 'title':
+                name = node.rawsource
+            elif node.tagname == 'section':
+                subsection, subsection_name = self._build_structure(node)
+                section[subsection_name] = subsection
+
+        return section, name
 
     def _check_titles(self, fname, titles):
-        expected_titles = ('Problem description', 'Proposed change',
-                           'Implementation', 'Dependencies',
-                           'Testing', 'Documentation Impact',
-                           'References')
-        self.assertEqual(
-            sorted(expected_titles),
-            sorted(titles.keys()),
-            "Expected titles not found in document %s" % fname)
+        expected_titles = ('Problem description', 'Proposed changes',
+                           'Alternatives', 'Upgrade impact', 'Security impact',
+                           'End user impact', 'Performance impact',
+                           'Deployment impact', 'Developer impact',
+                           'Infrastructure/operations impact',
+                           'Notifications impact',
+                           'Documentation impact', 'Expected OSCI impact',
+                           'Implementation', 'Testing, QA', 'References')
 
-        proposed = 'Proposed change'
-        self.assertIn('Alternatives', titles[proposed])
-        self.assertIn('Data model impact', titles[proposed])
-        self.assertIn('REST API impact', titles[proposed])
-        self.assertIn('Upgrade impact', titles[proposed])
-        self.assertIn('Security impact', titles[proposed])
-        self.assertIn('Notifications impact', titles[proposed])
-        self.assertIn('Other end user impact', titles[proposed])
-        self.assertIn('Performance Impact', titles[proposed])
-        self.assertIn('Other deployer impact', titles[proposed])
-        self.assertIn('Developer impact', titles[proposed])
+        self.assertEqual(sorted(expected_titles),
+                         sorted(titles.keys()),
+                         'Expected titles not found in document %s' % fname)
 
-        impl = 'Implementation'
-        self.assertIn('Assignee(s)', titles[impl])
-        self.assertIn('Work Items', titles[impl])
+        proposed = titles['Proposed changes'].keys()
+
+        self.assertIn('Web UI', proposed)
+        self.assertIn('Nailgun', proposed)
+        self.assertIn('Orchestration', proposed)
+        self.assertIn('Fuel Client', proposed)
+        self.assertIn('Plugins', proposed)
+        self.assertIn('Fuel Library', proposed)
+
+        impl = titles['Implementation'].keys()
+
+        self.assertIn('Assignee(s)', impl)
+        self.assertIn('Dependencies', impl)
+        self.assertIn('Work Items', impl)
+
+        test = titles['Testing, QA'].keys()
+        self.assertIn('Acceptance criteria', test)
+
+        # Check required subtopics for Nailgun, Orchestration
+        nailgun = titles['Proposed changes']['Nailgun'].keys()
+        self.assertIn('Data model', nailgun)
+        self.assertIn('REST API', nailgun)
+
+        orc = titles['Proposed changes']['Orchestration'].keys()
+        self.assertIn('RPC Protocol', orc)
 
     def _check_lines_wrapping(self, tpl, raw):
-        for i, line in enumerate(raw.split("\n")):
-            if "http://" in line or "https://" in line:
+        for i, line in enumerate(raw.split('\n')):
+            if 'http://' in line or 'https://' in line:
                 continue
             self.assertTrue(
                 len(line.decode("utf-8")) < 80,
@@ -77,21 +85,26 @@ class TestTitles(testtools.TestCase):
         matches = re.findall('\r', raw)
         self.assertEqual(
             len(matches), 0,
-            "Found %s literal carriage returns in file %s" %
+            'Found %s literal carriage returns in file %s' %
             (len(matches), tpl))
 
     def test_template(self):
-        files = ['specs/template.rst'] + glob.glob('specs/*/*')
+        files = ['specs/template.rst']
+        versions = ('8.0',)
+
+        for v in versions:
+            files.extend(glob.glob('specs/%s/*' % v))
+
         # filtering images subdirectory
         files = filter(lambda x: 'images' not in x, files)
         for filename in files:
-            self.assertTrue(filename.endswith(".rst"),
-                            "spec's file must uses 'rst' extension.")
+            self.assertTrue(filename.endswith('.rst'),
+                            'Specification files must use .rst extensions.')
             with open(filename) as f:
                 data = f.read()
 
             spec = docutils.core.publish_doctree(data)
-            titles = self._get_titles(spec)
-            self._check_titles(filename, titles)
+            document, name = self._build_structure(spec)
+            self._check_titles(filename, document)
             self._check_lines_wrapping(filename, data)
             self._check_no_cr(filename, data)
