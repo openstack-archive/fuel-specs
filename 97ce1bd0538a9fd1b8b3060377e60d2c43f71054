@@ -1,0 +1,14 @@
+Verified+2: Jenkins
+Code-Review+1: Denis Egorenko <degorenko@mirantis.com>
+Code-Review+1: Evgeniy L <eli@mirantis.com>
+Code-Review+2: Vladimir Kuklin <vkuklin@mirantis.com>
+Workflow+1: Vladimir Kuklin <vkuklin@mirantis.com>
+Code-Review+2: Sergii Golovatiuk <sgolovatiuk@mirantis.com>
+Code-Review+1: Bartłomiej Piotrowski <bpiotrowski@mirantis.com>
+Code-Review+1: Maksym Yatsenko <myatsenko@mirantis.com>
+Code-Review+1: Vasyl Saienko <vsaienko@mirantis.com>
+Submitted-by: Jenkins
+Submitted-at: Wed, 24 Jun 2015 09:24:34 +0000
+Reviewed-on: https://review.openstack.org/190203
+Project: stackforge/fuel-specs
+Branch: refs/heads/master
