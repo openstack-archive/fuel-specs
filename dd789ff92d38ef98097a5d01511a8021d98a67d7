@@ -1,0 +1,10 @@
+Verified+2: Jenkins
+Code-Review+2: Vitaly Kramskikh <vkramskikh@mirantis.com>
+Workflow+1: Vitaly Kramskikh <vkramskikh@mirantis.com>
+Code-Review+1: Anastasia Palkina <apalkina@mirantis.com>
+Code-Review+1: Alexandra Morozova <astepanchuk@mirantis.com>
+Submitted-by: Jenkins
+Submitted-at: Mon, 29 Jun 2015 10:05:23 +0000
+Reviewed-on: https://review.openstack.org/195454
+Project: stackforge/fuel-specs
+Branch: refs/heads/master
