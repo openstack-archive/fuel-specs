@@ -10,10 +10,11 @@ Define a new role in Fuel through a plugin
 
 https://blueprints.launchpad.net/fuel/+spec/role-as-a-plugin
 
-Implement possibility to describe new node roles in plugin
+Implement possibility to describe new node roles in plugins.
 
 Problem description
 ===================
+
 Currently there's no way to introduce new node roles through Fuel
 plugins, but plugin developers want to. So they use a bunch of hacks
 and workarounds:
@@ -28,6 +29,7 @@ and workarounds:
 
   * can't use custom disk partitioning layout, so they use disk
     partitioning tools as a part of deployment
+
 
 Proposed change
 ===============
@@ -71,10 +73,18 @@ allowed node roles which consist from core roles(contained in release)
 and plugin roles(contained in `roles_metadata` column for each
 enabled plugin in cluster).
 
+The release has a list of `roles` which is used for ordering roles on
+Web UI. It will be removed, since it won't be able to use it with plugin
+roles. Instead, each role declaration in `roles_metadata` will have
+the `weight` attribute which will be used for ordering roles on UI
+(we use similar approach for other things).
+
 Set of chosen specific roles are kept by each node in `pending_roles`
 column. After role tasks processed successfully pending role will be
-moved to `deployed_roles`. Process continues until `pending_roles`
-contains any role which is not in `roles`.
+moved to `roles`. Process continues until `pending_roles`
+contains any role which is not in `roles`. Each node will have also
+the `primary_roles` list. The column will have roles for which current
+node is primary one (important for serialization).
 
 General deployment tasks gets from release. Then for specific
 cluster nailgun build deployment graph which based on general
@@ -117,9 +127,15 @@ set of specific roles which need to be deployed
 `roles`
 set of roles which already have been deployed
 
+`primary_roles`
+set of roles for which current node is primary one
+
 
 REST API impact
 ---------------
+
+Sync plugins' metadata
+``````````````````````
 
 There will be new API call provided to sync changes for plugin
 metadata from yaml files to DB
@@ -144,6 +160,44 @@ empty then all plugins will be synced.
 
 Role API will be the same but inner logic changed (Role model will be
 removed).
+
+Get a list of available roles
+`````````````````````````````
+
+The will be a new API call for retrieving a list of roles available for
+deployment for specific cluster.
+
+====== ============================= ===================================
+method URL                           action
+====== ============================= ===================================
+GET    /api/v1/clusters/<:id>/roles/ Get a list of available for
+                                     deployment roles for the cluster
+                                     with ID=<:id>
+====== ============================= ===================================
+
+The response format will be similar to ``GET /api/v1/releases/<:id>/roles/``:
+
+.. code-block:: json
+
+    [
+        {
+            "name": "role_name",
+            "meta": {
+                "name": "some name for ui,
+                "description": "some role description",
+                "conflicts": ["another_role"],
+                "has_primary": false,
+
+                ...
+            },
+            "volumes_roles_mapping": [
+                {
+                    "id": "some-id",
+                    "allocate_size": "min"
+                }
+            ]
+        }
+    ]
 
 
 Upgrade impact
@@ -291,6 +345,7 @@ None
 
 Developer impact
 ----------------
+
 * We keep custom roles API but there is no need in roles table. So
   inner logic for managing it in Nailgun should be rewritten.
 
@@ -318,6 +373,7 @@ Primary assignee:
 
 Developers:
   * Andriy Popovych <apopovych@mirantis.com>
+  * Artem Roma <aroma@mirantis.com>
 
 Mandatory design review:
   * Evgeniy L <eli@mirantis.com>
@@ -341,6 +397,12 @@ Work Items
 
 * [Nailgun] Add API call to sync roles, volumes, and other stuff from
   plugins (filesystem) to Nailgun's database.
+
+* [Nailgun] Implement API call to retrieve all available roles for the
+  specific cluster.
+
+* [UI] Use new API call for retrieving roles, and sort them using the
+  ``weight`` attribute.
 
 * [Nailgun] Mix plugin's node roles and volumes with core ones
   everywhere it's used.
@@ -387,11 +449,10 @@ Acceptance criteria
 
 * A new node role - TestRole - has to be exported.
 
-* The new role has to use custom volumes. Currently the base-os role
-  allocates only one partition with minimum space (for OS installation
-  ), and left space are kept as unallocated. The TestRole has to
-  allocate an entire disk: min partition for os, and what is left for
-  personal using.
+* The new role has to be able use custom volumes. Currently the base-os
+  role allocates only one partition with minimum space (for OS installation),
+  and left space are kept as unallocated. The TestRole has to allocate
+  an entire disk: min partition for os, and what is left for personal using.
 
 * The TestRole has to export deployment tasks which perform some
   simple actions (e.g. package installation or file creation).
