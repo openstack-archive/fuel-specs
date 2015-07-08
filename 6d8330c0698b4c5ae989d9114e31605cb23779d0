@@ -1,0 +1,11 @@
+Verified+2: Jenkins
+Code-Review+1: Aleksey Kasatkin <akasatkin@mirantis.com>
+Code-Review+1: Egor Kotko <ykotko@mirantis.com>
+Code-Review+2: Igor Kalnitsky <ikalnitsky@mirantis.com>
+Workflow+1: Igor Kalnitsky <ikalnitsky@mirantis.com>
+Code-Review+1: Szymon Banka <sbanka@mirantis.com>
+Submitted-by: Jenkins
+Submitted-at: Wed, 08 Jul 2015 15:54:25 +0000
+Reviewed-on: https://review.openstack.org/194728
+Project: stackforge/fuel-specs
+Branch: refs/heads/master
