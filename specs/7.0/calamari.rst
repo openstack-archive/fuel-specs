@@ -59,7 +59,7 @@ Flow:
 Proposed change
 ===============
 
-We would like develop a new Fuel plugin in order to install Calamari [1]_. 
+We would like develop a new Fuel plugin in order to install Calamari [1]_.
 Our proposal considers the following aspects:
 
 - Install Calamari server (REST API) and client (web application) on a new node
@@ -79,11 +79,21 @@ Our proposal considers the following aspects:
   explored in the future.
 
 
+Planned improvements
+--------------------
+
+- Possibility to install Calamari on a controller node.
+
+- Configure Calamari to use Keystone as the authentication backend.
+
+- User session sharing between Calamari and the OpenStack dashboard.
+
+
 Alternatives
 ------------
 
 None.  The aim is to provide monitoring and management for Ceph.  There are
-more general monitoring solution like Zabbix [2]_, LMA collector [3]_ and 
+more general monitoring solution like Zabbix [2]_, LMA collector [3]_ and
 Elasticsearch-Kibana [4]_ plugins.
 
 
@@ -185,7 +195,7 @@ Task name: Calamari installation recipe
 Task name: include the latest version of Calamari package
   Task description: include in the plugin repositories the required packages.
 
-  Assignees: someone of Mirantis’ team, Alessandro Martellone,
+  Assignees: Dmytro Iurchenko, Alessandro Martellone,
   Daniele Pizzolli.
 
 
