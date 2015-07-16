@@ -278,19 +278,15 @@ Plugin impact
   .. code-block:: yaml
 
     role_name:
-      metadata:
-        name: "Some plugin role"
-        description: "Some description"
-        conflicts:
-          - some_not_compatible_role
-        limits:
-          min: 1
-        restrictions:
-          - condition: "some logic condition"
-            message: "Some message for restriction warning"
-      volumes_mapping:
-        - {allocate_size: "min", id: "os"}
-        - {allocate_size: "all", id: "role_volume_name"}
+      name: "Some plugin role"
+      description: "Some description"
+      conflicts:
+        - some_not_compatible_role
+      limits:
+        min: 1
+      restrictions:
+        - condition: "some logic condition"
+          message: "Some message for restriction warning"
 
   Description of volumes partition in `volumes` yaml file:
 
@@ -312,6 +308,10 @@ Plugin impact
             name: "swap"
             size: {generator: "calc_swap_size"}
             file_system: "swap"
+    volumes_roles_mapping:
+      role_name:
+        - {allocate_size: "min", id: "os"}
+        - {allocate_size: "all", id: "role_volume_name"}
 
   Pre/Post deployment tasks are kept in `tasks` yaml as before and
   deployment tasks will be described in `deployment_tasks` yaml file.
