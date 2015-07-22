@@ -45,14 +45,16 @@ will touch only puppet part and do not require any changes in nailgun side.
 Currently, we have way to calculate mtu value for private network in case if
 we have gre traffic. These calculations are not obligatory when we switch to
 mtu-selection-and-advertisement solution, cause neutron performing it itself.
-Remaining work here is to except mtu calculations from puppet manifests, and,
-to move mtu value for private network (mtu value of interface what assigned to
-private network) to the appropriated configuration files.
+But, we should not wide out these calculations cause we should use it to
+control mtu of dhcp/l3 neutron agents tap interfaces (cause current feature
+implementation do not allow to do it). Also, we should extend current
+calculation process to properly calculate mtu for `vxlan` environments.
+Remaining to move mtu value for private network (mtu value of interface what
+assigned to private network) to the appropriated configuration files.
 
 Implementation will be include following steps:
 
-* to exclude mtu calculations for private network
-  from puppet manifests
+* fix mtu calculations to support `vxlan` environments
 * to enable mtu-selection-and-advertisement feature
   set in neutron.conf file on controller nodes:
   advertise_mtu = True
@@ -62,7 +64,10 @@ Implementation will be include following steps:
 * to advertise proper mtu using neutron's L3 mechanism drivers(GRE)
   set in ml2_conf.ini file on all nodes:
   path_mtu = private_net_mtu
-* keep 'network_device_mtu = 65000' in l3_agent.ini configuration
+* keep 'network_device_mtu = $calculated_mtu' in dhcp_agent.ini configuration
+  files on controller nodes to avoid traffic's fragmentation on
+  neutron's dhcp interfaces
+* keep 'network_device_mtu = $calculated_mtu' in l3_agent.ini configuration
   files on controller nodes to avoid traffic's fragmentation on
   neutron's router
 * keep 'network_device_mtu = 65000' in nova.conf configuration
