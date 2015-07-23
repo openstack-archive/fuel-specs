@@ -23,6 +23,9 @@ labels can be used for sorting and filtering of node list to show only nodes
 that are characterized by specified parameters. Labels enable users to map
 their own organizational structures onto node list.
 
+As a side effect, labels may be used by Fuel plugins to provide node-specific
+attributes.
+
 
 Proposed change
 ===============
@@ -127,8 +130,7 @@ Accordingly, this new ``labels`` field should be added to the method output:
 
   {
     "id": 1,
-    "name": "cluster#1",
-    "release_id": 2,
+    "name": "Node(ab:15)",
     ...
     "labels": {
       "label1": "value1",
@@ -145,6 +147,38 @@ also be updated with the new field.
 
 Node labels should be reset to defaults (an empty object) after deleting
 node from environment.
+
+Data Serialization for Astute
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For v7.0 environments labels should be serialized and landed to astute.yaml:
+
+.. code-block:: yaml
+
+  uid: 1
+  name: "Node(74:57)"
+  ...
+  labels:
+    label1: value1
+    label2: none
+    ...
+
+For v7.0 environments labels should be added into provisioning data under
+the "ks_meta" section:
+
+.. code-block:: yaml
+
+  uid: 1
+  name: "Node(74:57)"
+  ...
+  ks_meta:
+    fuel_version: "6.1"
+    ...
+    labels:
+      label1: value1
+      label2: none
+      ...
+
 
 For Fuel Client
 ---------------
@@ -250,14 +284,27 @@ None.
 Plugin impact
 -------------
 
-None.
+This should be extremely useful for plugins. Labes will be available in
+astute.yaml and may be used by plugin tasks to do node-specific modifications.
+For instance, for Xen integration we need to provide separate Xen Server
+credentials for each Compute node.
+
+Restrictions:
+Labels will be set independently from plugins. A Fuel plugin may not set
+labels automatically. If a plugin developer decides to go with label's approach
+there will be no pre-deployment validation of labels available at this time.
 
 Other deployer impact
 ---------------------
 
-No impact. The feature was intended for organizing node lists (on UI mostly),
-filtering and sorting nodes in more flexible way. So, labels data will not
-go to deployment info for now.
+Labes will be available in astute.yaml and during the provisioning. It will be
+possible to use special labels to override global values (i.e. libvirt_type,
+thus implementing BP
+https://blueprints.launchpad.net/fuel/+spec/auto-virt-type). Another case may
+be the fenthing. A user may put IPMI credentials into labels.
+
+Also custom information may be added into provisioning data and using a custom
+bootstrap image (or a custom fuel-agent) a deployer may consume this data.
 
 Developer impact
 ----------------
@@ -302,6 +349,7 @@ Work Items
 * Modify DB structure and API to work with labels.
 * Implement corresponding UI controls including tests coverage.
 * Implement CLI functionality (CRUD operations).
+* Implement label serialization in Nailgun and cover it with unit tests.
 
 
 Dependencies
@@ -318,6 +366,7 @@ Testing
 
 * Custom node labels management in UI should be covered by functional tests.
 * Python unit tests for the REST API and DB change are also required.
+* Python unit tests for deployment and provisioning serializers are required.
 * Custom node labels management in CLI should be covered by unit tests.
 
 Acсeptance Criteria
@@ -333,12 +382,15 @@ Acсeptance Criteria
   characterized by specified custom parameters.
 * User can sort list of nodes in Fuel Web UI to group them by specified
   custom parameters.
+* Labels appear in astute.yaml and in provisioning data.
 
 
 Documentation Impact
 ====================
 
-The documentation should cover how the end user experience has been changed.
+The Fuel documentation should cover how the end user experience has been
+changed. The Fuel Plugin documentation should cover how to use labels in
+plugins.
 
 
 References
