@@ -1,0 +1,181 @@
+..
+ This work is licensed under a Creative Commons Attribution 3.0 Unported
+ License.
+
+ http://creativecommons.org/licenses/by/3.0/legalcode
+
+======================================
+Separate MOS packages from CentOS ones
+======================================
+
+https://blueprints.launchpad.net/fuel/+spec/example
+
+Problem description
+===================
+
+* As a Cloud Operator I would like to provision CentOS 7 on environments
+
+* As a Cloud Operator I would like to see what RPM packages are provided by
+  Mirantis OpenStack and what RPM packages are provided by base distro
+
+* As a Cloud Operator I would like to get security updates as fast as possible
+  independantly for base distro as well as for Mirantis OpenStack
+
+* As a Package Maintainer I would like to keep track of sources to all
+  Mirantis OpenStack packages and minimize the number of modified ones as much
+  as possible
+
+Proposed change
+===============
+
+- Minimize the number of customized packages required by MOS
+
+- Build MOS RPM packages (OpenStack Components and MOS dependencies)
+
+- Modify the buildsystem to make ISO with CentOS 7 packages
+
+- Adapt Puppet manifests to work with CentOS 7
+
+- Add support of the RPM repositories to the fuel-createmirror script
+
+Alternatives
+------------
+
+There is no alternative to the repositories separation approach due to
+considerations related to distribution policies of major OS vendors.
+Regarding the helper script to download base distro repositories, there
+could be a different approach implemented, by downloading only particular
+packages that required by MOS. However, we consider that providing a full
+upstream repository would make customer experience a bit better, especially
+in cases when additional upstream packages that are not a part of MOS need
+to be installed).
+
+Data model impact
+-----------------
+
+None
+
+REST API impact
+---------------
+
+None
+
+Upgrade impact
+--------------
+
+When Fuel master node is upgraded to a version that supports Linux distro
+separation, package repositories for old versions of MOS deployed by previous
+version of Fuel will keep using the old mirror structure. Package repositories
+for the new versions of MOS will use the structure defined in the
+mos-rpm-repos-iface_ specification.
+
+.. _mos-rpm-repos-iface: https://github.com/stackforge/fuel-specs/blob/master/specs/7.0/mos-rpm-repos-iface.rst
+
+Due to significant difference between CentOS 6.5 and CentOS 7 Cloud Operators
+won't be able to upgrade already deployed environments to CentOS 7.
+CentOS 7 will be offered as option only for new cloud installations. Meanwhile
+already deployed environments will be able to add compute nodes as well as
+controllers as CentOS 6.5 repo won't be changed.
+
+Security impact
+---------------
+
+None
+
+Notifications impact
+--------------------
+
+None
+
+Other end user impact
+---------------------
+
+In case of offline installations, user will be required to create a copy of MOS
+and base distro mirrors by using a script described in the
+separate-mos-from-linux_ specification.
+
+Performance Impact
+------------------
+
+If packages are consumed from remote 3rd party servers, overall deployment
+time may be increased. In case of offline installation, no deployment speed
+degradation is expected.
+
+Plugin impact
+-------------
+
+None
+
+Other deployer impact
+---------------------
+
+Changes described in this document allow to increase product flexibility,
+by making possible to choose an operating system and install it independent
+of MOS.
+
+Developer impact
+----------------
+
+None
+
+Infrastructure impact
+---------------------
+
+System tests for CentOS will be adjusted to reflect the new repositories scheme
+for MOS packages and base OS packages.
+
+
+Assignee(s)
+-----------
+
+Primary assignee:
+  Vitaly Parakhin <vparakhin@mirantis.com>
+
+QA assignee:
+   TBD
+
+Other contributors:
+  TBD
+
+Mandatory design review:
+  TBD
+
+Work Items
+----------
+
+* Determine the source of each package on MOS RPM mirror
+
+* Build MOS Packages for CentOS 7
+
+* Modify make system to allow to build ISO with CentOS 7
+
+* Add support of RPM repositories to the local mirrors creation script
+
+Dependencies
+============
+
+.. _separate_mos_from_linux: https://github.com/stackforge/fuel-specs/blob/master/specs/6.1/separate-mos-from-linux.rst
+
+Testing
+=======
+
+Acceptance criteria
+-------------------
+
+* ISO with CentOS 7 passes all BVT & Swarm system tests
+* All main CentOS clusters configurations can be successfully deployed
+* Local mirrors creation script can create local copies of MOS and
+  base OS repositories and can add them to Nailgun
+
+Documentation Impact
+====================
+
+The documentation should cover:
+
+* How to use the script for creating local base OS and MOS mirrors for
+  deployment in an environment without direct Internet access.
+
+References
+==========
+
+TBD
