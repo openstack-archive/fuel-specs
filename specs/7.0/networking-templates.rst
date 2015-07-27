@@ -41,61 +41,65 @@ Proposed change
 ===============
 
 Template solution is proposed to provide the following capabilities:
+
 * Ability to create additional networks and delete networks (new API handlers
-to be added to support this).
+  to be added to support this).
 * Have a specific set of network roles.
 * Ability to create network only in case relevant node role is present on the
-node.
+  node.
 * Ability to provide custom networking topologies (e.g. subinterface bonding).
 
 Template solution details:
+
 * REST API handler is added to load/cancel template for given environment
-(/clusters/x/network_configuration/template/).
+  (/clusters/x/network_configuration/template/).
 * Template is applied during serialization if it was set for the env. So,
-template can be loaded/reloaded any time before deployment is started and after
-reset. So, it is the same behaviour as for all network settings now. Deployment
-serializer for networking will be selected with regard to the fact whether
-template was loaded or not.
+  template can be loaded/reloaded any time before deployment is started and
+  after reset. So, it is the same behaviour as for all network settings now.
+  Deployment serializer for networking will be selected with regard to the fact
+  whether template was loaded or not.
 * Template has priority over network schema (not network addresses or node
-groups) in the DB (explained better below). If it is applied then DB data
-(related to network roles to networks mapping, networks to interfaces mapping
-and network objects topology) is ignored by networking serializer. If it is not
-applied then DB data is taken into account by networking serializer.
-Serialization of other data is not affected.
+  groups) in the DB (explained better below). If it is applied then DB data
+  (related to network roles to networks mapping, networks to interfaces mapping
+  and network objects topology) is ignored by networking serializer. If it is
+  not applied then DB data is taken into account by networking serializer.
+  Serialization of other data is not affected.
 * Astute.yaml for particular node has priority over template by default.
-If yaml was uploaded for particular nodes serialized data for them will be
-taken from there. Additional flag is added to node to override network part of
-astute.yaml. It the flag is set then network data is taken from serializer
-output regardless of template presence. Node's yaml overriding task can be
-postponed due to lack of time.
+  If yaml was uploaded for particular nodes serialized data for them will be
+  taken from there. Additional flag is added to node to override network part
+  of astute.yaml. It the flag is set then network data is taken from serializer
+  output regardless of template presence. Node's yaml overriding task can be
+  postponed due to lack of time.
 * Template allows to override network roles to networks mapping and topology
-(to support complex cases which cannot be configured via API, like subinterface
-bonding). Network roles' set can be not equal to core set, it is up to user.
-No verification of network roles' set is provided at this stage. Network roles
-to networks mapping can be set for each node role independently. Sets of
-network roles and networks may be different on every particular node.
-Validation should be added to ensure that all required roles are present on
-every node. It's naturally done with network roles to tasks mapping but can be
-postponed due to lack of time.
+  (to support complex cases which cannot be configured via API, like
+  subinterface bonding). Network roles' set can be not equal to core set, it is
+  up to user. No verification of network roles' set is provided at this stage.
+  Network roles to networks mapping can be set for each node role
+  independently. Sets of network roles and networks may be different on every
+  particular node. Validation should be added to ensure that all required roles
+  are present on every node. It's naturally done with network roles to tasks
+  mapping but can be postponed due to lack of time.
 * Template allows to use distinct network schemes for different node roles and
-for different node network groups. It also allows to use different NICs' sets
-for particular node network groups and particular nodes.
+  for different node network groups. It also allows to use different NICs' sets
+  for particular node network groups and particular nodes.
 
 User should be able to use specific networks for swift & cinder traffic:
+
 * Puppet manifests should support separated network roles for these services.
 * Template solution will allow to use the separation of network roles and
-networks.
+  networks.
 
 All the networking metadata which is now defined within networks should be
 moved to network roles description:
+
 * Every task description has section [network_roles] where the list of names of
-network roles required is declared. (It's required for template validation at
-least.) It can be out of first feature release as not highest priority task
-which takes significant time.
+  network roles required is declared. (It's required for template validation at
+  least.) It can be out of first feature release as not highest priority task
+  which takes significant time.
 * Descriptions of network roles are propagated to Nailgun and include metadata
-which is required for serialization to orchestrator.
+  which is required for serialization to orchestrator.
 * VIPs assignment is done using network roles metadata instead of networks
-metadata. It is true for both template and general flow.
+  metadata. It is true for both template and general flow.
 
 
 Alternatives
@@ -110,19 +114,19 @@ Data model impact
 Template example::
 
     adv_net_template:
-      - node_group: default
+      default:
         nic_mapping:
           default:
             if1: eth0
             if2: eth1
-            if3: wlan0
+            if3: eth2
           node-3:
             if1: eth0
             if2: eth1
             if3: eth2
-            if4: eth3
+            if4: wlan0
         network_scheme:
-          common: &common
+          common:
             transformations:
               - action: add-br
                 name: br-fw-admin
@@ -137,7 +141,6 @@ Template example::
             roles:
               admin/pxe: br-fw-admin
               neutron/api: br-mgmt
-              neutron/mesh: br-mgmt
               mgmt/corosync: br-mgmt
               mgmt/database: br-mgmt
               mgmt/messaging: br-mgmt
@@ -158,7 +161,7 @@ Template example::
               swift/replication: br-storage
               ceph/replication: br-storage
               cinder/iscsi: br-storage
-          public: &public
+          public:
             transformations:
               - action: add-br
                 name: br-ex
@@ -179,7 +182,7 @@ Template example::
               ceph/radosgw: br-ex
               swift/public: br-ex
               neutron/floating: br-floating
-          private: &private
+          private:
             transformations:
               - action: add-br
                 name: br-prv
@@ -197,7 +200,6 @@ Template example::
               - br-aux
             roles:
               neutron/private: br-prv
-
         templates_for_node_role:
           controller:
             - common
@@ -207,29 +209,54 @@ Template example::
             - common
             - private
         network_assignments:
-          br-fw-admin:
-              subnet: fuelweb_admin
-          br-mgmt:
-              subnet: management
-          br-ex:
-              subnet: public
-          br-storage:
-              subnet: storage
-          br-mesh:
-              subnet: private
-          br-prv:
-              subnet: private
+          storage:
+            ep: br-storage
+          private:
+            ep: br-prv
+          public:
+            ep: br-ex
+          management:
+            ep: br-mgmt
+          fuelweb_admin:
+            ep: br-fw-admin
 
 Network roles are introduced. Network role description contain:
+
 * id - string, can be treated as name. It should be used in tasks' descriptions
-for referencing network roles required for particular task. It is also used in
-manifests.
-* network properties - dictionary, properties which are required for underlying
-network are described here, like CIDR, gateway, VIPs.
+  for referencing network roles required for particular task. It is also used
+  in manifests.
+* default_mapping - string, name of the network to map this role be default
+  (when template is not in use).
+* properties - dictionary, properties which are required for underlying network
+  are described here, like CIDR, gateway, VIPs.
 * metadata - dictionary, it is metadata which is not related to networks,
-e.g. neutron settings. It is in our DSL format. It will be shown in UI and
-could be edited there. It is passed to orchestrator as is. Nailgun doesn't
-process it.
+  e.g. neutron settings. It is in our DSL format. It will be shown in UI and
+  could be edited there. It is passed to orchestrator as is. Nailgun doesn't
+  process it. It will not be used in 7.0. So, it can be skipped for now.
+
+Network role description example::
+
+    id: "mgmt/vip"
+    default_mapping: "management"
+    properties:
+      subnet: true
+      gateway: false
+      vip:
+        - name: "vrouter"
+          namespace: "vrouter"
+        - name: "management"
+          namespace: "haproxy"
+          node_roles: ["primary-controller", "controller"]
+
+VIPs can be requested in network role's description. Description of VIP
+includes:
+
+* name - string, it should be unique name within the environment, it cannot be
+  skipped.
+* namespace - string, network namespace, that should be used for landing of
+  the VIP, will be serialized to null when skipped.
+* node_roles - list, node roles where VIPs should be set up. It can be skipped.
+  Its value will be set to ["primary-controller", "controller"] then.
 
 Network role descriptions are accessible for Nailgun. They are accumulated into
 network_role_metadata field of Release DB table. They are used for assignment
@@ -443,8 +470,6 @@ Acceptance Criteria
 
 * Descriptions of network roles are propagated to Nailgun and include metadata
   which is required for serialization to orchestrator.
-* Every task description has section [network_roles] where the list of names of
-  network roles required is declared.
 * API handler is added to load/cancel template for given environment.
 * API handler is added to create/remove networks for given environment.
 * Template is applied during serialization if it was set for the env.
