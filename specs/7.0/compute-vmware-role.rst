@@ -133,7 +133,15 @@ in *vmware_attributes* section.
               az_name: "vcenter"
               vcenter_host: ""
               ...
-              target_node: "controllers"
+              target_node:
+                options:
+                  - id: "controllers"
+                    label: "controllers"
+                  - id: "node-2"
+                    label: "Supermicro X9DRW"
+                current:
+                  id "controllers"
+                  label: "controllers"
 
 Nailgun should be able to serialize new attribute *target_node* and pass it
 into astute.yaml file:
@@ -151,7 +159,7 @@ into astute.yaml file:
        vc_host: 172.16.0.254
        vc_password: Qwer!1234
        vc_user: administrator@vsphere.local
-       target_node: controllers
+       target_node: "controllers"
      - datastore_regex: "openstack-.*"
        service_name: cluster2
        availability_zone_name: vcenter
@@ -159,7 +167,7 @@ into astute.yaml file:
        vc_host: 172.16.0.254
        vc_password: Qwer!1234
        vc_user: administrator@vsphere.local
-       target_node: node-42
+       target_node: "node-2"
 
 
 REST API impact
