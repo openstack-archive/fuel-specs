@@ -38,8 +38,6 @@ empty string. We need 100 characters length limitation to avoid storing tons
 of data in labels.
 Label can also have `null` value that means an absence of label value (label
 is like a simple tag in this case).
-Also valid label key and value strings should not contain '=' character. This
-limitation goes from CLI command syntax (see `For Fuel Client`_ section).
 
 .. code-block:: json
 
@@ -107,19 +105,14 @@ of the following JSON:
     }
   }
 
-API should return 400 Bad Request in case of the following bad scenarios:
+API should return 400 Bad Request in case of the following bad scenarios
+(that are possible from CLI):
 
-* user tries to add invalid label (label key or value is not a string or
-  an empty string or a string with more that 100 characters)
-* user tries to apply invalid value to existing label (this value is not a
-  string or an empty string or a string with more that 100 characters)
-* user tries to add/update label of non-existing node
-* user wants to delete label(s) of non-existing node (the operation possible
-  from CLI)
-* user wants to get a non-existing label of node(s) (the operation possible
-  from CLI)
-* user wants to get label(s) of non-existing node (the operation possible
-  from CLI)
+* user tries to add label with invalid key (key is not a string or an empty
+  string or a string with more than 100 characters)
+* user tries to apply invalid value to label (value is string with more than
+  100 characters or value is not a string or null)
+* user tries to add/update/delete label of non-existing node
 
 Accordingly, this new ``labels`` field should be added to the method output:
 
@@ -127,8 +120,7 @@ Accordingly, this new ``labels`` field should be added to the method output:
 
   {
     "id": 1,
-    "name": "cluster#1",
-    "release_id": 2,
+    "name": "node#1",
     ...
     "labels": {
       "label1": "value1",
@@ -143,15 +135,12 @@ the new field.
 Collection methods ``PUT /api/nodes/` and ``GET /api/nodes/`` should
 also be updated with the new field.
 
-Node labels should be reset to defaults (an empty object) after deleting
-node from environment.
-
 For Fuel Client
 ---------------
 
 Adding support for key-value labels is pretty easy as far as all logic is
-incapsulated in the Fuel API. Adding, removing or changing these labels
-shoud only be done on the Nailgun's side so the official python-fuelclient
+encapsulated in the Fuel API. Adding, removing or changing these labels
+should only be done on the Nailgun's side so the official python-fuelclient
 and the rest of the client will be able to use it in a unified way.
 
 There is a list of new commands to be added to work with labels from CLI:
@@ -160,43 +149,48 @@ to create or update label(s) for node(s)
 
 ::
 
-  fuel2 node label set -l | --label key_1=[value_1] \
-    [-l | --label key_2=[value_2] ... ] -n | --nodes node_id_1 [node_id_2 ...]
+  fuel2 node label set -l |--labels key_1=[value_1] [key_2=[value_2] ... ] \
+    -n | --nodes node_id_1 [node_id_2 ...]
 
 to create or update label(s) for ALL nodes
 
 ::
 
-  fuel2 node label set -l | --label key_1=[value_1] \
-    [-l | --label key_2=[value_2] ... ] -n | --nodes all
+  fuel2 node label set -l |--labels key_1=[value_1] [key_2=[value_2] ... ] \
+    --nodes-all
 
 to delete label(s) of node(s)
 
 ::
 
-  fuel2 node label delete -l | --label key1 [-l | --label key2 ... ] \
+  fuel2 node label delete -l |--labels key_1[=value_1] [key_2[=value_2] ... ] \
     -n | --nodes node_id_1 [node_id_2 ...]
 
 to delete ALL labels of ALL nodes
 
 ::
 
-  fuel2 node label delete -l | --label all -n | --nodes all
+  fuel2 node label delete --labels-all --nodes-all
 
 to display values of label(s) of node(s)
 
 ::
 
-  fuel2 node label list -l | --label key1 [-l | --label key2 ... ] \
-    -n | --nodes node_id_1 [node_id_2 ...]
+  fuel2 node label list -n | --nodes node_id_1 [node_id_2 ...]
 
   node_id | label_name   | label_value
   1       | key1         | value1
   2       | key2         | value2
   3       | key2         | value3
 
-Node labels should also be shown in the output of ``fuel2 node show`` command,
-but should not be included to the output of the command ``fuel2 node list``,
+It should also be possible to filter nodes by labels and its values
+
+::
+
+  fuel2 node list --labels key1[=value_1] [key2[=value_2] ... ]
+
+Node labels should also be shown in the output of ``fuel2 node list`` command,
+but should not be included to the output of the command ``fuel2 node show``,
 because formatting of the table may be screwed up if there is a lot of labels
 on a single node.
 
@@ -282,9 +276,9 @@ Primary assignee:
 
 Developers:
 
-* Julia Aranovich (jkirnosova@mirantis.com) - JS code
-* Vitaly Kramskikh (vkramskikh@mirantis.com) - Python code
+* Julia Aranovich (jkirnosova@mirantis.com) - JS and Nailgun code
 * Bogdan Dudko (bdudko@mirantis.com) - visual design
+* Andrey Popovych (apopovych@mirantis.com) - CLI code
 
 Mandatory Design Reviewers:
 
