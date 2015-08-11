@@ -46,19 +46,33 @@ Proposed flow for change requests to MOS packages code and/or spec is below:
 
 * Change request is proposed for code review to Gerrit
 * Change request parameters (repository name, branch, change ID) are passed
-  to the Jenkins job that fetches sources and specs from Gerrit and pushes
-  sources and specs to the build system in a respective format (SRPM for
-  RPM packages, and unpacked sources for DEB packages)
-* Package (or packages) is built from resulting sources and specs by the
-  build system and placed into a test repository. Test repository location
+  by Zuul to the Jenkins *build* job that fetches sources and specs from
+  Gerrit and pushes sources and specs to the build system in a respective
+  format (SRPM for RPM packages, and unpacked sources for DEB packages)
+* On success *build* job triggers in series *publish* job, and then test jobs -
+  *install* and *systest*. If any of is jobs failed, next jobs are not run and
+  *build* job fails
+* *publish* job moves package (or packages), built from resulting sources and
+  specs by the build system, into a test repository. Test repository location
   is created as a Jenkins job artifact
-* Test repository is run through automated functional and integration tests
+* Test repository is run through *install* test - all built packages are
+  installed and removed one by one
+* Test repository is run through *systest* test - built packages are used to
+  deploy some set of servers.
 * Change request is peer-reviewed
 * Change request is accepted or rejected by core team
-* Change request is rebased and run through pre-merge automated checks
+* Change request is rebased and run through pre-merge automated checks -
+  *gate* job [3]_. Because *gate* job should check several change requests at
+  once, a set of *build* jobs are triggered with parameters preventing tests,
+  so each *build* job triggers only *publish* job
+* If all *build* jobs are succeed then *gate* job triggers *systest* job using
+  all created repositories at once to check together packages built by
+  several jobs
 * Change request is merged or rejected
-* Merge event from Gerrit is picked up by Jenkins job that places built
-  packages to the internal repository and signes them (for RPM - a package
+* Merge event from Gerrit is picked up by Zuul to run Jenkins *build* job that
+  builds final package and publish it to released repository. *publish* job
+  detects if change request is merged, selects appropriate repository, puts
+  packages to selected repository, and signes them (for RPM - a package
   itself, for DEB - repository metadata)
 * Repository with rebuilt package is propagated to the external MOS mirrors
   by the means of Jenkins job that uses transactional syncronization
@@ -76,12 +90,14 @@ Automated functional and integration tests
 ------------------------------------------
 Each package built into a test repository will undergo the following tests:
 
-#. *Basic syntax test* (rpmlint and lintian, for RPM and DEB packages,
-   respectively)
-#. *Basic package health test.* Uses plain VM with respective OS type that
+Basic syntax test
+   rpmlint and lintian, for RPM and DEB packages, respectively
+Basic package health test - *install* job
+   Uses plain VM with respective OS type that
    contains only the minimal set of packages. Package install, run basic
    shell script, and uninstall tests are performed.
-#. *Full system test.* All packages are tested using the same
+Full system test - *systest* job
+   All packages are tested using the same
    scenarios that are used in current BVT tests on the Product CI. In
    order to keep the actual test run as short and reliable as
    possible, the VM snapshots for Fuel master node and cluster nodes
@@ -95,21 +111,21 @@ Each package built into a test repository will undergo the following tests:
 Depending on the package flavor, there are different artifacts that could be
 supplied to the integration test job.
 
-   #. RPM and DEB packages for clusters. Test repository is added to the
-      Nailgun with highest priority (in terms of a respective package
-      manager).
+- RPM and DEB packages for clusters. Test repository is added to the
+  Nailgun with highest priority (in terms of a respective package
+  manager).
 
-   #. Fuel Master host OS packages. Rebuilding of a Fuel ISO with an extra test
-      repository and redeployment of Fuel Master node must precede the system
-      test.
+- Fuel Master host OS packages. Rebuilding of a Fuel ISO with an extra test
+  repository and redeployment of Fuel Master node must precede the system
+  test.
 
-   #. Fuel bootstrap packages. Rebuilding of bootstrap package and
-      installing it on the Fuel Master node created from snapshot prepared
-      ahead precedes the system test.
+- Fuel bootstrap packages. Rebuilding of bootstrap package and
+  installing it on the Fuel Master node created from snapshot prepared
+  ahead precedes the system test.
 
-   #. Fuel Docker container packages. Rebuilding of Fuel Docker containers
-      late-package and installing it on the Fuel Master node created from
-      snapshot prepared ahead precedes the system test.
+- Fuel Docker container packages. Rebuilding of Fuel Docker containers
+  late-package and installing it on the Fuel Master node created from
+  snapshot prepared ahead precedes the system test.
 
 All tests will be running in parallel. In case if basic package health test
 for a given patch set is failed, the respective full system test must be
