@@ -47,15 +47,13 @@ User Interface
   vCenter Host:       ______________  (description)
   vCenter Username:   ______________  (description)
   vCenter Password:   ______________  (description)
+
     Nova Computes: (multiple instances allowed)
     --------------
     Name of service:    ______________  (description)
     vCenter Cluster:    ______________  (description)
-    Datastore regex:    _______________ (description) OPTIONAL
-    Cinder:
-    -------
-    [x] Enable Cinder VMDK
-    Data Center:     ________________  (description)
+    Datastore regex:    ______________  (description) OPTIONAL
+    Target Node:        ______________  (description)
 
   Glance:
   -------
@@ -64,7 +62,6 @@ User Interface
   vCenter Password:______________  (description)
   Datacenter name: ______________  (description)
   Datastore name:  ______________  (description)
-  Directory for images: _________  (description) OPTIONAL
 
   Network:
   --------
