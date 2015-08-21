@@ -47,15 +47,13 @@ User Interface
   vCenter Host:       ______________  (description)
   vCenter Username:   ______________  (description)
   vCenter Password:   ______________  (description)
+
     Nova Computes: (multiple instances allowed)
     --------------
     Name of service:    ______________  (description)
     vCenter Cluster:    ______________  (description)
-    Datastore regex:    _______________ (description) OPTIONAL
-    Cinder:
-    -------
-    [x] Enable Cinder VMDK
-    Data Center:     ________________  (description)
+    Datastore regex:    ______________  (description) OPTIONAL
+    Target Node:        ______________  (description)
 
   Glance:
   -------
@@ -64,11 +62,10 @@ User Interface
   vCenter Password:______________  (description)
   Datacenter name: ______________  (description)
   Datastore name:  ______________  (description)
-  Directory for images: _________  (description) OPTIONAL
 
   Network:
   --------
-  ESXi VLAN Inerface: _____________ (description)
+  ESXi VLAN Interface: ___________ (description)
 
 .. image:: ../../doc/source/images/vmware-ui-settings-mockup.png
 
@@ -112,7 +109,7 @@ There is a new REST API URL added:
 |        |                                                  | vmware settings|
 +--------+--------------------------------------------------+----------------+
 |  PUT   | /api/v1/clusters/:id/vmware_attributes           | Write updated  |
-|        |                                                  | vmware clusterd|
+|        |                                                  | vmware cluster |
 |        |                                                  | settings       |
 +--------+--------------------------------------------------+----------------+
 |  GET   | /api/v1/clusters/:id/vmware_attributes/defaults/ | Get default    |
@@ -378,7 +375,7 @@ Work Items
 - Integrate UI with real Nailgun API when it is done
 - Implement new handler and validator for VMware attributes
 - DB integration: new table, model. Implement CRUD operations in Cluster
-  object for working with VMmware attributes data
+  object for working with VMware attributes data
 - Add new deployment serializer for working with VMware data
 
 
@@ -408,7 +405,7 @@ Acceptance criteria
 
 * UI part
 
-  * The VMware tab should appear only if 'use_vcenter' settings 
+  * The VMware tab should appear only if 'use_vcenter' settings
     attribute is true (bind from wizard vcenter checkbox)
   * It is possible to modify data at the VMware tab and regexes are
     applied to it.
