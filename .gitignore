@@ -16,6 +16,7 @@ draft/
 /.testrepository
 /.tox
 /doc/build
+/doc/source/index.rst
 
 ChangeLog
 AUTHORS
