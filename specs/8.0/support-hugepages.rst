@@ -50,9 +50,15 @@ The flow of actions is:
 Web UI
 ======
 
-New widget should be added. It should give to user the possibility to enable
-HugePages for selected node(s) and select page size from the
-list of available sizes for this node(s).
+Node details pop-up of compute nodes should be updated to give End User
+an ability to manage HugePages settings.
+User should be able to enable/disable HugePages for a particular node.
+If HugePages is active for the node, then user should be able to select
+a particular page size for the node from a list of available sizes
+(`available_pagesizes` attribute of Node model provides the list of sizes).
+
+Page size for the node should be set to `pagesize` attribute of Node model
+(`Null` value means that HugePages is not active for the node).
 
 
 Nailgun
@@ -207,6 +213,7 @@ Other contributors:
 
 Mandatory design review:
   sgolovatiuk
+  vkramskikh
 
 QA engineer:
   vkrayneva
@@ -233,6 +240,7 @@ Testing, QA
 -----------
 
 * Manual UI testing should be run according to the use cases steps
+* Existing UI functional test of node component should cover the change
 * Manual CLI testing should be run according to the use cases steps
 * System tests should be created for the huge pages
 
@@ -240,8 +248,8 @@ Testing, QA
 Acceptance criteria
 ===================
 
-* It should be possible to enable and set huge pages in Fuel
-  for each compute node
+* It should be possible to manage huge pages settings in Fuel for each compute
+  node via API/CLI/UI.
 * Flavors with extra key `hw:mem_page_size=large` are available after enabled
   and we can use created flavor to start VMs.
 
