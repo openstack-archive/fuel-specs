@@ -1,0 +1,430 @@
+=======================================================
+Dynamically build Ubuntu-based bootstrap on master node
+=======================================================
+
+https://blueprints.launchpad.net/fuel/+spec/dynamically-build-bootstrap
+
+This document describes bootstrap images configuration,
+rebuilding, and switching between several bootstrap images
+using CLI.
+
+We should support Ubuntu bootstrap images to have one common Operating System
+for bootstrapping and deploying nodes. Only ubuntu kernel image customization
+should be possible. Other kernels will not be supported.
+
+-------------------
+Problem description
+-------------------
+
+Now we use Centos as bootstrap image. This leads to old
+version of kernel/drivers/packages. We need to move from Centos to Ubuntu
+which will delivers fresh components.
+Moreover we use Ubuntu as post-provisioning system,
+this will give us more consistent environment.
+Last but not least, having Ubuntu on bootstrap stage will help us support
+the discovery and configuration of components on new servers users might have
+(of those not supported by CentOS 6.x)
+
+At the moment bootstrap image customization is a complicated process.
+Currently the builder script requires editing config files and running scripts
+on the master node.
+In addition operator needs a way to add custom packages inside bootstrap.
+
+Therefore a proper CLI-tool for configuring, rebuilding
+and switching to new bootstrap images is required.
+
+Use cases
+=========
+
+#. Dynamically build Ubuntu-based bootstrap image during
+   Fuel Master node installation [DONE]
+   Goal: Build initial bootstrap image during Fuel master node installation,
+   prepare for node discovery via PXE boot
+
+    #. User launches Fuel master node from Fuel ISO
+    #. Fuel Menu presents user with (new and always shown) options to:
+        * adjust repo location for bootstrap image
+          (default should be provided) [DONE]
+        * specify proxy server to access the repos [DONE]
+    #. User configures the options from previous steps and commits changes
+    #. Fuel Menu checks the accessibility of repos for bootstrap
+       via networking configuration.
+
+        #. If repo is not accessible - indicate informative + actionable
+           error message: "The repo specified for Fuel Bootstrap
+           is not accessible via network. Please check network settings
+           and repo location, adjust them and try again". [DONE]
+        #. If repo is STILL not accessible - user can prompt Fuel Menu to
+           proceed with Fuel master bootstrap
+           (with the intent to sort out repo later)
+        #. If repo is accessible - proceed with normal process of
+           Fuel master installation and bootstrap building.
+
+#. Apply customized bootstrap image to MOS nodes
+   Goal: Customize bootstrap image to particular deployment requirements
+
+    #. Use Case 1 is finished (Fuel master node is deployed).
+    #. User applies documented procedure + tooling to rebuild bootstrap image
+       on Fuel master node (including options such as kernel version pinning,
+       driver enabling, package installation).
+    #. By the end of rebuild process the bootstrap image created in
+       --output-dir, and can be applied as "active" for Fuel master.
+    #. User has the way to switch "active" bootstrap image.
+       User can have several bootstrap images built, but only one can
+       be activated for all environments.
+    #. User can re-discover any of existing (even already discovered or
+       provisioned) nodes with new bootstrap by rebooting this node in PXE boot
+       mode. No DB cleanup or any other actions in Fuel/Cobbler are required.
+
+User Experience
+===============
+
+* Fuel Menu allows user to specify repo location for bootstrap building
+  and proxy setting
+
+* Fuel provides command-line utilities to rebuild Ubuntu-based bootstrap
+  with customizations.
+
+----------------
+Proposed changes
+----------------
+
+#. Extend script for building image that allows the following actions:
+    * Customize list of packages installed in the image.
+    * Inject custom files inside the bootstrap image.
+    * Configure repositories for bootstrap image creating.
+    * Add warning message :
+      Every time when you rebuild a bootstrap image please make sure
+      that you keep all the options required by all the servers
+      managed by Fuel master in place. For example, if you're rebuilding
+      bootstrap with new NIC or RAID driver added - make sure
+      that previously added drivers remain enabled.
+#. Update Web UI "warning-message":
+    * Message should be "non-closable" while default image not added.
+#. Provide documentation with examples of bootstrap image customization:
+     * Generic way to build bootstrap image from custom repositories.
+     * Kernel version selection.
+     * Adding custom drivers.
+     * PXE parameters configuration (e.g. kernel cmdline).
+#. Add possibility to skip default bootstrap building process
+   to speedup Fuel master deployment(from fuel-menu).
+
+
+Web UI
+======
+
+* UI should provide a "non-skipped " warning, while default bootstrap not
+  added.
+
+
+Nailgun
+=======
+
+
+Data model
+----------
+
+
+REST API
+--------
+
+
+Orchestration
+=============
+
+
+RPC Protocol
+------------
+
+
+Fuel Library
+============
+
+Extend fuel-library import-bootstrap system.
+Implement fuel-library skip-bootstrap option.
+
+Fuel Client
+===========
+
+Bootstrap generator
+===================
+
+Bootstrap generator create bootstrap images for fuel-master.
+It use default configurations and allow user to make customization.
+There is 3 ways to make customization:
+
+    * set additional packages for installation
+    * copy custom files into root bootstrap
+    * perform user script at bootstrap file system during image creation
+
+::
+
+    mkbootstrap file-name [ options ]
+
+--ubuntu-repo REPOSITORY
+  Use the specified Ubuntu repository.
+  **Warning:** ubuntu-repo is mandatory variable,should be a mirror
+  of archive.ubuntu.com
+
+Example:
+
+.. code-block:: bash
+
+  --http-proxy URL              Pass http-proxy URL
+  --https-proxy URL             Pass https-proxy URL
+
+  --ubuntu-repo 'http://archive.ubuntu.com/ubuntu trysty main universe multiverse restricted'
+
+  --mos-repository REPOSITORY     Add link to repository with fuel* packages.
+                                That should be either http://mirror.fuel-infra.org/mos-repos
+                                or its mirror.
+
+  **Warning:** mos-repository is mandatory variable.
+  --repository REPOSITORY         Add additional repository
+
+
+
+**REPOSITORY variable  format:**
+The '--repository' option can be specified multiple times, several repositories
+will be added.
+
+.. code-block:: bash
+
+  --repository 'uri distribution [component],[priority]'
+  --repository 'http://mirror.fuel-infra.org/mos-repos/ubuntu/8.0 mos8.0 main,priority=1101'
+  --repository 'http://mirror.fuel-infra.org/mos-repos/ubuntu-test/9.0 mos9.0 main,priority=1120'
+
+  Note: priorities higher than 1000 select a package from the repository in
+  question  even if the newer versions of the same package are available from
+  other repositories or a newer version of the package is already installed in
+  the system. This can be used to force the installation of a previous
+  version(s) of a package (say, linux-image-*) in a case of regressions.
+
+You can find more information about apt-pinning `here <https://www.debian.org/doc/manuals/debian-reference/ch02.en.html#_tweaking_candidate_version>`_.
+
+
+.. code-block:: bash
+
+  --script FILE_PATH            The script is executed after installing
+                                package (both mandatory and user specified
+                                ones) and before creating the initramfs
+                                Also, it is possible to land into chroot
+                                system and made any customm changes  with
+                                '--script=/bin/bash' command.
+
+  --include-kernel-module       make sure the given modules are included into
+                                initramfs image.(by adding module into
+                                /etc/initramfs-tools/modules)
+
+   **Note**
+   If the module in question is not shipped with the kernel itself please add
+   the package providing it (see the `--package' option).
+   Keep in mind that initramfs image should be kept as small is possible.
+   This option is intended to include uncommon network interface cards'
+   drivers so the initramfs can fetch the root filesystem image via the
+   network.
+
+
+  --package PKGNAME             The option can be given multiple times, all
+                                specified packages and their dependencies will
+                                be installed.
+
+  --package-list-file FILE_PATH Install list of packages. Package names listed
+                                in the given file.
+
+**Note** Direct injection of files into the image is not recommended, and a
+         proper way to customize an image is adding (custom) packages.
+
+.. code-block:: bash
+
+  --inject-files-from PATH      Directory or archive that will be injected
+                                     to the image root filesystem.
+
+**Note** Files/packages will be injected after installing all packages,
+  but before generating system initramfs - thus it's possible to adjust
+  initramfs.
+
+Example:
+
+.. code-block:: bash
+
+  # tree /tmp/cool_stuff_directory/
+  /tmp/cool_stuff_directory/
+  └── root
+      └── dir1
+          └── dir2
+              └── dir3
+
+  $ mkbootstrap [opt] --inject-files-from /tmp/cool_stuff_directory/
+  $ # will be injected in bootstrap like:
+  {image}/root/dir1/dir2/dir3
+
+.. code-block:: bash
+
+  --kernel-params PARAMS          Custom kernel parameters(opt)
+  --kernel-flavor                 Defines kernel version
+                                (default=-generic-lts-trusty)
+  --ubuntu-release                Defines the Ubuntu release (default=trusty)
+  --ssh-keys FILE                 Copy public ssh keys into image - makes it
+                                possible to login as root into any bootstrap
+                                node using the key in question.
+
+Examples:
+
+.. code-block:: bash
+
+   $ mkbootstrap new_bootstrap --ubuntu-repo 'http://archive.ubuntu.com/ubuntu trysty main' --repository 'http://mirror.fuel-infra.org/mos-repos/ubuntu/8.0 mos8.0 main,priority=1101' --repository 'http://me.example.com/my-openstack kilo main,priority=1104' --package screen
+
+Plugins
+=======
+
+------------
+Alternatives
+------------
+
+Support only the latest version of a bootstrap for fuel.
+In that case if operator installs new version of the bootstrap for all nodes.
+Otherwise he will loose a possibility to manage bootstrap-per-node function.
+
+   Cons:
+      - All nodes have the same version of the bootstrap.
+        Operator doesn't have possibility to use different
+        versions of bootstrap for node.
+   Pros:
+      - Some part of this spec can be abandoned.
+
+--------------
+Upgrade impact
+--------------
+
+None
+
+---------------
+Security impact
+---------------
+
+None
+
+--------------------
+Notifications impact
+--------------------
+
+None
+
+---------------
+End user impact
+---------------
+
+------------------
+Performance impact
+------------------
+
+None
+
+-----------------
+Deployment impact
+-----------------
+
+to be filled
+
+----------------
+Developer impact
+----------------
+
+None
+
+--------------------------------
+Infrastructure/operations impact
+--------------------------------
+
+Fuel master operator will be available to build customized bootstrap images.
+
+--------------------
+Documentation impact
+--------------------
+
+We need to prepare documentation which will describe this design change.
+
+--------------------
+Expected OSCI impact
+--------------------
+
+
+--------------
+Implementation
+--------------
+
+
+Assignee(s)
+===========
+
+Primary assignee:
+    # TODO: Add primary assignee
+
+Mandatory design review:
+    * Aleksey Kasatkin <akasatkin@mirantis.com>
+
+QA engineers:
+    * Dmitry Kalashnik <dkalashnik@mirantis.com>
+
+
+Work Items
+==========
+
+* Modify builder script to provide required bootstrap image customization.
+* Extend Web UI to show blocker warning.
+* Extend fuel-library import-bootstrap system.
+* Create example for changing linux kernel version.
+* Create example for drivers customization.
+
+Dependencies
+============
+
+
+-----------
+Testing, QA
+-----------
+
+* Manual testing should be run according to the UI use cases steps
+* Manual testing should be run according to the CLI use cases steps
+* System tests should be created for the new bootstrap image building feature
+* System tests should be created for the new bootstrap customization feature
+
+
+Acceptance criteria
+===================
+
+* Use Cases 1 and 2 from Problem description pass
+* The workaround for bug with interface naming by Ubuntu
+  (https://bugs.launchpad.net/mos/+bug/1487044) is applied for bootstrap
+  context (hardcoded NIC names in bootstrap)
+* User must have a documented way to adjust settings described above and
+  rebuild bootstrap image later, when Fuel master node is installed.
+* User must have a documented way to inject additional
+  driver/configuration into bootstrap image
+
+    - This has to be available at later stage
+      (after Fuel master is deployed\some env already exist)
+    - The example of Mellanox Connect-X and some RAID storage
+      driver should be taken
+
+* User must have a documented way to pin kernel version
+  to be used: mirantis default (relevant for the moment of GA release),
+  ubuntu latest, user specified
+* Fuel Menu network check must ensure that the specified bootstrap
+  repositories can be accessed from the Fuel Master
+* If an error occurs during bootstrap image build:
+
+    - Fuel master must gracefully complete provisioning of itself
+    - User must receive an indication about bootstrap image being not available
+      on Web UI and CLI, with pointer to a log for troubleshooting.
+
+* Ubuntu and MOS repositories should be configurable, in particular the user
+  should be able to specify alternative URLs.
+* Ubuntu, MOS, and custom repositories can be accessed via HTTP/HTTPS proxy
+  as specified by --http-proxy/--https-proxy options or HTTP_PROXY/HTTPS_PROXY
+  environment variables.
+
+----------
+References
+----------
