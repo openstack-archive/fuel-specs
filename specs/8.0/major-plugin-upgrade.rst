@@ -73,11 +73,39 @@ Installation of a newer plugin version should not overwrite previous one.
 Web UI
 ======
 
-When upgrade is possible we should have a button which will assign new version
-of the plugin to given environment.
-'Deploy changes' should be executed by user after assigning new version of plugin.
-We should show which version of the plugin is installed on given environment.
-We should show all available plugins (in all available versions) on Fuel master.
+Existing environment Plugins tab in Fuel UI should be extended to support
+plugins upgrade. The change affects deployed environments, that have some
+plugins assigned.
+
+If new version of assigned plugin is available and upgrade is possible (?),
+then the plugin should have 'Upgrade' button to launch an upgrade process (?).
+
+If there are a few newer versions of plugin, then a dropdown with
+the available versions should be presented on UI, so user is able to select
+a particular plugin version for upgrade.
+
+If a plugin still not assigned to the environment, it has 'Assign' button
+that automatically corresponds to the latest plugin version.
+
+[TBD] By clicking 'Upgrade' button `pending_plugins` Cluster attribute should
+be updated to enable 'Deploy' button on the environment Dashboard.
+Plugin data in `pending_plugins` list should contain a particular version of
+the plugin to install.
+Dashboard tab should include an appropriate message if some plugins are
+pending upgrade.
+
+[TBD] Plugins upgrade process should be handled the same way as plugin
+installation to environment, 'deploy' task should be polled from UI.
+In case of successful upgrade, plugins data is updated accordingly on Plugins
+tab (version, 'Assigned' status).
+In case of upgrade failure, there should be an appropriate error message in
+Fuel UI.
+
+Additional notes:
+
+* common Plugins page in Fuel should display all available vesions of plugins.
+* there should be a confirmation pop-up, when user clicks 'Upgrade' button
+  to avoid unexpected upgrade.
 
 Nailgun
 =======
@@ -314,6 +342,19 @@ Implementation
 Assignee(s)
 ===========
 
+Primary assignee:
+  ?
+
+Other contributors:
+  ?
+
+Mandatory design review:
+  ?
+  vkramskikh
+
+QA engineer:
+  ?
+
 Work Items
 ==========
 
@@ -346,6 +387,8 @@ Testing, QA
 * System tests should be created to verify upgrading of a major plugin version
   on environments
 * Manual testing should be executed according to the UI use cases steps
+* Existing UI auto test for the Plugins tab should be updated to test plugis
+  upgrade.
 * Manual testing should be executed according to the CLI use cases steps
 
 Acceptance criteria
@@ -367,3 +410,5 @@ Acceptance criteria
 ----------
 References
 ----------
+
+None
