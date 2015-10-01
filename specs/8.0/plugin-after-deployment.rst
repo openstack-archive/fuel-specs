@@ -41,28 +41,78 @@ installed after deployment.
 In some cases it will not be possible:
 
  * Plugin which have pre-deployment tasks defined.
- * Plugin which uses features executed in pre-deployment stage (ex. reserve VIP
-   address).
+ * Plugin which uses features executed in pre-deployment stage (ex. reserve
+   VIP address).
 
 Web UI
 ======
 
-To support install and use plugin on previously deployed environment,
-we need extend CLI and UI to control plugin management on Fuel Master.
-Plugins should be installed on Fuel Master, and will available for all
-environments.
-When plugin is installed, you should assign plugin in given version
-to environment. After that plugin can be deployed using "Deploy changes".
+Fuel UI should be extended in order to support plugin assignment for
+particular environment (plugin installation is avaialable from CLI only).
+New Plugins tab should appear in both new and deployed environment.
 
-Each environment should have added 'plugins' tab, which will provide an
-information about installed plugins on Fuel Master, with available versions.
-Each entry should contain information, about:
+For not deployed environment, the tab should contain a list of plugins
+installed to Fuel Master, that can be assigned to the environment.
+Plugins in the list should have 'Not assigned' status and 'Assign' button
+to mark plugins as pending deployment.
+Plugin item in the list should also contain plugin information such as
+authors, releases, authors, versions, etc. (the same information that is
+shown on the common Plugins page in Fuel UI).
 
-   - plugin is installed, or is available to be installed
+For already deployed environment, the tab should also contain a list of
+all plugins installed to Fuel Master and compatible with particular
+environment with their data.
+Those plugins that are already deployed to the environment, should have
+'Assigned' status and NO some action buttons.
+Those plugins that are not deployed to the environment, but can be assigned
+to the already deployed environment, should have 'Not assigned' status AND
+'Asssign' button to mark plugins as pending deployment. To figure out if
+a plugin can be added to already deployed environment, UI should check
+`installable_after_deployment` plugin attribute.
+Those plugins that are not deployed to the environment and can not be added to
+the environment after it has been deployed, should have 'Not available' status
+and NO 'Assign' button.
 
-That information should be related to button 'Assign'.
-If there is possibility to assign plugin, button should be available for use,
-if not it should be disabled.
+After some plugins are marked as pending deployment, environment Dasboard
+should display an information that some plugins need deployment and 'Deploy'
+button should be enabled to start plugins deployment.
+
+If plugins deployment successful, the plugins have an appropriate 'Assigned'
+status on Plugins tab.
+[TBD] If plugins deployment failed, it does not affect environment
+'operational'status, BUT Fuel UI should warn user about plugin deployment
+failure.
+
+[TBD] List of available plugins for the environment should be provided on UI by
+`GET /api/plugins/?cluster_id=<cluster_id>` request.
+
+Plugin entry should include:
+
+* `clusters` attribute with a list of assigned environment ids, to check if
+  the plugin already assigned to the environment (already existing attribute).
+
+* `installable_after_deployment` attribute to check if plugin can be added to
+  already deployed environment (this attribute should be added to Plugin
+  model).
+
+[TBD] When user clicks 'Assign' button for a plugin, API should be provided,
+how to mark the plugin as pending deployment to the particular environment.
+Should it be a new Cluster model attribute like 'pending_plugins'?
+
+[TBD] When user clicks 'Deploy' button to install new plugins to the already
+deployed environment, UI should poll 'deploy' task as a usual deployment
+process.
+
+Other UI changes:
+
+* Plugins tab should be always locked and read-only during deployment process.
+  No 'Assign' buttons on the tab for deploying environment.
+
+* [TBD] Should the tab be locked in stopped or error environment?
+
+* Existing root-level Plugins page in Fuel UI should be updated with plugins
+  version data only. No other changes required here.
+
 
 Nailgun
 =======
@@ -164,8 +214,8 @@ End user impact
 
 In some cases, installation can lead to service disruption.
 Ex. plugin requires to restart some core services.
-Plugin developer should put statement into documentation how plugin will handle
-installation after deployment.
+Plugin developer should put statement into documentation how plugin will
+handle installation after deployment.
 
 ------------------
 Performance impact
@@ -215,6 +265,19 @@ Implementation
 Assignee(s)
 ===========
 
+Primary assignee:
+  ?
+
+Other contributors:
+  ?
+
+Mandatory design review:
+  ?
+  vkramskikh
+
+QA engineer:
+  ?
+
 Work Items
 ==========
 
@@ -233,6 +296,8 @@ Testing, QA
 - System tests should be created to verify plugin installation on already
   deployed environments.
 - Manual testing should be executed according to the UI use cases steps.
+- New environment Plugins tab in Fuel UI should be covered with UI functional
+  auto tests.
 - Manual testing should be executed according to the CLI use cases steps.
 
 Acceptance criteria
@@ -251,3 +316,5 @@ Acceptance criteria
 ----------
 References
 ----------
+
+None
