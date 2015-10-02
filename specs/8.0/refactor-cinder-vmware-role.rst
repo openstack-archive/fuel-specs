@@ -10,31 +10,46 @@ Refactor cinder-vmware role
 
 https://blueprints.launchpad.net/fuel/+spec/refactor-cinder-vmware-role
 
-Introduction paragraph -- why is it necessary to do anything?
+Currently, cinder-vmware [0]_ (cinder-volume) installed with default
+cinder-volume service. This leads to many problems, since such behavior is not
+considered. Moreover, it is wrong from a logical point of view, because we have
+an extra unaccounted default cinder-volume service (not for VMware). It is also
+necessary to alter start\stop scripts for cinder-vmware.
 
 
 --------------------
 Problem description
 --------------------
 
-A detailed description of the problem:
+Deploying cinder-vmware occurs abnormal scenario. At first configure and run
+all services cinder (cinder-api, cinder-scheduler,cinder-volume) configuration
+for a given environment (LVM or Ceph). Once configured and started
+cinder-volume with vmware-backend.
 
-* For a new feature this might be use cases. Ensure you are clear about the
-  actors in each use case: End User vs Deploy engineer
+This behavior leads to some problems:
 
-* For a major reworking of something existing it would describe the
-  problems in that feature that are being addressed.
+* we have unaccounted and unnecessary services
+  (cinder-api, cinder-scheduler,cinder-volume) for cinder-vmware role.
+* this leads to a variety of errors in running services (cinder-api,
+  cinder-scheduler, cinder-volume) due to the fact that the deployment does not
+  imply the existence of these services for the cinder-vmware role. For example
+  [1]_.
+
+Also, it is necessary to rework the start/stop script that is copied when we
+install cinder-volume (MOS), for support systemd and sysv-rc.
 
 
 ----------------
 Proposed changes
 ----------------
 
-Here is where you cover the change you propose to make in detail. How do you
-propose to solve this problem?
+To implement this blueprint, do the following:
 
-If this is one part of a larger effort make it clear where this piece ends. In
-other words, what's the scope of this effort?
+* removed from the package cinder-volume (MOS) custom start/stop script and use
+  the standard script of the package with the necessary changes.
+* change the puppet manifest (openstack-cinder and cinder-vmware).
+* add new OSTF test "Create volume and boot instance from it" for
+  cinder-vmware.
 
 Web UI
 ======
@@ -86,22 +101,15 @@ None.
 Fuel Library
 ============
 
-Are some changes required to Fuel Library? Please describe in details:
-
-* Changes to Puppet manifests
-
-* Supporting scripts
-
-* Components packaging
+It is planned to make changes to openstack-cinder and cinder-vmware manifests.
 
 
 ------------
 Alternatives
 ------------
 
-What are other ways of achieving the same results? Why aren't they followed?
-This doesn't have to be a full literature review, but it should demonstrate
-that thought has been put into why the proposed solution is an appropriate one.
+There are no alternatives, because if leave as is, we need to prepare for a
+large number of bugs and problems.
 
 
 --------------
@@ -129,11 +137,8 @@ None.
 End user impact
 ---------------
 
-Aside from the API, are there other ways a user will interact with this
-feature?
-
-* Does this change have an impact on python-fuelclient? What does the user
-  interface there look like?
+User can run new OSTF test "Create volume and boot instance from it" for
+cinder-vmware. 
 
 
 ------------------
@@ -168,23 +173,15 @@ None.
 Documentation impact
 --------------------
 
-What is the impact on the docs team of this change? Some changes might require
-donating resources to the docs team to have the documentation updated. Don't
-repeat details discussed above, but please reference them here.
+Update documentation about the new OSTF test "Create volume and boot instance
+from it" if necessary.
 
 
 --------------------
 Expected OSCI impact
 --------------------
 
-Expected and known impact to OSCI should be described here. Please mention
-whether:
-
-* There are new packages that should be added to the mirror
-
-* Version for some packages should be changed
-
-* Some changes to the mirror itself are required
+We remove custom upstart cinder-volume-vmware.conf from cinder-volume package.
 
 
 --------------
@@ -194,28 +191,23 @@ Implementation
 Assignee(s)
 ===========
 
-Who is leading the writing of the code? Or is this a blueprint where you're
-throwing it out there to see who picks it up?
+======================= =============================================
+Primary assignee        Alexander Arzhanov <aarzhanov@mirantis.com>
+Developers              Alexander Arzhanov <aarzhanov@mirantis.com>
 
-If more than one person is working on the implementation, please designate the
-primary author and contact.
-
-Primary assignee:
-  <launchpad-id or None>
-
-Other contributors:
-  <launchpad-id or None>
-
-Mandatory design review:
-  <launchpad-id or None>
+QA engineers            Ilya Bumarskov <ibumarskov@mirantis.com>
+Mandatory design review Igor Zinovik <izinovik@mirantis.com>
+======================= =============================================
 
 
 Work Items
 ==========
 
-Work items or tasks -- break the feature up into the things that need to be
-done to implement it. Those parts might end up being done by different people,
-but we're mostly trying to understand the timeline for implementation.
+* make changes to openstack-cinder and cinder-vmware manifests.
+* remove custom upstart cinder-volume-vmware.conf from cinder-volume package
+  and use the standard script of the package with the necessary changes.
+* add new OSTF test "Create volume and boot instance from it" for
+  cinder-vmware.
 
 
 Dependencies
@@ -228,30 +220,24 @@ None.
 Testing, QA
 ------------
 
-Please discuss how the change will be tested. It is assumed that unit test
-coverage will be added so that doesn't need to be mentioned explicitly.
-
-If there are firm reasons not to add any other tests, please indicate them.
+* manual testing.
+* the successful execution of OSTF tests, including the new OSTF test "Create
+  volume and boot instance from it" for cinder-vmware.
 
 
 Acceptance criteria
 ===================
 
-Please specify clearly defined acceptance criteria for proposed changes.
+User is able to deploy cluster with vCenter and cinder-vmware role.
+After deploy user can use create volume, create volume from image, etc for
+vCenter availability zone.
+User can run OSTF test "Create volume and boot instance from it" for
+cinder-vmware.
 
 
 ----------
 References
 ----------
 
-Please add any useful references here. You are not required to have any
-reference. Moreover, this specification should still make sense when your
-references are unavailable. Examples of what you could include are:
-
-* Links to mailing list or IRC discussions
-
-* Links to relevant research, if appropriate
-
-* Related specifications as appropriate
-
-* Anything else you feel it is worthwhile to refer to
+.. [0] https://blueprints.launchpad.net/fuel/+spec/cinder-vmdk-role
+.. [1] https://bugs.launchpad.net/fuel/+bug/1493441
