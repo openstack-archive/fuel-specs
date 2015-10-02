@@ -143,10 +143,30 @@ It's assumed that Web UI should have only functions that can be used by
 any user and don't require advanced administrator guidance.
 The following UI changes should be done:
 
-* UI should provide a control to change active bootstrap image globally.
-  It can be list of installed bootstrap images with radio button on combo-box.
-* UI should provide a button to completely remove node from Nailgun.
+* If bootstrap image building was failed during master node installation
+  and/or there is no default bootstrap image to use, then UI should provide
+  an error panel on the default `Environments` page with an appropriate
+  message about boostrapping failure and some instructions what user can do
+  next. User should not be able to close the panel, because the message
+  is important and should not be missed.
+  [TODO] what DB data should be used to check if UI need to display the error
+  message?
+
+* [TBD] UI should provide a control to change active bootstrap image globally.
+  New root-level Fuel Settings page can be created to display a list of
+  installed bootstrap images with radio button or combo-box.
+  [TODO] what API should be used to update bootstrap image Fuel setting?
+
+* [TBD] When a just-customized bootstrap image failed on some reason UI should
+  provide a button to completely remove already discovered node from Nailgun.
   In this case after node next boot up, it will be discovered again.
+  [TODO] If the button should appear in Fuel UI, then the following questions
+  should be discussed:
+
+    * will existing 'Remove' button, that is presented for offline nodes, suit
+      the case? The button send DELETE /api/nodes/<node_id> request and remove
+      a node from Nailgun DB
+    * should UI support a bulk node removal?
 
 
 Nailgun
@@ -406,6 +426,7 @@ Testing, QA
 -----------
 
 * Manual testing should be run according to the UI use cases steps
+* UI auto-tests should cover the changes in Fuel UI
 * Manual testing should be run according to the CLI use cases steps
 * System tests should be created for the new bootstrap image building feature
 * System tests should be created for the new bootstrap customization feature
