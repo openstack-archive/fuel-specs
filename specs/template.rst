@@ -450,6 +450,22 @@ After reading this section, it should be clear how you intend to confirm that
 you change was implemented successfully and meets it's acceptance criteria
 with minimal regressions.
 
+System testing impact
+=====================
+Excpected impact to system test suite. If you are planning create and/or
+changes verification step(s) you should describe these here.
+
+
+Health check(OSTF) impact
+=========================
+
+
+Tempest impact
+==============
+If some changes will require additional validation from Tempest side, you
+should describe these here.
+
+
 Acceptance criteria
 ===================
 
