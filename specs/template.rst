@@ -451,6 +451,19 @@ coverage will be added so that doesn't need to be mentioned explicitly.
 
 If there are firm reasons not to add any other tests, please indicate them.
 
+System testing impact
+=====================
+Excpected impact to system test suite. If you are planning create and/or changes verification step(s) you should describe these here.
+
+
+Health check(OSTF) impact
+===================
+
+
+Tempest impact
+==============
+If some changes will require additional validation from Tempest side, you should describe these here.
+
 
 Acceptance criteria
 ===================
