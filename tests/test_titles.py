@@ -34,10 +34,9 @@ class TestTitles(base.BaseDocTest):
         'Performance impact': None,
         'Deployment impact': None,
         'Developer impact': None,
-        'Infrastructure/operations impact': None,
+        'Infrastructure impact': None,
         'Notifications impact': None,
         'Documentation impact': None,
-        'Expected OSCI impact': None,
         'Implementation': {
             'Assignee(s)': None,
             'Dependencies': None,

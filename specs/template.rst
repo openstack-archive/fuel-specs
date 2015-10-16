@@ -346,9 +346,9 @@ such as:
   drivers would implement the feature is required.
 
 
---------------------------------
-Infrastructure/operations impact
---------------------------------
+---------------------
+Infrastructure impact
+---------------------
 
 Explain what changes in project infrastructure will be required to support the
 proposed change. Consider the following:
@@ -357,8 +357,8 @@ proposed change. Consider the following:
   consume more CPU, network, or storage capacity? Will it increase the number
   of scheduled jobs?
 
-* Will it require new work-flows or changes in existing work-flows implemented
-  in CI, packaging, source code management, code review, or software artifact
+* Will it require new workflows or changes in existing workflows implemented in
+  CI, packaging, source code management, code review, or software artifact
   publishing tools?
 
   * Will it require new or upgraded tools or services to be deployed on project
@@ -369,6 +369,11 @@ proposed change. Consider the following:
   * Will it affect git branch management strategies?
 
   * Will it introduce new release artifacts?
+
+  * Will it require changes to package dependencies: new packages, updated
+    package versions?
+
+  * Will it require changes to the structure of any package repositories?
 
 * Will it require changes in build environments of any existing CI jobs? Would
   such changes be backwards compatible with previous Fuel releases currently
@@ -382,20 +387,6 @@ Documentation impact
 What is the impact on the docs team of this change? Some changes might require
 donating resources to the docs team to have the documentation updated. Don't
 repeat details discussed above, but please reference them here.
-
-
---------------------
-Expected OSCI impact
---------------------
-
-Expected and known impact to OSCI should be described here. Please mention
-whether:
-
-* There are new packages that should be added to the mirror
-
-* Version for some packages should be changed
-
-* Some changes to the mirror itself are required
 
 
 --------------
