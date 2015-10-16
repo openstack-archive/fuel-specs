@@ -198,9 +198,9 @@ There is no impact on developing process, since packages for both CentOS 6
 and CentOS 7 will be built and appear on mirrors on the same gerrit events
 
 
---------------------------------
-Infrastructure/operations impact
---------------------------------
+---------------------
+Infrastructure impact
+---------------------
 
 * Expected jobs workload (building/publishing) will be double increased,
   because of triggering two sets of jobs (for CentOS 6 and 7) in parallel
@@ -262,17 +262,6 @@ Infrastructure/operations impact
                             Picture 1 - Zuul schema
 
 
---------------------
-Documentation impact
---------------------
-
-All infrastructure changes should be documented
-
-
---------------------
-Expected OSCI impact
---------------------
-
 Related mirrors should be created/rsynced to all location with the `base`
 path defined below:
 
@@ -285,7 +274,14 @@ path defined below:
 +----------+---------------------------------------+
 
 Fuel packages naming schema must correspond to those that is described in spec
-`separate-mos-from-centos`_
+`separate-mos-from-centos`_.
+
+
+--------------------
+Documentation impact
+--------------------
+
+All infrastructure changes should be documented
 
 
 --------------
