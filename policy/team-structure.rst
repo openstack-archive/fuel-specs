@@ -194,7 +194,7 @@ References
   http://lists.openstack.org/pipermail/openstack-dev/2015-August/072406.html
 
 * Fuel Review Inbox (by Dmitry Borodaenko):
-  http://git.openstack.org/cgit/stackforge/gerrit-dash-creator/tree/dashboards/fuel.dash
+  http://git.openstack.org/cgit/openstack/gerrit-dash-creator/tree/dashboards/fuel.dash
 
 * Fuel contribution statistics (Stackalytics):
   http://stackalytics.com/report/contribution/fuel-group/90
