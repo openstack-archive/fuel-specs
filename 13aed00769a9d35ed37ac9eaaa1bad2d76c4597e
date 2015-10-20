@@ -1,0 +1,12 @@
+Verified+2: Jenkins
+Code-Review+1: Vladimir Kozhukalov <vkozhukalov@mirantis.com>
+Code-Review+1: Roman Podoliaka <rpodolyaka@mirantis.com>
+Code-Review+2: Roman Vyalov <rvyalov@mirantis.com>
+Workflow+1: Roman Vyalov <rvyalov@mirantis.com>
+Code-Review+1: Artem Silenkov <asilenkov@mirantis.com>
+Code-Review+1: Alexander Evseev <aevseev@mirantis.com>
+Submitted-by: Jenkins
+Submitted-at: Tue, 20 Oct 2015 15:49:02 +0000
+Reviewed-on: https://review.openstack.org/229795
+Project: openstack/fuel-specs
+Branch: refs/heads/master
