@@ -32,18 +32,18 @@ Web UI
 Environment page changes:
 
 #. Existing sorting and filtering controls in node management panel should
-   include new `Node network group` option (`group_id` attribute of Node
+   include new `node network group` option (`group_id` attribute of Node
    model).
    All the other sorting and filtering behaviour remains the same.
 
-   When `Node network group` filter is applied and specific node network group
+   When `node network group` filter is applied and specific node network group
    chosen, only nodes from this network group should be shown in the node
    list.
-   `Node network group` filter should contain a list of network group names.
+   `node network group` filter should contain a list of network group names.
    Default node network group (its id is stored in Cluster model attribute)
    should go first in the list.
 
-   When `Node network group` sorter is applied, node list should be grouped by
+   When `node network group` sorter is applied, node list should be grouped by
    node network group name. Nodes from default node network group should go
    first in the list.
 
@@ -51,7 +51,29 @@ Environment page changes:
    nodes do not belong to any node network group (`group_id` attribute has
    `null` value).
 
-#. Node network group name should be shown in node details pop-up.
+#. node network group name should be shown in node details pop-up.
+
+#. The list of node network groups can be seen at Networks page. Node network
+   groups will appear as a pill on the left side of the screen on Networks tab,
+   so by switching then the user will be able to see which networks and which
+   parameters correspond to which node network group and configure them.
+
+   .. image:: ../../images/8.0/multirack-in-fuel-ui/network-group.png
+
+   After changing some network settings for particular node network group it
+   will be possible to switch to the other node network group and change
+   settings for it without confirmation dialog on leaving unsaved data. All the
+   changes are applied only after clicking Save Settings button at the bottom
+   of the page.
+
+   It should be impossible to create new node network group without saving
+   changes.
+
+   It should be possible to edit parameters of Admin networks for node network
+   groups.
+
+   Gateways must be set for all networks when more than one node network group
+   is present.
 
 
 Nailgun
@@ -71,6 +93,7 @@ Nailgun
   introduced. `Cluster` model should be extended to store id of default node
   network group for the particular environment.
 
+
 Data model
 ----------
 `clusters` table should be extended with new foreign key
@@ -79,7 +102,7 @@ Data model
 REST API
 --------
 
-Node network groups data is provided by existing
+node network groups data is provided by existing
 `GET /api/nodegroups?cluster_id=<id>` request. No changes requred here.
 
 Existing ``GET /api/clusters/{cluster_id}`` method should return the new
@@ -232,6 +255,7 @@ Work Items
 #. Include node network group option to environment node list sorters
    and filters scope.
 #. Display node network group name in the node details pop-up.
+#. Show node network groups on Networks tab.
 
 
 Dependencies
@@ -257,7 +281,8 @@ Acceptance criteria
   in Fuel UI
 * It is possible to filter environment node list by node network group
   in Fuel UI
-* Node network group name is shown in node details pop-up
+* node network group name is shown in node details pop-up
+* Networks tab is segmented with the list of node network groups
 
 ----------
 References
