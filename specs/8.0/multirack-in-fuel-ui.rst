@@ -36,22 +36,44 @@ Environment page changes:
    model).
    All the other sorting and filtering behaviour remains the same.
 
-   When `Node network group` filter is applied and specific node network group
+   When `Node network group` filter is applied and specific Node network group
    chosen, only nodes from this network group should be shown in the node
    list.
    `Node network group` filter should contain a list of network group names.
-   Default node network group (its id is stored in Cluster model attribute)
+   Default Node network group (its id is stored in Cluster model attribute)
    should go first in the list.
 
    When `Node network group` sorter is applied, node list should be grouped by
-   node network group name. Nodes from default node network group should go
+   Node network group name. Nodes from default Node network group should go
    first in the list.
 
    This change affects environment node list only, as well as unallocated
-   nodes do not belong to any node network group (`group_id` attribute has
+   nodes do not belong to any Node network group (`group_id` attribute has
    `null` value).
 
 #. Node network group name should be shown in node details pop-up.
+
+#. The list of Node network groups can be seen at Networks page. Node network
+   groups will appear as a pill on the left side of the screen on Networks tab,
+   so by switching then the user will be able to see which networks and which
+   parameters correspond to which Node network group and configure them.
+
+   .. image:: ../../images/8.0/multirack-in-fuel-ui/network-group.png
+
+   After changing some network settings for particular Node network group it
+   will be possible to switch to the other Node network group and change
+   settings for it without confirmation dialog on leaving unsaved data. All the
+   changes are applied only after clicking Save Settings button at the bottom
+   of the page.
+   
+   It should be impossible to create new Node network group without saving
+   changes.
+
+   It should be possible to edit parameters of Admin networks for node network
+   groups.
+
+   Gateways must be set for all networks when more than one Node network group
+   is present.
 
 
 Nailgun
@@ -60,16 +82,17 @@ Nailgun
 * Existing `group_id` attribute of Node model should be used to sort and filter
   node list in Fuel UI.
 
-* When new environment is created default node network group is created in
+* When new environment is created default Node network group is created in
   there (which is connected to shared Admin network). It is named "default".
-  This name is the only distinguisher of default node network group which is
-  being used in several places in code. But the name of node network group
+  This name is the only distinguisher of default Node network group which is
+  being used in several places in code. But the name of Node network group
   is not read-only entity. It can be changed via API. So, this distinguisher
   can be lost easily, data processing in Nailgun become broken in this case.
 
-  So that a permanent distinguisher for default node network group should be
+  So that a permanent distinguisher for default Node network group should be
   introduced. `Cluster` model should be extended to store id of default node
   network group for the particular environment.
+
 
 Data model
 ----------
@@ -229,9 +252,10 @@ Work Items
 
 #. Extend `Cluster` DB model with the new attribute, make corresponding
    changes in API
-#. Include node network group option to environment node list sorters
+#. Include Node network group option to environment node list sorters
    and filters scope.
-#. Display node network group name in the node details pop-up.
+#. Display Node network group name in the node details pop-up.
+#. Show Node network group on Networks tab.
 
 
 Dependencies
@@ -245,7 +269,7 @@ Testing, QA
 ------------
 
 * Nailgun tests should cover the `Cluster` model change
-* Nailgun tests should be updated to handle default node network groups
+* Nailgun tests should be updated to handle default Node network groups
 * Functional UI auto-tests should cover the changes
 * Manual testing
 
@@ -253,11 +277,12 @@ Testing, QA
 Acceptance criteria
 ===================
 
-* It is possible to sort environment node list by node network group
+* It is possible to sort environment node list by Node network group
   in Fuel UI
-* It is possible to filter environment node list by node network group
+* It is possible to filter environment node list by Node network group
   in Fuel UI
 * Node network group name is shown in node details pop-up
+* Networks tab is segmented with Node network groups
 
 ----------
 References
