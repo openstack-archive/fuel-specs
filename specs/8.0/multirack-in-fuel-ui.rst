@@ -53,6 +53,52 @@ Environment page changes:
 
 #. Node network group name should be shown in node details pop-up.
 
+Networks tab changes:
+
+#. The list of node network groups can be seen at Networks tab
+#. Networks tab is segmented into sections for node network groups:
+
+  * one, called 'Networks' if only one node network group is given;
+
+  * a separate section in case of multirack Openstack environment (several
+  node network groups)
+
+#. Neutron L2 and Neutron L3 settings will form a separate group, as well as
+   network verification control:
+
+   .. image:: ../../images/8.0/multirack-in-fuel-ui/verification_control.png
+
+Also it will be possible to see all node network groups at once by clicking
+'Show All' checkbox.
+
+Node network groups will appear as a pill on the left side of the screen on
+Networks tab, so by switching them the user will be able to see which networks
+and which  parameters correspond to which node network group and configure
+them.
+
+   .. image:: ../../images/8.0/multirack-in-fuel-ui/node_network_groups.png
+
+After changing some network settings for particular node network group it
+will be possible to switch to the other node network group and change
+settings for it without confirmation dialog on leaving unsaved data. All the
+changes are applied only after clicking Save Settings button at the bottom
+of the page.
+
+To create a new node network group user will be prompted to enter its name:
+
+   .. image:: ../../images/8.0/multirack-in-fuel-ui/new_group.png
+
+Special cases:
+
+#. It should not be possible to create new node network group without saving
+   changes.
+#. It should be possible to edit parameters of Admin networks for node network
+   groups.
+#. Gateways must be set for all networks when more than one node network group
+   is present (in case of multirack environment).
+#. Arbitrary names of networks should be supported - it should be possible to
+   modify network names on UI.
+
 
 Nailgun
 =======
@@ -233,6 +279,8 @@ Work Items
 #. Include node network group option to environment node list sorters
    and filters scope.
 #. Display node network group name in the node details pop-up.
+#. Show node network groups on Networks tab.
+#. Implement node network groups creation and editing support.
 
 
 Dependencies
@@ -258,6 +306,9 @@ Acceptance criteria
 * It is possible to filter environment node list by node network group
   in Fuel UI
 * Node network group name is shown in node details pop-up
+* Networks tab is segmented with the list of node network groups
+* It is possible to create a new node network
+* It is possible to edit existing node network group
 
 ----------
 References
