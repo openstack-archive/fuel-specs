@@ -159,12 +159,22 @@ Proposed changes
 Web UI
 ======
 
-* UI should provide a "non-skipped " warning, while default bootstrap not
-  added.
+While default bootstrap not added, UI should provide an error panel on
+`Environments` page with an appropriate message and some instructions what
+user can do next.
+User should not be able to close the panel, because the message is important
+and should not be missed.
+
+To display the error message UI should check the existence of
+`bootstrap_error` attribute in master node settings. If this attribute exists,
+it's value is exactly the text to be displayed on UI.
 
 
 Nailgun
 =======
+
+[TBD] Should be described how to update master node settings with
+`bootstrap_error` attribute if no defaut bootstrap was added.
 
 No changes is required on nailgun side. Only CLI tools will be provided to
 create and manage bootstrap images.
