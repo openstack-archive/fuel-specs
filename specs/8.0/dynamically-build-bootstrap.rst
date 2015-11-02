@@ -121,6 +121,14 @@ Example of user steps, required to build a new bootstrap image and set
   # or in one command:
   $ fuel-bootstrap import /root/latest-ubuntu-bootstrap.tar.gz --activate
 
+* In case 'skip' build or 'failed default build' bootstrap in Fuel-master
+  provision time - block message will be automatically added to Fuel-UI
+  using simple POST message to nailgun.
+  Warning message will be automatically removed, in case any newest imported
+  bootstrap becomes activate. Functional set\remove message will be covered by
+  fuel-bootstrap script.
+
+
 ----------------
 Proposed changes
 ----------------
@@ -159,8 +167,15 @@ Proposed changes
 Web UI
 ======
 
-* UI should provide a "non-skipped " warning, while default bootstrap not
-  added.
+While default bootstrap not added, UI should provide an error panel on
+`Environments` page with an appropriate message and some instructions what
+user can do next.
+User should not be able to close the panel, because the message is important
+and should not be missed.
+
+To display the error message UI should check the existence of
+`bootstrap_error` attribute in master node settings. If this attribute exists,
+it's value is exactly the text to be displayed on UI.
 
 
 Nailgun
@@ -458,9 +473,11 @@ Commands:
   import            allows to import already created bootstrap image to the
                     system
                     (archive file in format tar.gz)
+
   activate          sets selected image as an active - i.e. the image that will
                     be used to bootstrap all the nodes deployed from this
                     Fuel Master
+
   delete            deletes specified imagefrom the system
 
 
