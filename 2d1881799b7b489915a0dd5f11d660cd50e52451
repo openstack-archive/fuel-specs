@@ -1,0 +1,15 @@
+Verified+2: Jenkins
+Code-Review+1: Ksenia Demina <kdemina@mirantis.com>
+Code-Review+2: Aleksey Kasatkin <akasatkin@mirantis.com>
+Workflow+1: Aleksey Kasatkin <akasatkin@mirantis.com>
+Code-Review+2: Vladimir Kuklin <vkuklin@mirantis.com>
+Code-Review+1: Sergey Slipushenko <sslypushenko@mirantis.com>
+Code-Review+1: Alexander Kislitsky <akislitsky@mirantis.com>
+Code-Review+1: Szymon Banka <sbanka@mirantis.com>
+Code-Review+1: Alexander Saprykin <asaprykin@mirantis.com>
+Code-Review+1: Alex Schultz <aschultz@mirantis.com>
+Submitted-by: Jenkins
+Submitted-at: Mon, 09 Nov 2015 12:25:42 +0000
+Reviewed-on: https://review.openstack.org/239897
+Project: openstack/fuel-specs
+Branch: refs/heads/master
