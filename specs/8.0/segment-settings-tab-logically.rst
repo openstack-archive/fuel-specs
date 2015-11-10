@@ -51,7 +51,10 @@ Web UI
   * OpenStack Services
 
   Settings with undefined group will go to the 'Other'group.
-  Additionally, plugins can provide their own groups.
+
+  Plugins can provide any group from the list above. In case if plugin uses
+  custom group name (not from the predefined list) it will automatically go
+  to the 'Other' group.
 
   Settings with 'network' group -will not be displayed on Settings tab
   anymore.
@@ -71,7 +74,7 @@ Web UI
   and Logging. They will have 'General Settings' title on the page.
 
   To define groups for particular Common settings there will be new
-  'group' attribute inside every singular settings separetely:
+  'group' attribute inside every singular setting separetely:
 
   .. code-block:: yaml
 
@@ -180,7 +183,7 @@ List of possible 'group' values:
 
 For Common settings, which should be splitted to several groups, there is
 no changes inside metadata section, but 'group' attribute added inside every
-singular settings separetely.
+singular setting separetely.
 
 Data model
 ----------
