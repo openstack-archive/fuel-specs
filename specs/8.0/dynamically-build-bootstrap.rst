@@ -143,7 +143,7 @@ Proposed changes
       managed by Fuel master in place. For example, if you're building
       bootstrap with new NIC or RAID driver added - make sure
       that previously added drivers remain enabled.
-#. Update Web UI "warning-message":
+#. Add Web UI "warning-message":
     * Message should be "non-closable" while default image not added.
 #. Provide documentation with examples of bootstrap image customization:
     * Generic way to build bootstrap image from custom repositories.
@@ -168,14 +168,14 @@ Web UI
 ======
 
 While default bootstrap not added, UI should provide an error panel on
-`Environments` page with an appropriate message and some instructions what
+every page with an appropriate message and some instructions what
 user can do next.
 User should not be able to close the panel, because the message is important
 and should not be missed.
 
 To display the error message UI should check the existence of
-`bootstrap_error` attribute in master node settings. If this attribute exists,
-it's value is exactly the text to be displayed on UI.
+`error` attribute in `bootstrap` section in master node settings. If this
+attribute exists, it's value is exactly the text to be displayed on UI.
 
 
 Nailgun
