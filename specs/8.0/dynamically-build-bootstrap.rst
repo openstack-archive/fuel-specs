@@ -110,16 +110,16 @@ Example of user steps, required to build a new bootstrap image and set
 
 .. code-block:: bash
 
-  $ fuel-bootstrap build /root/latest-ubuntu-bootstrap.tar.gz
-         ...Assembling bootstrap with default parameters...
-                            ...
-         ...Assembling done..
-         ...Bootstrap saved to /root/latest-ubuntu-bootstrap.tar.gz...
-         ...Bootstrap UUID: 765556d0-8b8e-4017-89e0-a5feb4d4518e ...
-  $ fuel-bootstrap import /root/latest-ubuntu-bootstrap.tar.gz
-  $ fuel-bootstrap activate 765556d0-8b8e-4017-89e0-a5feb4d4518e
+  $ fuel-bootstrap build
+     ...Assembling bootstrap with default parameters...
+                        ...
+     ...Assembling done..
+     ...Bootstrap saved to /{dir}/{uuid}.tar.gz...
+     ...Bootstrap UUID: {uuid}...
+  $ fuel-bootstrap import /{dir}/{uuid}.tar.gz
+  $ fuel-bootstrap activate {uuid}
   # or in one command:
-  $ fuel-bootstrap import /root/latest-ubuntu-bootstrap.tar.gz --activate
+  $ fuel-bootstrap import /{dir}/{uuid}.tar.gz --activate
 
 * In case 'skip' build or 'failed default build' bootstrap in Fuel-master
   provision time - block message will be automatically added to Fuel-UI
@@ -252,7 +252,7 @@ Fuel Library
 * Extend fuel-library import-bootstrap system.
 * Implement fuel-library skip-bootstrap option.
 
-Fuel manifests will be changed to allow to skip bootsrap image creation
+Fuel manifests will be changed to allow to skip bootstrap image creation
 during fuel master deployment process. Additionally manifests could be used
 to change active bootstrap image.
 
@@ -277,37 +277,36 @@ Example:
 
 ::
 
-    fuel-bootstrap build <file-name>.tar.gz [ options ]
+    fuel-bootstrap build [ options ]
 
 .. code-block:: bash
 
   --ubuntu-repo REPOSITORY      Use the specified Ubuntu repository.
-                                **Warning:** ubuntu-repo is mandatory variable,
-                                should be a mirror of archive.ubuntu.com
+
+  --ubuntu-repo 'deb http://archive.ubuntu.com/ubuntu trusty main universe multiverse restricted'
 
   --http-proxy URL              Pass http-proxy URL
   --https-proxy URL             Pass https-proxy URL
 
-  --ubuntu-repo 'http://archive.ubuntu.com/ubuntu trysty main universe multiverse restricted'
+  --direct-repo-addr            Nodes with such address will be connected to
+                                the repositories without proxy
 
-  --mos-repository REPOSITORY   Add link to repository with fuel* packages.
+  --mos-repo REPOSITORY         Add link to repository with fuel* packages.
                                 That should be either http://mirror.fuel-infra.org/mos-repos
                                 or its mirror.
 
-  **Warning:** mos-repository is mandatory variable.
-
-  --repository REPOSITORY       Add one more repository
+  --repo REPOSITORY             Add one more repository
 
 
 **REPOSITORY variable  format:**
-The '--repository' option can be specified multiple times, several repositories
+The '--repo' option can be specified multiple times, several repositories
 will be added.
 
 .. code-block:: bash
 
-  --repository 'uri distribution [component],[priority]'
-  --repository 'http://mirror.fuel-infra.org/mos-repos/ubuntu/8.0 mos8.0 main,priority=1101'
-  --repository 'http://mirror.fuel-infra.org/mos-repos/ubuntu-test/9.0 mos9.0 main,priority=1120'
+  --repo 'type uri distribution [components],[priority]'
+  --repo 'deb http://mirror.fuel-infra.org/mos-repos/ubuntu/8.0 mos8.0 main restricted,priority=1101'
+  --repo 'deb http://mirror.fuel-infra.org/mos-repos/ubuntu-test/9.0 mos9.0 main,priority=1120'
 
   Note: priorities higher than 1000 select a package from the repository in
   question  even if the newer versions of the same package are available from
@@ -324,7 +323,7 @@ You can find more information about apt-pinning `here <https://www.debian.org/do
                                 package (both mandatory and user specified
                                 ones) and before creating the initramfs
                                 Also, it is possible to land into chroot
-                                system and made any customm changes  with
+                                system and made any custom changes  with
                                 '--script=/bin/bash' command.
 
   --include-kernel-module       make sure the given modules are included into
@@ -350,7 +349,7 @@ You can find more information about apt-pinning `here <https://www.debian.org/do
   --label LABEL                 Custom string, which will be presented in
                                 bootstrap listing
 
-  --blacklist-kernel-module    Make sure the given modules never get
+  --blacklist-kernel-module     Make sure the given modules never get
                                 loaded automatically
 
 **Note** Direct injection of files into the image is not recommended, and a
@@ -382,19 +381,28 @@ Example:
 
 .. code-block:: bash
 
-  --kernel-params PARAMS          Custom kernel parameters(opt)
-  --kernel-flavor                 Defines kernel version
-                                (default=-generic-lts-trusty)
-  --ubuntu-release                Defines the Ubuntu release (default=trusty)
-  --ssh-keys FILE                 Copy public ssh keys into image - makes it
-                                possible to login as root into any bootstrap
-                                node using the key in question.
+  --extend-kopts OPTS          Extend kernel opts
+
+  --kernel-flavor              Defines kernel version
+                                (default=generic-lts-trusty)
+
+  --ubuntu-release             Defines the Ubuntu release (Currently
+                               supports only trusty)
+
+  --ssh-keys FILE              Copy public ssh keys into image - makes it
+                               possible to login as root into any bootstrap
+                               node using the key in question.
+
+  --configuration-file FILE    Parse all parameters from yaml file
+
+  --output-dir DIR             Which directory should contain built image,
+                               /tmp/ is used by default
 
 Examples:
 
 .. code-block:: bash
 
-   $ fuel-bootstrap build new_bootstrap.tar.gz --ubuntu-repo 'http://archive.ubuntu.com/ubuntu trysty main' --repository 'http://mirror.fuel-infra.org/mos-repos/ubuntu/8.0 mos8.0 main,priority=1101' --repository 'http://me.example.com/my-openstack kilo main,priority=1104' --package screen
+   $ fuel-bootstrap build --output-dir /tmp/ --ubuntu-repo 'deb http://archive.ubuntu.com/ubuntu trysty main' --repo 'deb http://mirror.fuel-infra.org/mos-repos/ubuntu/8.0 mos8.0 main,priority=1101' --repo 'deb http://me.example.com/my-openstack kilo main,priority=1104' --package screen
 
 Bootstrap container format:
 ---------------------------
@@ -403,7 +411,7 @@ To simplify bootstrap sharing and delivery, we propose to pack all needed for
 bootstrap files in simply tar.gz archive, which also can be simply created
 manually by user, w\o fuel-bootstrap build script.
 
-Bootstrap archive shoule contain at least(filenames are also mandatory!):
+Bootstrap archive should contain at least(filenames are also mandatory!):
     * metadata.yaml - description yaml file
     * initramfs.img - initramfs
     * linux - kernel image
@@ -425,14 +433,14 @@ Mandatory data fields for metadata.yaml:
  uuid : <string>
    # Uniq uuid for bootstrap.
 
-In case manual-builded bootstrap, user can simply generate it with
+In case manual-built bootstrap, user can simply generate it with
 command :
 
 ::
 
    python -c "import uuid; print str(uuid.uuid4())"
 
-Example for typically builded ubuntu-bootstrap:
+Example for typically built ubuntu-bootstrap:
 
 .. code-block:: bash
 
@@ -450,10 +458,10 @@ Example for typically builded ubuntu-bootstrap:
 Note: "${bs_root_on_server}" mandatory variable, which will be automatically
   replaced with correct value.
 
-Bootstrap managment
-===================
+Bootstrap management
+====================
 
-Bootstrap managment operates images for fuel-master.
+Bootstrap management operates images for fuel-master.
 Actually,current implementation of management will be covered
 with python-wrapper script, which use fuel_agent modules and resources.
 It allows user to manage existing bootstrap images and upload a new ones.
@@ -478,7 +486,7 @@ Commands:
                     be used to bootstrap all the nodes deployed from this
                     Fuel Master
 
-  delete            deletes specified imagefrom the system
+  delete            deletes specified image from the system
 
 
 Examples:
