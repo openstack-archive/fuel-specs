@@ -414,6 +414,35 @@ priorities. This functionality is accessible via yum plugin named
 **yum-plugin-priorities** and accessible from Base repository. Also this
 makes us able to use priorities for *Holdback* repositories.
 
+---------------------------------
+EXTRA_RPM_REPOS variable behavior
+---------------------------------
+
+In the current Fuel make system, the EXTRA_RPM_REPO variable is used to
+specify one or more yum repositories to be used as additional sources
+during creation of mixed repository that consists of MOS and upstream packages.
+
+EXTRA_RPM_REPOS is a space-separated list of: name,url,priority
+
+With the introduction of separate MOS and upstream repositories, the approach
+to handling of the EXTRA_RPM_REPOS variable will change as well.
+
+The following extra actions will be taken for each of yum repositories
+specified in the EXTRA_RPM_REPOS variable:
+
+* download to the local mirror created during an ISO build process using
+  reposync tool from yum-utils, along with the respecive comps.xml
+  Downloaded repository is placed to the $(LOCAL_MIRROR)/extra-repos/$reponame
+  folder, where $reponame is the repo name taken from EXTRA_RPM_REPOS
+* rebuild metadata with the createrepo command
+* copy extra repository to the "extra-repos" folder in the ISO root
+* add repo entry to the Fuel node kickstart file (ks.cfg) with the priority
+  specified in the EXTRA_RPM_REPOS variable
+* create extra.repo file in yum.conf(5) format to be used on the Fuel node
+
+Extra repositories added to the Fuel node kickstart, will be used both during
+node provisioning, and node deployment.
+
 --------------
 Implementation
 --------------
