@@ -14,9 +14,9 @@ Extend Dashboard tab of operational OpenStack environment with links to
 dashboards of plugins installed to the environment.
 
 
---------------------
+-------------------
 Problem description
---------------------
+-------------------
 
 For now dashboard links of plugins installed to environment are not available
 for user from Fuel UI, that is not good UX. Fuel UI should cover the feature.
@@ -72,10 +72,40 @@ All the attributes are mandatory for the table entry and should not have null
 or empty string value.
 
 
+Also quite similar table for Master node dashboard entries is required.
+
++----+----------+-------------+----------------+----------+--------------+-----------+
+| id | Title    | Description | tls            | port     | path         | plugin_id |
++====+==========+=============+================+==========+==============+===========+
+| id | String   | String      | Boolean        | Integer  | String       | id        |
+| id | required | default: "" | default: false | required | default: '/' | required  |
++---------------+-------------+----------------+----------+--------------+-----------+
+
+
+`plugin_id` refer to the plug-in record in database.
+Final URL unlike the cluster record link is supposed to be builded
+dynamically based on `tls` flag, Master node address, `port` and `path`.
+
+  http(s)[tls?]://[master node address]:[port][path]
+
+Port should satisfy 1024-65535 range.
+
+
 REST API
 --------
 
-API should be extended with the following methods:
+API should be extended with the methods listed below.
+
+API GET, POST, PUT and DELETE method should be available for plugins in their
+post-deployment hooks.
+
+The following validation cases for the data will be supported:
+
+  * 400 Bad Request - in case of invalid data (missing field, wrong format)
+  * 404 Not found (missing entry)
+
+Cluster Level Dashboard
+^^^^^^^^^^^^^^^^^^^^^^^
 
 +--------+-----------------------------+---------------------+-------------+
 | method | URL                         | action              | auth exempt |
@@ -161,6 +191,70 @@ DELETE method accepts data of the following format:
    {
      id: Number(identificator)
    }
+
+
+Plug-in Level Dashboard (on master node)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+There will be a new REST API url added:
+
++--------+--------------------------------+--------------------------+-------+
+| method | URL                            | action                   | auth  |
+|        |                                |                          | exempt|
++========+================================+==========================+=======+
+|  POST  | /api/v1/plugins/:plugin_id/    | create a new item        | true  |
+|        | links                          | for dashboard links      |       |
++--------+--------------------------------+--------------------------+-------+
+|  GET   | /api/v1/plugins/:plugin_id/    | get a list of            | false |
+|        | links                          | dashboard links          |       |
++--------+--------------------------------+--------------------------+-------+
+|  PUT   | /api/v1/plugins/:plugin_id/    | update a dashboard link  | false |
+|        | links/:link_id                 | with specified id        |       |
++--------+--------------------------------+--------------------------+-------+
+| DELETE | /api/v1/plugins/:plugin_id/    | delete a dashboard       | false |
+|        | links/:link_id                 | link with specified id   |       |
++--------+--------------------------------+--------------------------+-------+
+
+GET returns JSON like this:
+
+.. code-block:: json
+
+    [
+        {
+            id: Entry Number (identificator)
+            title: 'Zabbix',
+            description: 'Zabbix is software that monitors numerous' +
+            + 'parameters of a network and the health and integrity' +
+            + ' of servers',
+            tls: true,
+            port: 8080,
+            path: '/',
+        }
+    ]
+
+POST to `/api/v1/plugins/:plugin_id/links` will be formed in
+the same format as GET request.
+
+.. code-block:: json
+
+    {
+        title: 'My plugin',
+        description: 'My awesome plugin',
+        tls: false
+        port: 8080,
+        path: '/',
+    }
+
+Title and port fields is required.
+
+PUT request `/api/v1/plugins/:plugin_id/links/:link_id` will
+provide an ability to change existing dashboard entries.
+
+.. code-block:: json
+
+    {
+        title: 'My plugin1',
+    }
 
 
 Orchestration
@@ -282,6 +376,7 @@ Other contributors:
   vsharshov (vsharshov@mirantis.com)
   astepanchuk (astepanchuk@mirantis.com)
   bdudko (bdudko@mirantis.com)
+  ikutukov (ikutukov@mirantis.com)
 
 QA engineer:
   apalkina (apalkina@mirantis.com)
