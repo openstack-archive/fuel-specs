@@ -14,9 +14,9 @@ Extend Dashboard tab of operational OpenStack environment with links to
 dashboards of plugins installed to the environment.
 
 
---------------------
+-------------------
 Problem description
---------------------
+-------------------
 
 For now dashboard links of plugins installed to environment are not available
 for user from Fuel UI, that is not good UX. Fuel UI should cover the feature.
@@ -65,6 +65,9 @@ Nailgun
 New API `api/clusters/:id/plugin_links` endpoint should be created to
 support environment plugin dashboard links management.
 
+Appropriate API `api/plugins/:id/links` should be created to support management
+of plugin-level dashboards links that refer to dashboards on master node.
+
 The plugins should have a possibility to create/update/delete their entries
 which will be shown in operational environment dashboard.
 
@@ -75,18 +78,31 @@ Data model
 The new table for dashboard entries should be created in Nailgun DB,
 containing the following fields:
 
-+----+--------+-------------+--------+------------+
-| id | title  | description | url    | cluster_id |
-+====+========+=============+========+============+
-| id | String | String      | String | id         |
-+----+--------+-------------+--------+------------+
++----+----------+---------------+----------+------------+
+| id | title    | description   | url      | cluster_id |
++====+==========+===============+==========+============+
+| id | String   | String        | String   | id         |
+| id | required | default: None | required | required   |
++----+----------+---------------+----------+------------+
 
 All the attributes are mandatory for the table entry and should not have null
 or empty string value.
 
+Also quite similar table for Master node dashboards entries is required.
+
++----+----------+---------------+----------+------------+
+| id | title    | description   | url      | plugin_id  |
++====+==========+===============+==========+============+
+| id | String   | String        | String   | id         |
+| id | required | default: None | required | required   |
++----+----------+---------------+----------+------------+
+
 
 REST API
 --------
+
+Cluster Dashboards Links
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 API should be extended with the following methods:
 
@@ -173,10 +189,77 @@ DELETE method accepts data of the following format:
    }
 
 
+Plugin Dashboards Links
+^^^^^^^^^^^^^^^^^^^^^^^
+
+There will be a new REST API url added:
+
++--------+--------------------------------+--------------------------+-------+
+| method | URL                            | action                   | auth  |
+|        |                                |                          | exempt|
++========+================================+==========================+=======+
+|  POST  | /api/v1/plugins/:plugin_id/    | create a new item        | true  |
+|        | links                          | for dashboard links      |       |
++--------+--------------------------------+--------------------------+-------+
+|  GET   | /api/v1/plugins/:plugin_id/    | get a list of            | false |
+|        | links                          | dashboard links          |       |
++--------+--------------------------------+--------------------------+-------+
+|  PUT   | /api/v1/plugins/:plugin_id/    | update a dashboard link  | false |
+|        | links/:link_id                 | with specified id        |       |
++--------+--------------------------------+--------------------------+-------+
+| DELETE | /api/v1/plugins/:plugin_id/    | delete a dashboard       | false |
+|        | links/:link_id                 | link with specified id   |       |
++--------+--------------------------------+--------------------------+-------+
+
+The methods should return the following statuses in case of errors:
+
+* 400 Bad Request - in case of invalid data (missing field, wrong format)
+* 404 Not found - in case of missing entry
+* 405 Not Allowed - for `PUT /api/clusters/:cluster_id/plugin_links`
+
+GET method returns JSON of the following format:
+
+.. code-block:: json
+
+    [
+        {
+            id: Entry Number (identificator)
+            title: 'Zabbix',
+            description: 'Zabbix is software that monitors numerous' +
+            + 'parameters of a network and the health and integrity' +
+            + ' of servers',
+            url: '/'
+        }
+    ]
+
+POST to `/api/v1/plugins/:plugin_id/links` will be formed in
+the same format as GET request.
+
+.. code-block:: json
+
+    {
+        title: 'My plugin',
+        description: 'My awesome plugin',
+        url: 'https://10.0.0.42:8080/my_dashboard'
+    }
+
+Title and port fields is required.
+
+PUT request `/api/v1/plugins/:plugin_id/links/:link_id` will
+provide an ability to change existing dashboard links entries.
+
+.. code-block:: json
+
+    {
+        title: 'My plugin1',
+    }
+
+
 Orchestration
 =============
 
 None
+
 
 RPC Protocol
 ------------
@@ -290,6 +373,7 @@ Other contributors:
   vsharshov (vsharshov@mirantis.com)
   astepanchuk (astepanchuk@mirantis.com)
   bdudko (bdudko@mirantis.com)
+  ikutukov (ikutukov@mirantis.com)
 
 QA engineer:
   apalkina (apalkina@mirantis.com)
