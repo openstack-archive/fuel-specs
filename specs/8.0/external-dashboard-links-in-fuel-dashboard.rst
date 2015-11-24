@@ -14,9 +14,9 @@ Extend Dashboard tab of operational OpenStack environment with links to
 dashboards of plugins installed to the environment.
 
 
---------------------
+-------------------
 Problem description
---------------------
+-------------------
 
 For now dashboard links of plugins installed to environment are not available
 for user from Fuel UI, that is not good UX. Fuel UI should cover the feature.
@@ -65,6 +65,9 @@ Nailgun
 New API `api/clusters/:id/plugin_links` endpoint should be created to
 support environment plugin dashboard links management.
 
+Appropriate API `api/plugins/:id/links` should be created to support management
+of plugin-level dashboards links that refer to dashboards on master node.
+
 The plugins should have a possibility to create/update/delete their entries
 which will be shown in operational environment dashboard.
 
@@ -75,18 +78,31 @@ Data model
 The new table for dashboard entries should be created in Nailgun DB,
 containing the following fields:
 
-+----+--------+-------------+--------+------------+
-| id | title  | description | url    | cluster_id |
-+====+========+=============+========+============+
-| id | String | String      | String | id         |
-+----+--------+-------------+--------+------------+
++----+----------+---------------+----------+----------------+------------+
+| id | title    | description   | url      | hidden         | cluster_id |
++====+==========+===============+==========+================+============+
+| id | String   | String        | String   | Boolean        | id         |
+| id | required | default: None | required | default: False | required   |
++----+----------+---------------+----------+----------------+------------+
 
 All the attributes are mandatory for the table entry and should not have null
 or empty string value.
 
+Also quite similar table for Master node dashboards entries is required.
+
++----+----------+---------------+----------+----------------+------------+
+| id | title    | description   | url      | hidden         | plugin_id  |
++====+==========+===============+==========+================+============+
+| id | String   | String        | String   | Boolean        | id         |
+| id | required | default: None | required | default: False | required   |
++----+----------+---------------+----------+----------------+------------+
+
 
 REST API
 --------
+
+Cluster Dashboards Links
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 API should be extended with the following methods:
 
@@ -121,12 +137,14 @@ GET method returns JSON of the following format:
        title: 'Zabbix',
        description: 'Zabbix is software that monitors ...',
        url: 'https://172.5.6.24:80/zabbix_dashboard',
+       hidden: false,
        id: Number(identificator)
      },
      {
        title: 'Murano',
        description: 'Murano dashboard link ...',
        url: '/openstack/murano_dashboard',
+       hidden: false,
        id: Number(identificator)
      },
      ...
@@ -161,8 +179,119 @@ and returns:
      title: 'New plugin title',
      description: 'My awesome plugin',
      url: '/my_plugin',
+     hidden: false,
      id: Number(identificator)
    }
+
+Also you could hide or reveal link updating `hidden` field:
+
+
+.. code-block:: json
+
+    {
+        hidden: true
+    }
+
+DELETE method accepts data of the following format:
+
+.. code-block:: json
+
+   {
+     id: Number(identificator)
+   }
+
+
+Plugin Dashboards Links
+^^^^^^^^^^^^^^^^^^^^^^^
+
+There will be a new REST API url added:
+
++--------+--------------------------------+----------------------+-------+
+| method | URL                            | action               | auth  |
+|        |                                |                      | exempt|
++========+================================+======================+=======+
+|  POST  | /api/v1/plugins/:plugin_id/    | create a new plugin  | true  |
+|        | links                          | link                 |       |
++--------+--------------------------------+----------------------+-------+
+|  GET   | /api/v1/plugins/:plugin_id/    | get a list of        | false |
+|        | links                          | plugin link          |       |
++--------+--------------------------------+----------------------+-------+
+|  PUT   | /api/v1/plugins/:plugin_id/    | update a plugin link | false |
+|        | links/:link_id                 |                      |       |
++--------+--------------------------------+----------------------+-------+
+| DELETE | /api/v1/plugins/:plugin_id/    | delete a plugin link | false |
+|        | links/:link_id                 |                      |       |
++--------+--------------------------------+----------------------+-------+
+
+The methods should return the following statuses in case of errors:
+
+* 400 Bad Request - in case of invalid data (missing field, wrong format)
+* 404 Not found - in case of missing entry
+* 405 Not Allowed - for `PUT /api/plugins/:plugin_id/links`
+
+GET method returns JSON of the following format:
+
+.. code-block:: json
+
+   [
+     {
+       title: 'Zabbix',
+       description: 'Zabbix is software that monitors ...',
+       url: 'https://172.5.6.24:80/zabbix_dashboard',
+       hidden: false,
+       id: Number(identificator)
+     },
+     {
+       title: 'Murano',
+       description: 'Murano dashboard link ...',
+       url: '/openstack/murano_dashboard',
+       hidden: false,
+       id: Number(identificator)
+     },
+     ...
+   ]
+
+POST method accepts data of the following format:
+
+.. code-block:: json
+
+   {
+     title: 'My plugin',
+     description: 'My awesome plugin',
+     url: '/my_plugin'
+   }
+
+and return data of the same format as GET.
+
+PUT method accepts data of the following format:
+
+.. code-block:: json
+
+   {
+     id: Number(identificator),
+     title: 'New plugin title'
+   }
+
+and returns:
+
+.. code-block:: json
+
+   {
+     title: 'New plugin title',
+     description: 'My awesome plugin',
+     url: '/my_plugin',
+     hidden: false
+     id: Number(identificator)
+   }
+
+Also you could hide or reveal link updating `hidden` field:
+
+
+.. code-block:: json
+
+    {
+        hidden: true
+    }
 
 DELETE method accepts data of the following format:
 
@@ -177,6 +306,7 @@ Orchestration
 =============
 
 None
+
 
 RPC Protocol
 ------------
@@ -290,6 +420,7 @@ Other contributors:
   vsharshov (vsharshov@mirantis.com)
   astepanchuk (astepanchuk@mirantis.com)
   bdudko (bdudko@mirantis.com)
+  ikutukov (ikutukov@mirantis.com)
 
 QA engineer:
   apalkina (apalkina@mirantis.com)
