@@ -48,12 +48,12 @@ The environment-level entries come from Nailgun in
 If url provided in plugin entry is relative, then Fuel UI code should process
 it in the following way:
 
-* check `public_ssl.services` environment setting (comes in
+* check `public_ssl.horizon` environment setting (comes in
   `GET /api/clusters/:cluster_id/attributes response`) value:
 
-  * if `public_ssl.services` is True, then a protocol for result url should be
+  * if `public_ssl.horizon` is True, then a protocol for result url should be
     `https` and hostname is a `public_ssl.hostname` environment setting value
-  * if `public_ssl.services` is False, then a protocol for result url should
+  * if `public_ssl.horizon` is False, then a protocol for result url should
     be `http` and hostname is environment virtual IP (stored in environment
     network configuration data)
 
