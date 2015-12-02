@@ -13,7 +13,7 @@ https://blueprints.launchpad.net/fuel/+spec/external-dashboard-links-in-fuel-das
 Extend Dashboard tab of operational OpenStack environment with links to
 dashboards of plugins installed to the environment.
 
-Extend Plugins and Nodes Fuel UI pages with links to dashboards of plugins
+Extend Plugins and Equipment Fuel UI pages with links to dashboards of plugins
 installed on master node and not related to any particular environment.
 
 -------------------
@@ -78,10 +78,10 @@ Web UI
    If a link metadata contains `group` attribute, then the dashboard link
    should be also provided in Fuel UI in location, specified by the attribute:
 
-   * in case of `equipment::nodes` group, a plugin link should be shown on
-     Nodes page also.
+   * in case of `equipment` group, a plugin link should be shown on
+     Equipment page also.
 
-   On Nodes page a plugin link block should contain the following data:
+   On Equipment page a plugin link block should contain the following data:
 
    * plugin title (that a link to plugin dashboard)
    * plugin description
@@ -337,15 +337,15 @@ Plugins
 
 Plugin framework should be extended to provide an ability for the plugin to
 create/update/delete its entry to be displayed in environment dashboard or
-on Plugins/Nodes pages in Fuel UI.
+on Plugins/Equipment pages in Fuel UI.
 
-To specify an extra Fuel UI location (Nodes page), master node plugin can
+To specify an extra Fuel UI location (Equipment page), master node plugin can
 provide an additional group in it's `groups` attribute.
 
 The following groups which are recognized by Fuel UI, are possible:
 
-* `equipment::nodes` - plugin link will be also displayed on the equipment
-  panel (Nodes page)
+* `equipment` - plugin link will be also displayed on the equipment
+  panel (Equipment page)
 
 
 Fuel Library
@@ -461,7 +461,7 @@ Work Items
 #. Plugin framework changes to support master node plugin links management
 #. Fuel UI changes to display plugin links in operational environment
    dashboard
-#. Fuel UI changes to display plugin links on Plugins/Nodes pages
+#. Fuel UI changes to display plugin links on Plugins/Equipment pages
 
 
 Dependencies
@@ -486,7 +486,7 @@ Acceptance criteria
 * User can access dashboards of installed environment plugins from Dashboard
   tab of the operational environment in Fuel UI
 * User can access dashboards of installed master node plugins from
-  Plugins page in Fuel UI and other locations (Nodes page), specified in
+  Plugins page in Fuel UI and other locations (Equipment page), specified in
   plugin data (`groups` attribute)
 
 
