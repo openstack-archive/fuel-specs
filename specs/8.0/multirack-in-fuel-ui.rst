@@ -126,12 +126,12 @@ Environment page changes:
    #. Arbitrary node network group names should be supported - it should be
       possible to modify node network group names on UI.
 
-New root-level 'Nodes' page:
+New root-level 'Equipment' page:
 
-#. 'Nodes' page should appear in main Fuel menu and display a list of nodes
-   in Fuel across all environments, including unallocated nodes.
+#. 'Equipment' page should appear in main Fuel menu and display a list of
+   nodes in Fuel across all environments, including unallocated nodes.
 
-#. 'Nodes' page should represent a standart node list functionality:
+#. 'Equipment' page should represent a standart node list functionality:
 
    * display list of grouped nodes
    * support node list sorting (by status (default sorting in the list),
@@ -147,7 +147,7 @@ New root-level 'Nodes' page:
    * support of node actions, which do not depend on environment
      (like removing from Fuel for offline nodes)
 
-   .. image:: ../../images/8.0/multirack-in-fuel-ui/nodes-page.png
+   .. image:: ../../images/8.0/multirack-in-fuel-ui/equipment-page.png
       :scale: 75 %
 
 Node pop-up should be extended with the following data:
@@ -166,7 +166,7 @@ Data model
 ----------
 
 Master node settings DB model should be extended with a new `ui_settings`
-attribute of JSON type to store settings of 'Nodes' page. Default value
+attribute of JSON type to store settings of 'Equipment' page. Default value
 of the attribute should be:
 
   .. code-block:: json
@@ -402,10 +402,10 @@ Work Items
 #. Reorganize Networks tab to include common network settings, verification
    block changes and node network groups list
 #. Implement node network groups creation and editing support
-#. Create new root-level 'Nodes' page in Fuel UI with all Fuel nodes list
+#. Create new root-level 'Equipment' page in Fuel UI with all Fuel nodes list
    and standart node list management functionality
 #. Display environment name in the node details pop-up
-#. Support saving and updating of node list settings of 'Nodes' page
+#. Support saving and updating of node list settings of 'Equipment' page
    from UI
 #. Extend master node settings DB model with the new `ui_settings` attribute
 #. Prepare Alembic migrations and update JSON schemas
@@ -442,8 +442,8 @@ Acceptance criteria
 * It should not be possible to delete default node network group
 * It should be possible to view and manage all Fuel nodes across all
   environments including unallocated nodes
-* Node list custom settings (applied sorters, filters, etc.) of 'Nodes' page
-  are stored in DB, so the page has the same configuration after refresh
+* Node list custom settings (applied sorters, filters, etc.) of 'Equipment'
+  page are stored in DB, so the page has the same configuration after refresh
 * Environment name should be shown in node pop-up (if the node assigned
   to some environment)
 
