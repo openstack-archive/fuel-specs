@@ -71,33 +71,13 @@ interface should be different.
 E.g. this ability is required to use a dedicated storage.
 See https://bugs.launchpad.net/fuel/+bug/1473047
 
-5. API must allow VIP to be manually set to ANY valid IP address. If the IP on
-update API is a member of any network in this environment then the address
-should be put in the assignments table so that it can not be used in any other
-automatic assignment. (This allows the user to override if the automatic
-allocation doesn't match their needs or in the case that they want to use
-external LB).
-See https://bugs.launchpad.net/fuel/+bug/1482399
-
-6. Ability to set the floating IP range. Now, Nailgun doesn't allow to set
+5. Ability to set the floating IP range. Now, Nailgun doesn't allow to set
 floating IP range from non-default node network group. So, network and
 controller nodes can be deployed in default nodegroup only. It should be
 allowed to set floating range within any of Public networks. So, it will be
 possible to deploy controller nodes in any node group. IPs from the
 floating range need to be added to the allocated addresses pool.
 See https://bugs.launchpad.net/fuel/+bug/1502829
-
-7. Default gateway for nodes is always taken from Public network (or Admin
-network when Public is absent). It should be possible to select any network
-from existing ones where default gateway will be taken from. Selection should
-be environment-wide for the first stage.
-See https://bugs.launchpad.net/fuel/+bug/1502939
-
-8. (Nice to have) Assignment of VIP for network managed by dhcp. It is about
-Admin network. When some network role that requires VIP is mapped to Admin
-network, IP address should be excluded from Admin networks' IP ranges
-(i.e. from DHCP ranges). This can be done manually.
-This should enable all-services-in-one-network scheme.
 
 Web UI
 ======
@@ -143,38 +123,11 @@ equal VLAN IDs within environment. Exception is that every single network
 interface cannot handle coincident VLAN IDs.
 
 Change 5.
-a. Setting of VIP addresses will be allowed together with change of other
-networking parameters via urls:
-/clusters/<cluster_id>/network_configuration/neutron/,
-/clusters/<cluster_id>/network_configuration/nova_network/.
-VIPs are returned there now by GET request. It will be possible to set them via
-PUT request. VIPs addresses should be changed in 'vips' dict to be accepted by
-API.
-b. User-defined VIP addresses may match some networks known by Fuel or do not
-match any known networks. Anyway, VIP address provided is saved into DB as
-occupied. So, it cannot be used for other purposes.
-c. To cancel manual address setup for particular VIP, user should set it to
-'null' in network configuration YAML file ('None' in JSON) and run the same API
-PUT request.
-
-Change 6.
 a. Change the verification of floating ranges to allow floating range to match
 any of Public networks in environment. Now it may only match Public network
 from default node network group.
 b. Change the serialization of floating network to find appropriate Public
 network for floating ranges defined.
-
-Change 7.
-a. Add a environment-wide (for the first stage) selector of network from
-existing ones where default gateway will be taken from. Add it into attributes
-of environment (Settings tab).
-b. Serialize default gateways on nodes according to that selection.
-
-Change 8.
-a. IP ranges of Admin networks should automatically be modified so that they do
-not include VIP addresses which were set by user. Such request for VIP address
-changing will be rejected if desired VIP address matches any known node's
-address.
 
 Data model
 ----------
@@ -182,12 +135,24 @@ Data model
 Change 1.
 New task name and new node error type will be added.
 
-Change 5.
-Some new properties can be added into IPAddress (to distinguish
-user-defined VIP address).
+Change 2.
+New parameter for modular tasks is added: 'reexecute_on'. This parameter is a
+list of Nailgun events on which this task should be re-executed. For example:
 
-Change 7.
-New editable attributes (to Release) will be added to be shown on Settings tab.
+::
+
+  - id: netconfig
+    type: puppet
+    groups: [primary-controller, controller, cinder, cinder-vmware, compute, ceph-osd, primary-mongo, mongo, virt, ironic]
+    required_for: [deploy_end]
+    requires: [tools]
+    reexecute_on: [deploy_changes]
+    parameters:
+      puppet_manifest: /etc/puppet/modules/osnailyfacter/modular/netconfig/netconfig.pp
+      puppet_modules: /etc/puppet/modules
+      timeout: 3600
+
+It means that 'netconfig' task will be re-executed on 'deploy_changes' event.
 
 REST API
 --------
@@ -251,11 +216,11 @@ N/A
 Notifications impact
 --------------------
 
-When a node group or cluster is deleted there can be some nodes in bootstrap
-which have IPs corresponding to those deleted node groups (in case nodes were
-booting up during node group deletion). They cannot be provisioned as dnsmasq
-configuration does not contain information about those admin networks anymore.
-Nailgun marks such nodes as 'error' and sends appropriate notification.
+When a node group or a cluster is deleted there can be some nodes in bootstrap
+which have IPs corresponding to those deleted node groups. They cannot be
+provisioned as dnsmasq configuration does not contain information about those
+admin networks anymore. Nailgun marks such nodes as 'error' and sends
+appropriate notification.
 
 ---------------
 End user impact
@@ -281,7 +246,7 @@ Fuel node bootstrap are used only for initial DHCP configuration. After that
 Nailgun controls all the network related settings even for DHCP/PXE network.
 Please note that if you change DHCP/PXE CIDR for the default node group and
 it requires to change Fuel node IP address, you should change it on admin
-interface of Fuel node manually.
+interface of Fuel node manually and check/update docker containers.
 
 ----------------
 Developer impact
@@ -335,16 +300,8 @@ Work Items
 - CLI/API only: There is an ability to share network between several node
   network groups or to use separate L2/L3 parameters for each node network
   group.
-- It should be allowed to set user-defined IP for any VIP. This IP can even be
-  out of any environment's networks.
 - Make it possible to set floating IP range from non-default node network
   group.
-- It should be possible to select any network from existing ones where default
-  gateway will be taken from.
-- There is a special case when network managed by dhcp (PXE network) needs VIPs
-  to be assigned. IP addresses should be excluded from Admin networks' IP
-  ranges (i.e. from DHCP ranges). (Nice to have).
-
 
 Dependencies
 ============
@@ -391,15 +348,8 @@ Acceptance criteria
 - CLI/API only: There is an ability to share network between several node
   network groups or to use separate L2/L3 parameters for each node network
   group.
-- It should be allowed to set user-defined IP for any VIP. This IP can even be
-  out of any environment's networks.
 - Make it possible to set floating IP range from non-default node network
   group. So, it will be possible to deploy controller nodes in any node group.
-- It should be possible to select any network from existing ones where default
-  gateway will be taken from.
-- There is a special case when network managed by dhcp (PXE network) needs VIPs
-  to be assigned. IP addresses should be excluded from Admin networks' IP
-  ranges (i.e. from DHCP ranges). (Nice to have).
 
 ----------
 References
