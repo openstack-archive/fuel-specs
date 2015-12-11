@@ -215,9 +215,12 @@ Non-OpenStack projects::
     2nd update:
     python-zzzeeksphinx_1.0.17-1~u14.04+mos20+r8+1 -> python-zzzeeksphinx_1.0.17-1~u14.04+mos20+r8+2
 
-OpenStack projects will continue use incremental approach::
+OpenStack projects use the same approach::
 
-    python-nova-12.0.0-1~u14.04+mos15 -> python-nova-12.0.0-1~u14.04+mos16
+    First update:
+    python-nova-12.0.0-1~u14.04+mos15 -> python-nova-12.0.0-1~u14.04+mos15+r8+1
+    2nd update:
+    python-nova-12.0.0-1~u14.04+mos15 -> python-nova-12.0.0-1~u14.04+mos15+r8+2
 
 
 **Security updates:**
