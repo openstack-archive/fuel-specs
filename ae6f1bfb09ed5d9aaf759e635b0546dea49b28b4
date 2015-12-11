@@ -1,0 +1,10 @@
+Verified+2: Jenkins
+Code-Review+1: Dmitry Teselkin <dteselkin@mirantis.com>
+Code-Review+1: Igor Yozhikov <iyozhikov@mirantis.com>
+Code-Review+2: Dmitry Pyzhov <dpyzhov+gerrit@mirantis.com>
+Workflow+1: Dmitry Pyzhov <dpyzhov+gerrit@mirantis.com>
+Submitted-by: Jenkins
+Submitted-at: Fri, 11 Dec 2015 16:50:19 +0000
+Reviewed-on: https://review.openstack.org/256318
+Project: openstack/fuel-specs
+Branch: refs/heads/master
