@@ -15,9 +15,10 @@ Problem description
 -------------------
 
 Old versioning scheme does not represents proper meta-data for *deb*
-packages. For *rpm* packages we have agreed scheme (`separate-mos-from-centos`_)
-wich is representing proper meta-data at package suffix part and know *deb*
-packages need to be renamed with the account of specific of distribution.
+packages. For *rpm* packages we have agreed scheme
+(`separate-mos-from-centos`_) wich is representing proper meta-data at
+package suffix part and know *deb* packages need to be renamed with
+the account of specific of distribution.
 
 
 ----------------
@@ -28,17 +29,16 @@ Need to introduce into CI/Build new naming and version policy for *deb*
 packages instead of using elaborated previously `old scheme`_.
 
 
--------------------------------
 Package versioning requirements
--------------------------------
+===============================
+
 Package version string, as well as package metadata for a *MOS specific* or
 *divergent* package must not include registered trademarks of base distro
 vendors, and should include "mos" keyword.
 
 
------------------------
 DEB packages versioning
------------------------
+=======================
 
 Package name constructs from::
 
@@ -58,7 +58,8 @@ Where:
 
   Where:
 
-  - 5 - amount of commits into code since last tag change in current code branch
+  - 5 - amount of commits into code since last tag change in current
+    code branch
 
 At present moment *MOS subversion* part represented as amount of commits into
 code and build projects since brach was created.
@@ -93,7 +94,8 @@ Where:
 
 - + separator from base Linux distribution.
 - mos - shows that package belongs to MOS and maintained by Mirantis.
-- X - as last digit, represents amount of commits since last tag/branch update in code.
+- X - as last digit, represents amount of commits since last tag/branch update
+  in code.
 
 
 For example we have python-nova package with code version = *12.0.0*
@@ -110,9 +112,8 @@ Regular packages should only have commits number for the very last
 value in version string.
 
 
-------------------------------
 Backport from external sources
-------------------------------
+==============================
 
 The name and the upstream version of a package backported from external sources
 (Debian unstable, newer Ubuntu releases, etc) should be kept intact.
@@ -127,7 +128,8 @@ Example::
     Initial import:
     python-zzzeeksphinx_1.0.17-1 -> python-zzzeeksphinx_1.0.17-1~u14.04+mos1
     Update based on the same original version:
-    python-zzzeeksphinx_1.0.17-1~u14.04+mos1 -> python-zzzeeksphinx_1.0.17-1~u14.04+mos2
+    python-zzzeeksphinx_1.0.17-1~u14.04+mos1 ->
+    python-zzzeeksphinx_1.0.17-1~u14.04+mos2
     Sync with the original distro (say, Debian unstable):
     python-zzzeeksphinx_1.0.17-2 -> python-zzzeeksphinx_1.0.17-2~u14.04+mos1
 
@@ -135,9 +137,8 @@ Backporting to the stable (GA) MOS branches should be done according to
 the scheme described at `post-release updates`_.
 
 
---------------
 Package update
---------------
+==============
 
 If required to update package build manifests (debian/ folder) or add patch or
 make any other modifications not related to code version update, debian package
@@ -153,11 +154,13 @@ of further modifications of a package.
 
 Update of dependencies within one code version(*non OpenStack*)::
 
-    python-zzzeeksphinx_1.0.17-1~u14.04+mos1 -> python-zzzeeksphinx_1.0.17-1~u14.04+mos2
+    python-zzzeeksphinx_1.0.17-1~u14.04+mos1 ->
+    python-zzzeeksphinx_1.0.17-1~u14.04+mos2
 
 Update of dependencies in case of code version update(*non OpenStack*)::
 
-    python-zzzeeksphinx_1.0.17-1~u14.04+mos2 -> python-zzzeeksphinx_1.0.19-1~u14.04+mos1
+    python-zzzeeksphinx_1.0.17-1~u14.04+mos2 ->
+    python-zzzeeksphinx_1.0.19-1~u14.04+mos1
 
 Update of OpenStack project - debian/ changed::
 
@@ -168,23 +171,24 @@ Update of OpenStack project - code tag/branch changed::
     python-nova-12.0.0-2~u14.04+mos5 -> python-nova-13.0.0-1~u14.04+mos0
 
 
------------------------
 Binary package upgrades
------------------------
+=======================
 
 In case of binary package upgrades within same Linux distribution version in
 future, changes introduced here, will make us able to get next benefits:
 
 - to do not rebuild packages which has not been changed between mos releases.
-- reduce amount of binary packages required by binary upgrade, ie package with same code-base version.
+- reduce amount of binary packages required by binary upgrade, ie package with
+  same code-base version.
 
 Example::
 
     mosX: mysql-server-wsrep-5.6-5.6.23-1~u14.04+mos2
     mosY: mysql-server-wsrep-5.6-5.6.23-1~u14.04+mos2
 
-In case of switching to next version of Linux distribution as base layer without
-additional changes in project code **<base-distro-release>** must be changed.
+In case of switching to next version of Linux distribution as base layer
+without additional changes in project code **<base-distro-release>**
+must be changed.
 
 Example::
 
@@ -192,18 +196,18 @@ Example::
     Ubuntu 16.04: mysql-server-wsrep-5.6-5.6.23-1~u16.04+mos2
 
 
-----------------------------------------------
 Versioning of packages in post-release updates
-----------------------------------------------
+==============================================
 
 **Updates:**
 
 Since MOS reaches GA status, ie officially released, all updated packages will
-be published into separate *updates* repository. A suffix containing the GA release
-number and a second counter which tracks the updates within the stable/GA release
-must be added (in order to avoid version clashes with the same package in a development
-branch of MOS). Also changes made in updates within same code version should be
-proposed into master branch to keep packages in consistent state:
+be published into separate *updates* repository. A suffix containing the
+GA release number and a second counter which tracks the updates within
+the stable/GA release must be added (in order to avoid version clashes with
+the same package in a development branch of MOS). Also changes made in updates
+within same code version should be proposed into master branch to keep packages
+in consistent state:
 
   {revision at freeze}+r{mos major release number}+{update counter}
 
@@ -211,9 +215,11 @@ proposed into master branch to keep packages in consistent state:
 Non-OpenStack projects::
 
     First update:
-    python-zzzeeksphinx_1.0.17-1~u14.04+mos20 -> python-zzzeeksphinx_1.0.17-1~u14.04+mos20+r8+1
+    python-zzzeeksphinx_1.0.17-1~u14.04+mos20 ->
+    python-zzzeeksphinx_1.0.17-1~u14.04+mos20+r8+1
     2nd update:
-    python-zzzeeksphinx_1.0.17-1~u14.04+mos20+r8+1 -> python-zzzeeksphinx_1.0.17-1~u14.04+mos20+r8+2
+    python-zzzeeksphinx_1.0.17-1~u14.04+mos20+r8+1 ->
+    python-zzzeeksphinx_1.0.17-1~u14.04+mos20+r8+2
 
 OpenStack projects will continue use incremental approach::
 
@@ -228,7 +234,8 @@ the version of a package which represents security bundle number.
 
 Example::
 
-    python-zzzeeksphinx_1.0.17-1~u14.04+mos20+r8+1 -> python-zzzeeksphinx_1.0.17-1~u14.04+mos20+r8+1.1
+    python-zzzeeksphinx_1.0.17-1~u14.04+mos20+r8+1 ->
+    python-zzzeeksphinx_1.0.17-1~u14.04+mos20+r8+1.1
     python-nova-12.0.0-1~u14.04+mos16 -> python-nova-12.0.0-1~u14.04+mos16.1
 
 

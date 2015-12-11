@@ -143,12 +143,15 @@ list of Nailgun events on which this task should be re-executed. For example:
 
   - id: netconfig
     type: puppet
-    groups: [primary-controller, controller, cinder, cinder-vmware, compute, ceph-osd, primary-mongo, mongo, virt, ironic]
+    groups:
+      [primary-controller, controller, cinder, cinder-vmware, compute,
+      ceph-osd, primary-mongo, mongo, virt, ironic]
     required_for: [deploy_end]
     requires: [tools]
     reexecute_on: [deploy_changes]
     parameters:
-      puppet_manifest: /etc/puppet/modules/osnailyfacter/modular/netconfig/netconfig.pp
+      puppet_manifest:
+        /etc/puppet/modules/osnailyfacter/modular/netconfig/netconfig.pp
       puppet_modules: /etc/puppet/modules
       timeout: 3600
 
