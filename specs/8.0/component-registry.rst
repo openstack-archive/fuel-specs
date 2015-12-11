@@ -327,9 +327,9 @@ contain hypervisor, network and storage components.
 Additional components should be checkboxes. Incompatible list can have all
 types of components.
 
-Every type can have a compatible list or whitelist. It will be used to highlight
-definitely compatible components with 'green light' if all elements from
-compatible list are enabled.
+Every type can have a compatible list or whitelist. It will be used to
+highlight definitely compatible components with 'green light' if all elements
+from compatible list are enabled.
 
 .. code-block:: json
 
