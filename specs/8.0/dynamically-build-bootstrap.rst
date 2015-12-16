@@ -325,21 +325,6 @@ You can find more information about apt-pinning `here <https://www.debian.org/do
                                 package (both mandatory and user specified
                                 ones) and before creating the initramfs
 
-  --include-kernel-module       make sure the given modules are included into
-                                initramfs image.(by adding module into
-                                /etc/initramfs-tools/modules)
-
-   **Note**
-   If the module in question is not shipped with the kernel itself please add
-   the package providing it (see the `--package' option).
-   Keep in mind that initramfs image should be kept as small is possible.
-   This option is intended to include uncommon network interface cards'
-   drivers so the initramfs can fetch the root filesystem image via the
-   network.
-
-  --blacklist-kernel-module     Make sure the given modules never get
-                                loaded automatically
-
   --package PKGNAME             The option can be given multiple times, all
                                 specified packages and their dependencies will
                                 be installed.
