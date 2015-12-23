@@ -440,8 +440,15 @@ Testing, QA
 Please discuss how the change will be tested. It is assumed that unit test
 coverage will be added so that doesn't need to be mentioned explicitly.
 
+This should include changes / enhancements to any of the integration
+testing. Most often you need to indicate how you will test so that you can
+prove that you did not adversely effect any of impacts sections above.
+
 If there are firm reasons not to add any other tests, please indicate them.
 
+After reading this section, it should be clear how you intend to confirm that
+you change was implemented successfully and meets it's acceptance criteria
+with minimal regressions.
 
 Acceptance criteria
 ===================
