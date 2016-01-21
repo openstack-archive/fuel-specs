@@ -1,3 +1,6 @@
+# temporary pin version of pip because of:
+# https://github.com/pypa/pip/issues/3384
+pip<8.0
 docutils==0.9.1
 oslosphinx
 pbr>=0.6,!=0.7,<1.0
