@@ -1,0 +1,12 @@
+Code-Review+2: Vitaly Kramskikh <vkramskikh@mirantis.com>
+Code-Review+1: Julia Aranovich <jkirnosova@mirantis.com>
+Code-Review+2: Igor Kalnitsky <ikalnitsky@mirantis.com>
+Code-Review+1: Sergii Golovatiuk <sgolovatiuk@mirantis.com>
+Code-Review+2: Dmitry Borodaenko <dborodaenko@mirantis.com>
+Workflow+1: Dmitry Borodaenko <dborodaenko@mirantis.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Tue, 09 Feb 2016 18:02:16 +0000
+Reviewed-on: https://review.openstack.org/274663
+Project: openstack/fuel-specs
+Branch: refs/heads/master
