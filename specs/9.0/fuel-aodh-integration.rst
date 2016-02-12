@@ -1,0 +1,256 @@
+..
+ This work is licensed under a Creative Commons Attribution 3.0 Unported
+ License.
+
+ http://creativecommons.org/licenses/by/3.0/legalcode
+
+==============================================
+Integration of Aodh alarming service with Fuel
+==============================================
+
+Include the URL of your launchpad blueprint:
+
+https://blueprints.launchpad.net/fuel/+spec/fuel-aodh-integration
+
+Fuel have to deploy Aodh in the environments.
+
+
+-------------------
+Problem description
+-------------------
+
+Aodh is the alarm engine of the Ceilometer project. Since Liberty
+this project has been founded based on the alarming services
+code of Ceilometer. In Mitaka all alarm relative code has been deleted
+from the Ceilometer project. So, for the alarm supporting Aodh has to deployed
+with Fuel. [1]_
+
+----------------
+Proposed changes
+----------------
+
+Aodh provides alarm functional on the Ceilometer database. It is used in Heat
+autoscaling and in other users activities. The main idea is deploy Aodh
+as separate project with Ceilometer.
+
+Aodh has a 4 services which should be started:
+
+* aodh-api
+* aodh-evaluator
+* aodh-listener
+* aodh-notifier
+
+Service `aodh-api` provides an access to alarms for the user.
+This service runs under HAProxy with wsgi_mod or not. Endpoint for this service
+should be registered in keystone service catalog, because Ceilometer API used
+this endpoint then for proxying alarm relative requests from
+Ceilometer client. It means what it's better to install and run `aodh-api`
+before running `ceilometer-api` service.
+For the authenticating requests it uses a Keystone.
+
+Service `aodh-evaluator` evaluates alarms on a periodic basis,
+defaulting to once every minute. This service runs as current
+`ceilometer-alarm-evalutor` service under the pacemaker with one active and
+other passive services. It caused by fact what coordination needed for the
+several instances of `aodh-evaluator`.
+
+Service `aodh-listener` provides evaluating for the event alarms.
+It listen queue and evaluates alarms if event for this alarm is received.
+This service don't need a coordination and can be started on every controller
+as service with respawn.
+This service need a connection to the AMQP.
+
+Service `aodh-notifier` effects notification actions which described in
+alarm for the state transition of individual alarm
+(to ok, alarm, insufficient data).
+This service don't need a coordination and
+can be started on every controller as service with respawn.
+This service need a connection to the AMQP.
+
+The default database for aodh is MySQL and connection url should be defined
+in configuration file. Binary `aodh-dbsync` is required before the first Aodh
+services starting.
+
+Puppet modules for described services deployment should be created.
+
+
+Web UI
+======
+
+No impact, it will be deployed in Ceilometer installation.
+
+Nailgun
+=======
+
+It supports current business logic and don't need any changes.
+
+Data model
+----------
+
+All alarms should be moved from the Ceilometer database to the Aodh db.
+According to the fact of default Ceilometer db is MongoDB and default
+Aodh db is MySQL we should have a migration code between this databases.
+This code will be implemented on Ceilometer side and should be during
+the deploying.
+
+
+REST API
+--------
+
+API described in [2]_.
+
+Validation should check User configuration whether RAM is enough for specified
+Huge Pages.
+
+Orchestration
+=============
+
+None
+
+RPC Protocol
+------------
+
+None
+
+Fuel Client
+===========
+
+No changes in the Fuel client.
+
+Plugins
+=======
+
+None
+
+Fuel Library
+============
+
+Puppet manifests will perform next actions before Ceilometer deploying:
+
+ * install Aodh packages
+ * configure Aodh
+ * start Aodh services
+
+------------
+Alternatives
+------------
+
+None
+
+--------------
+Upgrade impact
+--------------
+
+There is not impact of master node upgrading.
+
+---------------
+Security impact
+---------------
+
+None
+
+--------------------
+Notifications impact
+--------------------
+
+None
+
+---------------
+End user impact
+---------------
+
+API for the end users will be same as current Ceilometer API.
+All alarm request will be redirected to the Aodh API.
+
+
+------------------
+Performance impact
+------------------
+
+It's same as current performance level of Ceilometer alarm services.
+
+-----------------
+Deployment impact
+-----------------
+
+All was already mentioned.
+
+----------------
+Developer impact
+----------------
+
+None
+
+--------------------------------
+Infrastructure/operations impact
+--------------------------------
+
+None
+
+--------------------
+Documentation impact
+--------------------
+
+New services have a documentation space in Openstack wiki. [3]_
+
+--------------------
+Expected OSCI impact
+--------------------
+
+None
+
+--------------
+Implementation
+--------------
+
+Assignee(s)
+===========
+
+Primary assignee:
+  Dmitry Burmistrov
+
+Other contributors:
+  * Ivan Berezovsky
+  * Ilya Tyaptin
+
+QA engineer:
+  Artem Minasyan
+
+Mandatory design review:
+  Ivan Berezovsky
+
+
+
+Work Items
+==========
+
+* Implement puppet modules for the Aodh services
+* Implement migration script for migrating alarms from Ceilometer to Aodh storage.
+* Manual testing
+
+
+Dependencies
+============
+
+No additional dependencies
+
+-----------
+Testing, QA
+-----------
+
+* Create OSTF tests for event alarms.
+
+Acceptance criteria
+===================
+
+* Aodh is deployed to the environment with Ceilometer installation succesfully
+* Old and new OSTF test cases pass
+
+----------
+References
+----------
+
+.. [1] https://blueprints.launchpad.net/ceilometer/+spec/split-ceilometer-alarming
+.. [2] http://docs.openstack.org/developer/aodh/webapi/v2.html#alarms-api
+.. [3] https://wiki.openstack.org/wiki/Telemetry#Aodh
+.. [4] https://github.com/openstack/aodh
