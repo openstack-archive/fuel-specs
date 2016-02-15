@@ -39,10 +39,10 @@ Enabling SR-IOV requires:
   whether it's working or not
 
 * Proper network configuration with dedicated Private network for VLAN
-  segmentation.
+  segmentation
 
 * Making configurations on both controller and compute sides, including nova,
-  neutron, and interface setup.
+  neutron, and interface setup
 
 Web UI
 ======
@@ -55,7 +55,8 @@ On Nodes tab, in Interfaces configuration dialog for every interface should be:
   should be initialized on the interface
 
 Only Private network with VLAN segmentation could be placed on SR-IOV enabled
-interface. This validation should be done in API as well.
+interface. Also, SR-IOV can be enabled on SR-IOV capable interfaces where no
+networks are assigned. This validation should be done in API as well.
 
 Nailgun
 =======
@@ -250,8 +251,8 @@ Performance impact
 Deployment impact
 -----------------
 
-* This feature requires to use VLAN segmentation and dedicated SR-IOV capable
-  network interface for Private network.
+* This feature requires to use dedicated SR-IOV capable network interface
+  for Private network in case of VLAN segmentation.
 
 * VM Live Migration with SR-IOV attached instances is not supported.
 
