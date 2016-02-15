@@ -39,10 +39,10 @@ Enabling SR-IOV requires:
   whether it's working or not
 
 * Proper network configuration with dedicated Private network for VLAN
-  segmentation.
+  segmentation
 
 * Making configurations on both controller and compute sides, including nova,
-  neutron, and interface setup.
+  neutron, and interface setup
 
 Web UI
 ======
@@ -54,8 +54,15 @@ On Nodes tab, in Interfaces configuration dialog for every interface should be:
 * Visual controls to enable SR-IOV, and to input how much virtual functions
   should be initialized on the interface
 
-Only Private network with VLAN segmentation could be placed on SR-IOV enabled
-interface. This validation should be done in API as well.
+The following validation should be done in both UI and API:
+
+* In case of VLAN segmentation it should be possible to assign Private network
+  to any NIC (with or without SR-IOV support).
+* In case of tunneling segmentation it should be possible to assign Private
+  (mesh) network only to NIC where SR-IOV is not enabled.
+* SR-IOV can be enabled on SR-IOV capable interfaces where no networks are
+  assigned. In such case a warning should be shown that only NIC with Private
+  network on it is going to be configured in Nova.
 
 Nailgun
 =======
@@ -129,7 +136,7 @@ Information from the nailgun-agent and user input should be stored in
   ]
 
 
-When operator configures interface as SR-IOV and use it for Private network:
+When operator configures interface as SR-IOV:
 
 * Network transformations should add port using `add-port` action with provider
   `sriov` and fill vendor_specific attributes as following.
@@ -139,7 +146,8 @@ When operator configures interface as SR-IOV and use it for Private network:
   enabled SR-IOV. If this parameter is empty, it means SR-IOV is not enabled at
   all.
 
-According to this, astute.yaml will be extended and looks like this
+When Private network is assigned to SR-IOV enabled interface, deployment
+information (astute.yaml) will be extended and will look like this:
 
 ::
 
@@ -156,6 +164,22 @@ According to this, astute.yaml will be extended and looks like this
       - <PCI-ID>
 
 where <NUM> is number and <PCI-ID> is string like "8086:1515".
+
+When no network is assigned to SR-IOV enabled interface, deployment
+information (astute.yaml) will be extended and will look like this:
+
+::
+
+  network_scheme:
+    transformations:
+    - action: add-port
+      name: enp1s0f0
+      provider: sriov
+      vendor_specific:
+        sriov_numvfs: <NUM>
+  quantum_settings:
+    supported_pci_vendor_devs:
+      - <PCI-ID>
 
 REST API
 --------
@@ -250,8 +274,10 @@ Performance impact
 Deployment impact
 -----------------
 
-* This feature requires to use VLAN segmentation and dedicated SR-IOV capable
-  network interface for Private network.
+* Fuel supports configuration of SR-IOV in OpenStack services only when VLAN
+  segmentation is in use and Private network is assigned to SR-IOV capable
+  network interface. Handling SR-IOV enabled interfaces which are not in use
+  for Private networks is up to cloud operators or plugin developers.
 
 * VM Live Migration with SR-IOV attached instances is not supported.
 
