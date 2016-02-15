@@ -13,9 +13,9 @@ https://blueprints.launchpad.net/fuel/+spec/support-sriov
 User should be able to deploy compute nodes with dedicated network interface
 into SR-IOV mode, then create direct-attached port and boot a VM with it.
 
---------------------
+-------------------
 Problem description
---------------------
+-------------------
 
 SR-IOV allows to bind network interface virtual functions to the different
 virtual machines like a PCI device. It gives a boost to the networking
@@ -39,10 +39,10 @@ Enabling SR-IOV requires:
   whether it's working or not
 
 * Proper network configuration with dedicated Private network for VLAN
-  segmentation.
+  segmentation
 
 * Making configurations on both controller and compute sides, including nova,
-  neutron, and interface setup.
+  neutron, and interface setup
 
 Web UI
 ======
@@ -54,8 +54,21 @@ On Nodes tab, in Interfaces configuration dialog for every interface should be:
 * Visual controls to enable SR-IOV, and to input how much virtual functions
   should be initialized on the interface
 
-Only Private network with VLAN segmentation could be placed on SR-IOV enabled
-interface. This validation should be done in API as well.
+The following validation should be done in both UI and API:
+
+* In case of VLAN segmentation it should be possible to assign Private network
+  to any NIC (with or without SR-IOV support).
+* In case of tunneling segmentation it should be possible to assign Private
+  (mesh) network only to NIC where SR-IOV is not enabled.
+* SR-IOV can be enabled on SR-IOV capable interfaces where no networks are
+  assigned. In such case a warning should be shown that only NIC with Private
+  network on it is going to be configured in Nova.
+* SR-IOV enabled interface(s) cannot be part of a bond
+
+The proposed change to Node Interfaces configuration screen will look like this:
+
+  .. image:: ../../images/9.0/support-sriov/sriov-ui.png
+      :scale: 75 %
 
 Nailgun
 =======
@@ -129,7 +142,7 @@ Information from the nailgun-agent and user input should be stored in
   ]
 
 
-When operator configures interface as SR-IOV and use it for Private network:
+When operator configures interface as SR-IOV:
 
 * Network transformations should add port using `add-port` action with provider
   `sriov` and fill vendor_specific attributes as following.
@@ -139,7 +152,8 @@ When operator configures interface as SR-IOV and use it for Private network:
   enabled SR-IOV. If this parameter is empty, it means SR-IOV is not enabled at
   all.
 
-According to this, astute.yaml will be extended and looks like this
+When Private network is assigned to SR-IOV enabled interface, deployment
+information (astute.yaml) will be extended and will look like this:
 
 ::
 
@@ -157,11 +171,34 @@ According to this, astute.yaml will be extended and looks like this
 
 where <NUM> is number and <PCI-ID> is string like "8086:1515".
 
+When no network is assigned to SR-IOV enabled interface, deployment
+information (astute.yaml) will be extended and will look like this:
+
+::
+
+  network_scheme:
+    transformations:
+    - action: add-port
+      name: enp1s0f0
+      provider: sriov
+      vendor_specific:
+        sriov_numvfs: <NUM>
+  quantum_settings:
+    supported_pci_vendor_devs:
+      - <PCI-ID>
+
 REST API
 --------
 
 Only payload for interfaces and node agent API handlers will be changed as
 described in Nailgun-agent and Data model sections.
+
+Network Checker
+---------------
+
+Network checker will not be able to check traffic through Private VLANs when
+SR-IOV is enabled for the corresponding interface. So, this verification
+should be disabled for such nodes after deployment.
 
 Orchestration
 =============
@@ -188,8 +225,6 @@ None
 
 Fuel Library
 ============
-
-Library will consume data from astute.yaml.
 
 * l23network will configure interfaces virtual functions, set them up, and
   store network configuration into Operating System config
@@ -250,8 +285,10 @@ Performance impact
 Deployment impact
 -----------------
 
-* This feature requires to use VLAN segmentation and dedicated SR-IOV capable
-  network interface for Private network.
+* Fuel supports configuration of SR-IOV in OpenStack services only when VLAN
+  segmentation is in use and Private network is assigned to SR-IOV capable
+  network interface. Handling SR-IOV enabled interfaces which are not in use
+  for Private networks is up to cloud operators or plugin developers.
 
 * VM Live Migration with SR-IOV attached instances is not supported.
 
@@ -303,13 +340,15 @@ Dependencies
 
 None
 
-------------
+-----------
 Testing, QA
-------------
+-----------
 
-* Extend TestRail with manual API/CLI cases for the configuring SR-IOV
-* Extend TestRail with manual WEB UI cases for the configuring SR-IOV
-* Manually test that SR-IOV is discovered and configured properly
+* Manually test that SR-IOV is discovered properly
+* Manually test that SR-IOV is configured properly via API/CLI/WEB UI
+  (deployment information is correct)
+* Manually test that SR-IOV is set up on nodes properly (manifests configure
+  node interfaces properly)
 * Performance testing
 
 Acceptance criteria
