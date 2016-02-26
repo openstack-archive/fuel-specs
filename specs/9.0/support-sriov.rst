@@ -51,19 +51,32 @@ On Nodes tab, in Interfaces configuration dialog for every interface should be:
 
 * Information whether interface is SR-IOV capable
 
-* Visual controls to enable SR-IOV, and to input how much virtual functions
-  should be initialized on the interface
+* Visual controls to enable SR-IOV and configure additional parameters:
+
+  * Input how many virtual functions should be initialized on the interface
+  * Input physical network name for `pci_passthrough_whitelist` configuration
+    in Nova. Defaults to `physnet2`
 
 The following validation should be done in both UI and API:
 
 * In case of VLAN segmentation it should be possible to assign Private network
-  to any NIC (with or without SR-IOV support).
+  to any NIC (with or without SR-IOV support). Physical network name should be
+  equal to `physnet2`, other names are not allowed (in UI this text field
+  should be disabled in such case, API should give 4xx reply)
 * In case of tunneling segmentation it should be possible to assign Private
   (mesh) network only to NIC where SR-IOV is not enabled.
 * SR-IOV can be enabled on SR-IOV capable interfaces where no networks are
-  assigned. In such case a warning should be shown that only NIC with Private
-  network on it is going to be configured in Nova.
+  assigned. Physical network name could be set to any name, defaults to
+  `physnet2`
 * SR-IOV enabled interface(s) cannot be part of a bond
+
+The following validation is needed in UI only:
+
+* In case Operator specifies physical network name not equal to `physnet2`, a
+  warning should be shown that only `physnet2` is going to be configured by
+  Fuel in Neutron. Configuration of other physical networks is up to Operator
+  or plugin. Fuel will just configure appropriate `pci_passthrough_whitelist`
+  option in nova.conf for such interface and physical networks
 
 The proposed change to Node Interfaces configuration screen will look like this:
 
