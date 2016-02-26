@@ -51,19 +51,29 @@ On Nodes tab, in Interfaces configuration dialog for every interface should be:
 
 * Information whether interface is SR-IOV capable
 
-* Visual controls to enable SR-IOV, and to input how much virtual functions
-  should be initialized on the interface
+* Visual controls to enable SR-IOV and configure additional parameters:
+
+  * Input how many virtual functions should be initialized on the interface
+  * Input physical network name for `pci_passthrough_whitelist` configuration
+    in Nova. Defaults to `physnet2`
 
 The following validation should be done in both UI and API:
 
-* In case of VLAN segmentation it should be possible to assign Private network
-  to any NIC (with or without SR-IOV support).
-* In case of tunneling segmentation it should be possible to assign Private
-  (mesh) network only to NIC where SR-IOV is not enabled.
+* It should be possible to assign Private (mesh) network only to NIC where
+  SR-IOV is not enabled
 * SR-IOV can be enabled on SR-IOV capable interfaces where no networks are
-  assigned. In such case a warning should be shown that only NIC with Private
-  network on it is going to be configured in Nova.
+  assigned. Physical network name could be set to any name on per interface
+  basis, defaults to `physnet2` on each interface
 * SR-IOV enabled interface(s) cannot be part of a bond
+
+The following validation is needed in UI only:
+
+* It should not be allowed to move Private network to SR-IOV enabled interface
+* In case Operator specifies physical network name not equal to `physnet2`, a
+  warning should be shown that only `physnet2` is going to be configured by
+  Fuel in Neutron. Configuration of other physical networks is up to Operator
+  or plugin. Fuel will just configure appropriate `pci_passthrough_whitelist`
+  option in nova.conf for such interface and physical networks
 
 The proposed change to Node Interfaces configuration screen will look like this:
 
@@ -121,7 +131,7 @@ Information from the nailgun-agent and user input should be stored in
 
 * Number of available virtual functions (`sriov_totalvfs`)
 
-* SR-IOV availability (IOMMU groups should be checked)
+* SR-IOV availability
 
 * PCI-ID of NIC virtual functions of this NIC (it's same for all VFs)
 
@@ -152,8 +162,8 @@ When operator configures interface as SR-IOV:
   enabled SR-IOV. If this parameter is empty, it means SR-IOV is not enabled at
   all.
 
-When Private network is assigned to SR-IOV enabled interface, deployment
-information (astute.yaml) will be extended and will look like this:
+For each SR-IOV enabled interface deployment information (astute.yaml) will be
+extended and will look like this:
 
 ::
 
@@ -164,28 +174,13 @@ information (astute.yaml) will be extended and will look like this:
       provider: sriov
       vendor_specific:
         sriov_numvfs: <NUM>
-        physnet: physnet2
+        physnet: <PHYSNET>
   quantum_settings:
     supported_pci_vendor_devs:
       - <PCI-ID>
 
-where <NUM> is number and <PCI-ID> is string like "8086:1515".
-
-When no network is assigned to SR-IOV enabled interface, deployment
-information (astute.yaml) will be extended and will look like this:
-
-::
-
-  network_scheme:
-    transformations:
-    - action: add-port
-      name: enp1s0f0
-      provider: sriov
-      vendor_specific:
-        sriov_numvfs: <NUM>
-  quantum_settings:
-    supported_pci_vendor_devs:
-      - <PCI-ID>
+where <NUM> is number, <PCI-ID> is string like "8086:1515" and <PHYSNET> is
+string with specified physical network name (defaults to `"physnet2"`).
 
 REST API
 --------
@@ -285,10 +280,12 @@ Performance impact
 Deployment impact
 -----------------
 
-* Fuel supports configuration of SR-IOV in OpenStack services only when VLAN
-  segmentation is in use and Private network is assigned to SR-IOV capable
-  network interface. Handling SR-IOV enabled interfaces which are not in use
-  for Private networks is up to cloud operators or plugin developers.
+* Fuel will configure SR-IOV on enabled interfaces and add appropriate
+  `pci_passthrough_whitelist` configuration option to nova.conf file:
+
+::
+
+ pci_passthrough_whitelist=[{"devname":"enp1s0f0","physical_network":"physnet2"},{"devname":"enp1s0f1","physical_network":"physnet3"}]
 
 * VM Live Migration with SR-IOV attached instances is not supported.
 
