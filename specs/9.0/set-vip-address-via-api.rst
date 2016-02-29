@@ -53,27 +53,8 @@ VIPs should be changed to skip allocation of IP for VIP if user configured it
 with manually set IP. Validation should be added before deployment that all
 VIPs have IPs either assigned automatically or by user.
 
-VIPs will be checked and re-allocated in ip_addrs table at these points (VIPs
-allocation is done after pending changes are applied. If allocation failed
-changes are reverted):
-
-#. create cluster
-
-#. modify networks configuration
-
-#. modify one network
-
-#. modify network template
-
-#. change nodes set for cluster
-
-#. change node roles set on nodes
-
-#. modify cluster attributes (change set of plugins)
-
-#. modify release
-
-#. deployment start (final check)
+Full checking and auto-allocation of VIPs will be done only before
+deployment start.
 
 VIPs allocation procedure should not overwrite information in DB
 (IP, namespace) if it was set by user already:
@@ -113,6 +94,13 @@ Only `ip_addr`, `vip_namespace` and `is_user_defined` fields can be changed via
 API. It should be possible to pass full output of GET request to the input of
 PUT request (as for other handlers). Check for read-only fields should be done
 in API validator.
+
+POST request will be added for collection handler. It will allow to create
+(allocate) VIP with user defined IP. `ip_addr`, `vip_namespace`, `network`
+must be passed in the requests body. Validation will be added to ensure that.
+Creation of VIP with new name is out of scope. `is_user_defined` flag may not
+be supplied in request body in which case it will be set automatically by
+Nailgun. If the flag is passed it cannot be false.
 
 The following fields of `ip_addrs` table should be serialized:
 
@@ -282,7 +270,7 @@ Work Items
 
 - Add new vip_info into ip_addrs table
 - Extend Nailgun REST API
-- Use `manual` flag to disable IP auto-allocation.
+- Use `is_user_defined` flag to disable IP auto-allocation.
 - Validate VIPs before deployment.
 - Add VIP-related commands to CLI.
 
