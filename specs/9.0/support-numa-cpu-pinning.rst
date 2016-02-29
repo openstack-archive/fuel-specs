@@ -98,7 +98,7 @@ Collected information should be passed to nailgun in the next format:
 .. code-block:: json
 
   'numa_topology': {
-    'available_hugepages': ['2M', '1G']
+    'supported_hugepages': ['2048', '1048576']
     'numa_nodes': [
        {'id': 0,
        'cpus': [0, 1, ..., 5, 12, 13, ..., 17],
@@ -147,37 +147,58 @@ Node will be extended with `attributes` column:
 
 where User's CPUs configuration will be stored as
 
-.. code-block:: json
+.. code-block:: yaml
 
-  node.attributes = {
-    ...
-    'nova_cpu_pinning': {
-      'description': "Amount of CPUs for Nova usage",
-      'label': "Nova CPU pinning",
-      'restrictions': [],
-      'type': 'text',
-      'value': '4',
-      'weight': 10,
-      'regex': {
-        'source': "^\d+$"
-        'error': "Incorrect value"
-      }
-    },
-    'dpdk_cpu_pinning': {
-      'description': "Amount of CPUs for DPDK usage",
-      'label': "DPDK CPU pinning",
-      'restriction': [],
-      'type': 'text'
-      'value': '3',
-      'weight': 20,
-      'regex': {
-        'source': '^\d+$",
-        'error': "Incorrect value"
-      }
-    }
-    ...
-  }
-
+    node_attributes:
+      cpu_pinning:
+        metadata:
+          group: "nfv"
+          label: "CPU pinning"
+          weight: 10
+          restrictions:
+            - condition: "settings:common.libvirt_type.value != 'kvm'"
+              action: "hide"
+        nova:
+          weight: 10
+          description: "Number of CPUs for Nova usage"
+          label: "Nova CPU pinning"
+          type: "text"
+          value: "0"
+          regex:
+            source: '^\d+$'
+            error: "Incorrect value"
+        dpdk:
+          weight: 20
+          description: "Number of CPUs for DPDK usage"
+          label: "DPDK CPU pinning"
+          type: "text"
+          value: "0"
+          regex:
+            source: '^\d+$'
+            error: "Incorrect value"
+      hugepages:
+        metadata:
+          group: "nfv"
+          label: "Huge Pages"
+          weight: 20
+          restrictions:
+            - condition: "settings:common.libvirt_type.value != 'kvm'"
+              action: "hide"
+        nova:
+          weight: 10
+          description: "Nova Huge Pages configuration"
+          label: "Nova Huge Pages"
+          type: "custom_hugepages"
+          value: {}
+        dpdk:
+          weight: 20
+          description: "DPDK Huge Pages per NUMA node in MB"
+          label: "DPDK Huge Pages"
+          type: "text"
+          value: "0"
+          regex:
+            source: '^\d+$'
+            error: "Incorrect value"
 
 All values will be '0' by default.
 Nailgun will specify CPU ids for each Nova and DPDK accordingly to User
