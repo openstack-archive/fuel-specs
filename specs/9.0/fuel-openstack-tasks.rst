@@ -54,9 +54,9 @@ The present "upgrade" method relies on:
 
 * previous version of serializer
 * previous version of release meatdata
-* previous version of openstack install (puppet-opnstack modules)
+* previous version of openstack install (puppet-openstack modules)
 * previous version of fuel components (fuel-library components, cluster,
-  pacemaker, haproxy, rabbit, db, High avalailibility, huge pages, etc...)
+  pacemaker, haproxy, rabbit, db, High availability, huge pages, etc...)
 * previous version of fuel tasks for everything fuel and openstack
   (osnailyfacter)
 * previous version of network manager, volume manager, etc...
@@ -268,8 +268,8 @@ supported as current default combination of Fuel and OpenStack. Early in the
 development cycle, this represents development version of fuel (9.0) and the
 previous version of OpenStack (Liberty). Later, once the changes are made to
 switch this version to the next OpenStack it would target fuel 9.0 and
-OpenStack Mitaka. To this end, we should branch master not just at SCF but
-also when we switch between OpenStack versions, this would allow for a
+OpenStack Mitaka. To this end, just as we branch master at SCF we should tag
+when we switch between OpenStack versions, this would allow for a
 interested party to pick up at the last usable spot, and not have to work
 from scratch to work with the latest fuel and the prior OpenStack.
 
@@ -328,6 +328,8 @@ Work Items
   against 10)
 * Update the build process of the fuel-library package to be able to switch
   the openstack tasks repo
+* Update fuel-dev guide to indicate separation of the tasks locations
+
 
 Dependencies
 ============
