@@ -124,15 +124,17 @@ Data model
 Information from the nailgun-agent and user input should be stored in
 `interface_properties` field of `NodeNICInterface` in format that described:
 
-* Whether SR-IOV is enabled by operator or not
+* Whether SR-IOV is enabled by operator or not (`enabled`)
 
 * Number of enabled VFs (`sriov_numvfs`)
 
 * Number of available virtual functions (`sriov_totalvfs`)
 
-* SR-IOV availability
+* SR-IOV availability (`available`)
 
-* PCI-ID of NIC virtual functions of this NIC (it's same for all VFs)
+* PCI-ID of NIC virtual functions of this NIC, it's same for all VFs (`pci_id`)
+
+* Physical network name, defaults to `"physnet2"` (`physnet`)
 
 .. code-block:: json
 
@@ -144,7 +146,8 @@ Information from the nailgun-agent and user input should be stored in
           "sriov_numvfs": Number or null,
           "sriov_totalvfs": Number, Read only,
           "available": Boolean, Read only,
-          "pci_id": String, Read only
+          "pci_id": String, Read only,
+          "physnet": String
         }
       }
     }
