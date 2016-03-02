@@ -47,15 +47,25 @@ Enabling DPDK requires:
 Web UI
 ======
 
-On Nodes tab, in Interfaces configuration screen for every interface should be:
+On Nodes tab, in Interfaces configuration screen for every interface or bond
+should be checkbutton to enable DPDK on network interface. It will be shown
+only if interface is DPDK-capable:
 
-* Checkbox to enable DPDK on network interface, that will be shown only if
-  interface is DPDK-capable.
+.. image:: ../../images/9.0/support-dpdk/dpdk-ui.png
+    :scale: 75 %
+
+For bond, it will be shown only if all bonded interfaces are DPDK-capable:
+
+.. image:: ../../images/9.0/support-dpdk/dpdk-bond-ui.png
+    :scale: 75 %
 
 Only Private network with VLAN segmentation could be placed on DPDK enabled
-interface. This validation should be done in API as well.
+interface or bond.
 
-OpenVSwitch bonds will not be used for DPDK interfaces in this release.
+If no networks is placed on DPDK interface, that means that no changes should
+be done in deployment.
+
+These validations should be done both on UI and in API.
 
 Nailgun
 =======
@@ -98,7 +108,8 @@ Next DPDK-related information is stored in `interface_properties` field of
 
 * Whether DPDK is enabled by user or not.
 
-Availability should not be stored, and should be calculated in runtime.
+DPDK availability should be calculated for node when it's added to
+environment.
 
 Data model for `interface_properties` should look like this
 
@@ -117,49 +128,75 @@ Data model for `interface_properties` should look like this
      }
   ]
 
+For bond interface, only `dpdk` dict is needed.
+
+When operator configures interface as DPDK to use it for Private network,
 `astute.yaml` will be extended as following
 
-::
+* Node-level parameter `enabled` will enable DPDK in OpenVSwitch on node. Other
+  parameters should be defined and provided by HugePages and NUMA/CPU
+  pinning features
 
-  network_scheme:
-    transformations:
-    - action: add-br
-      name: br-prv
-      provider: ovs
-      vendor_specific:
-        datapath_type: netdev
-    - action: add-port
-      name: enp1s0f0
-      bridge: br-prv
-      provider: dpdkovs
-      vendor_specific:
-        dpdk_driver: igb_uio
-  dpdk:
-    enabled: True
-    ovs_core_mask: 0x4
-    ovs_pmd_core_mask: 0x6
-    ovs_socket_mem: 128,128,128,128
+  * `ovs_core_mask`: OpenVSwitch cpu core mask in hexa format
 
-When operator configures interface as DPDK to use it for Private network:
+  * `ovs_pmd_core_mask`: OpenVSwitch core mask in hexa format for PMD threads
 
-* Node-level parameter `enabled` will enable DPDK in OpenVSwitch on compute
-  node.
+  * `ovs_socket_mem`: List of amounts of memory to allocate per NUMA node
+
+  ::
+
+    dpdk:
+      enabled: True
+      ovs_core_mask: 0x4
+      ovs_pmd_core_mask: 0x6
+      ovs_socket_mem: 128,128,128,128
 
 * Network transformations should include vendor specific attrubute
-  `datapath_type: netdev` to `br-prv` bridge.
+  `datapath_type: netdev` to `br-prv` bridge::
+
+    network_scheme:
+      transformations:
+      - action: add-br
+        name: br-prv
+        provider: ovs
+        vendor_specific:
+          datapath_type: netdev
 
 * Interface should be added using `add-port` action with provider `dpdkovs`
-  directly into `br-prv` bridge. New vendor specific attrubute `dpdk_driver`
-  should be added from hardcoded list of supported hardware (described above).
+  directly into OVS `br-prv` bridge::
 
-Next parameters should be defined and provided by HugePages and NUMA/CPU
-pinning features:
+    network_scheme:
+      transformations:
+      - action: add-port
+        name: enp1s0f0
+        bridge: br-prv
+        provider: dpdkovs
 
-* `ovs_core_mask`: OpenVSwitch cpu core mask in hexa format
+* Bond should be added using `add-bond` action with provider `dpdkovs` directly
+  into OVS `br-prv` bridge::
 
-* `ovs_pmd_core_mask`: OpenVSwitch core mask in hexa format for PMD threads
+    network_scheme:
+      transformations:
+      - action: add-bond
+        bridge: br-prv
+        provider: dpdkovs
+        bond_properties:
+          mode: balance-rr
+        interfaces:
+        - enp1s0f0
+        - enp1s0f1
+        name: bond0
 
-* `ovs_socket_mem`: List of amounts of memory to allocate per NUMA node
+* New vendor specific attribute `dpdk_driver` should be added from hardcoded
+  list of supported hardware (described above)::
+
+    network_scheme:
+     interfaces:
+       enp1s0f0:
+         vendor_specific:
+           bus_info: '0000:01:00.0'
+           driver: ixgbe
+           dpdk_driver: uio_igb
 
 REST API
 --------
