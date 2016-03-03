@@ -40,13 +40,16 @@ Service set what is supposed to be moved under cgroups control:
         - mongodb
         - ceph services
 
-All described services above will be moved  under cgroups resources control,
-but cgroups limits will not be activated by default. So cgroups profiles will be
-configured for proposed resources without specified limits if they were not
-explicitly stated by the user. User will be able to specify limits via
-API/CLI (one more field will be brought into yaml with cluster's settings
-structure by user). New puppet task to apply cgroups configuration on target
-nodes will be added as well.
+User will be able to move all services described above under cgroups resources
+control(we specified only openstack related set of services in provided list, but,
+user is able to move any service what he want under the cgroup control).
+User should prepare special configuration JSON string for each service
+what supposed to be moved under the cgroups control(cgroups utils will be
+installed even if no cgroup's settings are specified).
+
+User will be able to specify limits via API/CLI (one more field will be brought
+into yaml with cluster's settings structure by user). New puppet task to apply
+cgroups configuration on target nodes will be added as well.
 
 As there is one source of limits for all cluster nodes we should support
 relative values for specific resources(like RAM). Format of proposed relative
@@ -93,10 +96,13 @@ None
 Data model
 ----------
 
-Cloud operator should add `cgroups` section into downloaded cluster's settings file to override
-default cgroups settings.
-Example of a new structure what's supposed to be added into cluster's settings.yaml file by
-cloud operator( the nesting level - ['editable']['additional_components']):
+New hidden section `cgroups` should be added into openstack.yaml file under 'general' group
+to make cgroups settings configurable after the cluster is deployed. User will be able to
+download/upload cluster's settings file to override default cgroups settings(add new services
+and settings).
+
+Example of a new structure what's supposed to be added into openstack.yaml file by
+( the nesting level - ['editable']['additional_components']):
 
 .. code-block:: yaml
 
@@ -104,10 +110,17 @@ cloud operator( the nesting level - ['editable']['additional_components']):
     metadata:
       group: general
       label: Cgroups configuration
+      always_editable: true
       weight: 90
       restrictions:
         - condition: "true"
         action: "hide"
+    ...
+
+Example of services what should be added under cgroups control:
+
+.. code-block:: yaml
+
     mysqld:
       label: mysqld
       type:  text
@@ -130,9 +143,8 @@ cloud operator( the nesting level - ['editable']['additional_components']):
       value: {"memory":{"memory.soft_limit_in_bytes":"%total, min, max"}}
     ...
 
-New block 'cgroups' will be introduced into cluster's settings tab under 'general' group.
 Cgroups limits per service will be described in json format into 'text' fields. Format will be
-explicitly described in feature's documetation.
+explicitly described in feature's documentation.
 
 
 REST API
@@ -167,9 +179,10 @@ None
 Fuel Library
 ============
 
-Cloud operator should add 'cgroup' section into cluster's settings file via CLI, data
-from corresponding section will be included into node's astute yaml file automatically during
-the serialization process.
+Cloud operator should add services that are supposed to be moved under cgroups control into
+cluster's settings file via CLI(into cgroups section), data from corresponding section
+will be included into node's astute yaml file automatically during the serialization
+process.
 A new cgroups puppet module should be implemented which will be used by
 main task to configure given limits for services on the cluster nodes.
 Module should be able to get input data from hiera structure
@@ -182,7 +195,7 @@ Task will be run on post deploment stage:
   id: cgroups
   type: puppet
   version: 2.0.0
-  groups: ['/.*/']
+  role: '*'
   requires: [post_deployment_start]
   required_for: [post_deployment_end]
   parameters:
@@ -297,6 +310,7 @@ Mandatory design reviewers:
 Work Items
 ==========
 
+* Introduce cgroups section into openstack.yaml file
 * Implement cgroups puppet module
 * Place openstack/middleware services in cgroups (create task)
 * Testing of overall system impact
