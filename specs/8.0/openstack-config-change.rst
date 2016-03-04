@@ -242,9 +242,9 @@ Flow of configuration option manipulation:
 
 #. upload YAML:
 
-   fuel configuration --env 1 --node 1,2,3 --upload file.yaml
-   fuel configuration --env 1 --role compute --upload file.yaml
-   fuel configuration --env 1 --upload file.yaml
+   fuel openstack-config --env 1 --node 1,2,3 --upload file.yaml
+   fuel openstack-config --env 1 --role compute --upload file.yaml
+   fuel openstack-config --env 1 --upload file.yaml
 
 Upload action, will mark configuration as 'is_active' = True.
 Always latest config is treated as active.
@@ -252,7 +252,7 @@ node and role parameters will be mutually exclusive.
 
 #. download YAML:
 
-   fuel configuration --id 1 --download
+   fuel openstack-config --id 1 --download
 
 As we will store historical data in DB, we need possibility to download
 any record from the past. For that we will use 'id' parameter.
@@ -260,15 +260,15 @@ ID is id of DB record.
 
 #. list historical data
 
-   fuel configuration --env 1 --node 1 --list
-   fuel configuration --env 1 --role compute --list
-   fuel configuration --env 1 --list
+   fuel openstack-config --env 1 --node 1 --list
+   fuel openstack-config --env 1 --role compute --list
+   fuel openstack-config --env 1 --list
 
 #. execute YAML
 
-   fuel configuration --env 1 --node 1,2,3 --execute
-   fuel configuration --env 1 --role compute --execute
-   fuel configuration --env 1 --execute
+   fuel openstack-config --env 1 --node 1,2,3 --execute
+   fuel openstack-config --env 1 --role compute --execute
+   fuel openstack-config --env 1 --execute
 
 Plugins
 =======
