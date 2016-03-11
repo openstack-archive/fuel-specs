@@ -97,19 +97,19 @@ Collected information should be passed to nailgun in the next format:
 
 .. code-block:: json
 
-  'numa_topology': {
-    'supported_hugepages': ['2048', '1048576']
-    'numa_nodes': [
-       {'id': 0,
-       'cpus': [0, 1, ..., 5, 12, 13, ..., 17],
-       'memory: 135171932160},
-       {'id': 1,
-        'cpus': [6, 7, ..., 11, 18, 19, ..., 23],
-        'memory': 135289372672}]
+  "numa_topology": {
+    "supported_hugepages": [2048, 1048576]
+    "numa_nodes": [
+       {"id": 0,
+       "cpus": [0, 1, ..., 5, 12, 13, ..., 17],
+       "memory: 135171932160},
+       {"id": 1,
+        "cpus": [6, 7, ..., 11, 18, 19, ..., 23],
+        "memory": 135289372672}]
     ],
-    'distances': [
-      [1.0, 2.1],
-      [2.1, 1.0]
+    "distances": [
+      ["1.0", "2.1"],
+      ["2.1", "1.0"]
     ]
   }
 
@@ -130,7 +130,7 @@ This information will be stored in node metadata
 
  node.metadata = {
    ...
-   'numa_topology': {
+   "numa_topology": {
      ...
    }
    ...
@@ -176,29 +176,6 @@ where User's CPUs configuration will be stored as
           regex:
             source: '^\d+$'
             error: "Incorrect value"
-      hugepages:
-        metadata:
-          group: "nfv"
-          label: "Huge Pages"
-          weight: 20
-          restrictions:
-            - condition: "settings:common.libvirt_type.value != 'kvm'"
-              action: "hide"
-        nova:
-          weight: 10
-          description: "Nova Huge Pages configuration"
-          label: "Nova Huge Pages"
-          type: "custom_hugepages"
-          value: {}
-        dpdk:
-          weight: 20
-          description: "DPDK Huge Pages per NUMA node in MB"
-          label: "DPDK Huge Pages"
-          type: "text"
-          value: "0"
-          regex:
-            source: '^\d+$'
-            error: "Incorrect value"
 
 All values will be '0' by default.
 Nailgun will specify CPU ids for each Nova and DPDK accordingly to User
@@ -206,21 +183,27 @@ configuration and pass this information to astute.yaml:
 
 .. code-block:: yaml
 
+  network_metadata:
+    nodes:
+      node-1:
+        nova_cpu_pinning_enabled: True
+  ...
   nova:
     ...
     cpu_pinning: [0, 1, 18, 19]
-    enable_cpu_pinning: true
   dpdk:
     ...
     enabled: True
     ovs_core_mask: 0x4
     ovs_pmd_core_mask: 0x6
 
-`cpu_pinning` will be generated per compute node.
-`enable_cpu_pinning` will be true in case there are some
-compute with pinned CPU. It's global (is generated for all nodes).
+Section of `nodes` will be moved from `network_metadata` out to root in the
+next releases. `nova_cpu_pinning_enabled` will be used by controllers to
+know whether appropriate filter should be enabled for nova-scheduler.
 
-DPDK `enable` will be taken from appropriate NIC info [2]_.
+`cpu_pinning` will be generated per compute node.
+
+DPDK `enabled` will be taken from appropriate NIC info [2]_.
 Nailgun will calculate cpu masks according to User configuration -
 `dpdk_cpu_pinning`
 
@@ -267,27 +250,26 @@ None
 Fuel Client
 ===========
 
-Fuel Client have to show node NUMA topology. New command should be added:
+Fuel Client have to show node NUMA topology. Node show command will be
+extended with new fields:
 
 .. code-block:: console
 
-  fuel node --node-id 1 --numa-topology
+  fuel2 node show 1
 
 User can use next commands to configure node attributes
 
 .. code-block:: console
 
-  fuel node --node-id 1 --attributes --download/-d
-  fuel node --node-id 1 --attributes --upload/-u
+  fuel node --node-id 1 --attributes --download [--dir download-dir]
+  fuel node --node-id 1 --attributes --upload [--dir upload-dir]
 
 Also, appropriate commands should be added to fuel2 client:
 
 .. code-block:: console
 
-  fuel2 node show-numa-topology 1
-
-  fuel2 node download-attributes 1
-  fuel2 node upload-attributes 1
+  fuel2 node attributes-download 1
+  fuel2 node attributes-upload 1
 
 
 Plugins
