@@ -103,6 +103,11 @@ Typical commit goes through the following code review stages:
    core reviewer (may be the same core reviewer if the repository has only 2 or
    less core reviewers), or by the component lead of the modified component.
 
+Commits to fuel-specs use a different workflow: they are merged by only by PTL,
+and only after all component leads left a positive vote on the latest patch
+set. Even a spec that presumably doesn't impact a component needs a vote from
+the corresponding CL to confirm that potential impact wasn't missed.
+
 Governance Process
 ------------------
 
