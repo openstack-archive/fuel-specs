@@ -242,11 +242,11 @@ Flow of configuration option manipulation:
 
 #. upload YAML:
 
-   fuel openstack-config --env 1 --node 1,2,3 --upload file.yaml
+   fuel openstack-config --env 1 --node 1,2,3 --upload --file file.yaml
 
-   fuel openstack-config --env 1 --role compute --upload file.yaml
+   fuel openstack-config --env 1 --role compute --upload --file file.yaml
 
-   fuel openstack-config --env 1 --upload file.yaml
+   fuel openstack-config --env 1 --upload --file file.yaml
 
 Upload action, will mark configuration as 'is_active' = True.
 Always latest config is treated as active.
