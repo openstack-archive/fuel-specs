@@ -242,7 +242,7 @@ Flow of configuration option manipulation:
 
 #. upload YAML:
 
-   fuel openstack-config --env 1 --node 1,2,3 --upload --file file.yaml
+   fuel openstack-config --env 1 --node 1 --upload --file file.yaml
 
    fuel openstack-config --env 1 --role compute --upload --file file.yaml
 
@@ -270,7 +270,7 @@ ID is id of DB record.
 
 #. execute YAML
 
-   fuel openstack-config --env 1 --node 1,2,3 --execute
+   fuel openstack-config --env 1 --node 1 --execute
 
    fuel openstack-config --env 1 --role compute --execute
 
