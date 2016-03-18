@@ -78,6 +78,11 @@ Add new time field for tasks table `deleted_at`. Change deletion behavior
 for tasks: instead of deletion from DB Nailgun should write deleted_at
 time and stay it in DB.
 
+Old API endpoint `/api/tasks` return only tasks with `deleted_at is null`
+column in order to keep backward compatibility with UI.
+Also `/api/tasks` endpoint has mark as deprecated because it superseded
+by `/api/transactions`.
+
 Add new unique constraint for such fields: task_id, node_id,
 deployment_graph_task_name.
 
@@ -96,8 +101,8 @@ There will be a REST API handler allowing to get a list of tasks and
 +--------+---------------------------------+-------------------+-------------+
 | method | URL                             | action            | auth exempt |
 +========+=================================+===================+=============+
-|  GET   | /api/transactions/              | get list of all   | false       |
-|        | :transaction_id/                | deployment tasks  |             |
+|  GET   | /api/transactions/\             | get list of all   | false       |
+|        | :transaction_id/\               | deployment tasks  |             |
 |        | deployment_history              | of a nailgun task |             |
 +--------+---------------------------------+-------------------+-------------+
 |  GET   | /api/transactions/              | get list of all   | false       |
@@ -108,16 +113,17 @@ There will be a REST API handler allowing to get a list of tasks and
 The methods should return the following statuses in case of errors:
 
 * 404 Not found - in case of missing entry
-* 405 Not Allowed - for `PUT /api/tasks/:task_id/deployment_history`
+* 405 Not Allowed - for `PUT /api/transactions/:transaction_id/\
+  deployment_history`
 
 GET method should also support filters by node or/and by history tasks
 statuses:
 
-* /api/transactions/:transaction_id/deployment_history/
-    ?nodes={nodes ids} - to get all tasks for such nodes
-* /api/transactions/:transaction_id/deployment_history/
-    ?statuses={list of statuses} - to get all tasks with such statuses
-* /api/transactions/:transaction_id/deployment_history/
+* /api/transactions/:transaction_id/deployment_history/\
+  ?nodes={nodes ids} - to get all tasks for such nodes
+* /api/transactions/:transaction_id/deployment_history/\
+  ?statuses={list of statuses} - to get all tasks with such statuses
+* /api/transactions/:transaction_id/deployment_history/\
   ?statuses={list of statuses}&nodes={nodes ids} - to get the list of all
   tasks with such statuses on the selected nodes
 
