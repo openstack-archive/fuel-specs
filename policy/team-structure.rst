@@ -117,20 +117,14 @@ can't be PTL and component lead in the same cycle.
 
 Following Fuel components have elected leads:
 
-* fuel-library (code: fuel-library)
+* fuel-library
 
-* fuel-python (code: fuel-web except fuel-ui that currently lives under
-  fuel-web/nailgun/static)
+* fuel-web
+
+* fuel-ui
 
 In other repositories, there is no component leads, and technical decisions are
 made by consensus of core reviewers, and disputes are resolved by Fuel PTL.
-
-.. note::
-
-   All fuel-ui developers are also committers to fuel-web and are still
-   eligible to vote for the fuel-python component lead. However, fuel-ui itself
-   is not governed by the fuel-python component lead and follows the governance
-   process for repositories without component leads.
 
 Core reviewers are approved by consensus of existing core reviewers, following
 the same process as with other OpenStack projects. Core reviewers can
@@ -177,7 +171,7 @@ Other contributors: angdraug (Dmitry Borodaenko)
 Milestones
 ----------
 
-The current policy was put in place for Mitaka.
+The current policy was put in place for Mitaka, and updated for Newton.
 
 Work Items
 ----------
