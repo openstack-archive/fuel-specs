@@ -173,16 +173,16 @@ New command should be added:
 
   fuel deployment-tasks --task-id 1
   fuel deployment-tasks --task-id 1 --node-id 5,6
-  fuel deployment-tasks --task-id 1 --statuses error,ready
-  fuel deployment-tasks --task-id 1 --node-id 5,6 --statuses error,ready
+  fuel deployment-tasks --task-id 1 --status error,ready
+  fuel deployment-tasks --task-id 1 --node-id 5,6 --status error,ready
 
 Also, appropriate commands should be added to fuel2 client:
 
 .. code-block:: console
 
-  fuel2 task 1 history show
-  fuel2 task 1 history show --nodes node_id_1 [node_id_2 ...]
-  fuel2 task 1 history show --statuses task_status_1 [task_status_2 ...]
+  fuel2 task history show 1
+  fuel2 task history show 1 --nodes node_id_1,[node_id_2 ...]
+  fuel2 task 1 history show --statuses task_status_1,[task_status_2 ...]
   fuel2 task 1 history show --nodes 1 --statuses error
 
 
