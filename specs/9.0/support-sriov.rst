@@ -38,9 +38,6 @@ Enabling SR-IOV requires:
 * Providing operator with information about SR-IOV compatible interfaces and
   whether it's working or not
 
-* Proper network configuration with dedicated Private network for VLAN
-  segmentation
-
 * Making configurations on both controller and compute sides, including nova,
   neutron, and interface setup
 
