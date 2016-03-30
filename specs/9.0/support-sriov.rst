@@ -38,9 +38,6 @@ Enabling SR-IOV requires:
 * Providing operator with information about SR-IOV compatible interfaces and
   whether it's working or not
 
-* Proper network configuration with dedicated Private network for VLAN
-  segmentation
-
 * Making configurations on both controller and compute sides, including nova,
   neutron, and interface setup
 
@@ -193,9 +190,9 @@ described in Nailgun-agent and Data model sections.
 Network Checker
 ---------------
 
-Network checker will not be able to check traffic through Private VLANs when
-SR-IOV is enabled for the corresponding interface. So, this verification
-should be disabled for such nodes after deployment.
+Network checker will not be able to check traffic through SR-IOV enabled
+interface before and/or after deployment. So no changes in network verification
+are needed.
 
 Orchestration
 =============
