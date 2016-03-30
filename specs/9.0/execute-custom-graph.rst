@@ -328,6 +328,14 @@ Operations with graph via different models
   Existing `GET /clusters/<cluster_id>/deployment_tasks/`
   Should be extended with `graph_type` parameter
 
+* Get merged plugins tasks for plugins enabled for the environment
+  `GET /clusters/<cluster_id>/deployment_tasks/plugins/`
+  with `graph_type` parameter support
+
+* Get cluster release deployment tasks
+  `GET /clusters/<cluster_id>/deployment_tasks/release/`
+  with `graph_type` parameter support
+
 * Operate specific type related to Cluster
   `GET/POST/PUT/PATCH/DELETE /clusters/<cluster_id>/deployment_graphs/<graph_type>/`
 
@@ -344,7 +352,7 @@ Run custom graph
 Graph should be ran for given cluster with optional nodes list.
 And it is not possible to run graph without cluster.
 
-* Existing `PUT /cluster/<cluster_id>/deploy/`
+* Existing `PUT /clusters/<cluster_id>/deploy/`
   Should be extended with `graph_type` parameter.
 
 Other API changes
