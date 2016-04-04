@@ -81,6 +81,18 @@ Example: Customer 7.0/centos6
  http://${mirror_host}/customer/centos/mos7.0-centos6/cr/x86_64/
 
 
+Example: MOS 9.0/centos7
+-------------------------------
+
+::
+
+ http://${mirror_host}/mos-repos/centos/mos9.0-centos7/os/x86_64/
+ http://${mirror_host}/mos-repos/centos/mos9.0-centos7/updates/x86_64/
+ http://${mirror_host}/mos-repos/centos/mos9.0-centos7/security/x86_64/
+ http://${mirror_host}/mos-repos/centos/mos9.0-centos7/holdback/x86_64/
+ http://${mirror_host}/mos-repos/centos/mos9.0-centos7/cr/x86_64/
+
+
 Advantages:
  - MOS release can target arbitrary number of Centos versions
    (limited only by available resources).
