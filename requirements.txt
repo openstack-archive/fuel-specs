@@ -1,3 +1,4 @@
+PyYAML>=3.11
 docutils==0.9.1
 oslosphinx
 pbr>=0.6,!=0.7,<1.0
