@@ -73,16 +73,10 @@ Core Reviewer:
     of code reviews and was promoted to core reviewers team by consensus of
     other core reviewers of the same Fuel component.
 
-Component Lead:
-    Defines architecture of a particular module or component in Fuel, resolves
-    technical disputes in their area of responsibility. All design specs that
-    impact a component must be approved by the corresponding component lead.
-
 Fuel PTL:
     Project Team Lead in its OpenStack standard definition. Delegates most of
-    the review and design work to component leads, resolves technical disputes
-    across components and for components that don't have dedicated component
-    leads.
+    the review and design work to component teams, resolves technical disputes
+    across components.
 
 Code Review Workflow
 --------------------
@@ -101,7 +95,7 @@ Typical commit goes through the following code review stages:
 
 3. A commit that has a +2 vote from a core reviewer can be merged by another
    core reviewer (may be the same core reviewer if the repository has only 2 or
-   less core reviewers), or by the component lead of the modified component.
+   less core reviewers).
 
 Governance Process
 ------------------
@@ -110,21 +104,19 @@ Fuel PTL is elected twice a year following the same cycle and rules as other
 OpenStack projects: all committers to all Fuel projects (fuel-* and
 python-fuelclient) over the last year can vote and can self-nominate.
 
-Fuel component leads are elected twice a year immediately after PTL elections,
-following the same process. All committers to the component code repository as
-defined below over the last year can vote and can self-nominate. Same person
-can't be PTL and component lead in the same cycle.
+Fuel aggregates features provided by Fuel components.
+Components could be either Fuel driven (like Nailgun, Astute, UI) or
+generic in a sense that Fuel is not the only use case for such components
+(e.g. Keystone, potentially Neutron, Ironic, Glance, etc.). Component
+teams are independent but should interact with each other while
+working on features.
 
-Following Fuel components have elected leads:
-
-* fuel-library
-
-* fuel-web
-
-* fuel-ui
-
-In other repositories, there is no component leads, and technical decisions are
-made by consensus of core reviewers, and disputes are resolved by Fuel PTL.
+Core team of a component is responsible for code review in their component.
+It is totally up to a component team (not Fuel team as a whole)
+to decide whether they resolve review conflicts by consensus or they delegate
+their voices to a formal or inforaml component lead. It should be up to a
+component team how they share review responsibilites and how they make
+architecture and planning decisions.
 
 Core reviewers are approved by consensus of existing core reviewers, following
 the same process as with other OpenStack projects. Core reviewers can
@@ -137,6 +129,23 @@ propose an update of a MAINTAINERS file; a core reviewer can approve an update
 that has a +2 from another core reviewer; if the update adds new maintainers,
 it must also have +1 votes from all added maintainers.
 
+Since components could be generic there must be two levels of design.
+By-component design specs describe component changes that are not necessarily
+related to Fuel and these specs are out of the scope of this policy.
+Fuel design specs describe Fuel features that usually require coordinated
+changes in multiple components. Each Fuel spec must be reviewed
+and approved by matter experts from at least the following backgrounds
+(even if respective section is empty):
+
+* Web UI
+
+* Nailgun&Orchestration
+
+* Fuel Library
+
+It is up to the Fuel-specs core team to involve other SMEs to review a particular
+spec if specific expertise is required.
+
 Alternatives
 ============
 
@@ -148,15 +157,6 @@ a single list of core reviewers for the whole project. The advantage is a more
 simple and straightforward governance process. The disadvantages are described
 in the problem description.
 
-Split Fuel into sub-projects
-----------------------------
-
-An alternative way to address the problem of insufficiently granular ownership
-is to split Fuel into several sub-projects with independent governance. The
-advantage is not having to introduce the role of a component lead that doesn't
-exist in other OpenStack projects. The disadvantage is even more governance
-overhead, and having to involve the Technical Committee in cross-sub-project
-dispute resolution.
 
 Implementation
 ==============
@@ -164,9 +164,12 @@ Implementation
 Author(s)
 ---------
 
-Primary author: mihgen (Mike Scherbakov)
+Primary author:
+  mihgen (Mike Scherbakov)
 
-Other contributors: angdraug (Dmitry Borodaenko)
+Other contributors:
+  angdraug (Dmitry Borodaenko)
+  kozhukalov (Vladimir Kozhukalov)
 
 Milestones
 ----------
