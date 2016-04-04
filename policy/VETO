@@ -1,0 +1,21 @@
+---
+description:
+  For Fuel team structure and contribution policy, see [1].
+
+  This is Fuel spec VETO file. This file is used to check if a design
+  spec has been approved by at least one veto volunteers for all listed
+  sections. Otherwise a spec can not be merged. We need this kind
+  of check to avoid cross-component design discrepancies.
+
+  [1] https://specs.openstack.org/openstack/fuel-specs/policy/team-structure
+
+  Please keep this file in YAML format in order to allow helper scripts
+  to read this as a configuration data.
+
+veto:
+  "Web UI":
+    - "Vitaly Kramskikh <vkramskikh@mirantis.com>"
+  "Nailgun":
+    - "Igor Kalnitsky <ikalnitsky@mirantis.com>"
+  "Fuel Library":
+    - "Sergii Golovatiuk <sgolovatiuk@mirantis.com>"
