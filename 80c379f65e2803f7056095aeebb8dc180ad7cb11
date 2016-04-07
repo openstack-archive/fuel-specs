@@ -1,0 +1,14 @@
+Code-Review+1: Vasily Gorin <vgorin@mirantis.com>
+Code-Review+1: Mike Scherbakov <mscherbakov@mirantis.com>
+Code-Review+2: Igor Kalnitsky <ikalnitsky@mirantis.com>
+Code-Review+1: sryabin <sryabin@mirantis.com>
+Code-Review+1: Oleksii Kolodiazhnyi <akolodyazhnyy@mirantis.com>
+Code-Review+1: Aleksey Kasatkin <akasatkin@mirantis.com>
+Code-Review+2: Sergii Golovatiuk <sgolovatiuk@mirantis.com>
+Workflow+1: Igor Kalnitsky <ikalnitsky@mirantis.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Thu, 07 Apr 2016 14:14:05 +0000
+Reviewed-on: https://review.openstack.org/286012
+Project: openstack/fuel-specs
+Branch: refs/heads/master
