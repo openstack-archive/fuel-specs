@@ -35,7 +35,7 @@ contradicts with the main Fuel idea - keep as more business logic in Nailgun as
 we can. Also, the only 'Cinder' role makes it hard to deploy VMDK and
 LVM/Ceph backends in one environment simultaneously.
 
-I want to cover the following use case within blueprint [5]
+I want to cover the following use case within blueprint [5]_.
 
 Be able to deploy Cinder VMDK backend simultaneously with any other Cinder
 backends.
@@ -153,7 +153,7 @@ Developer impact
 
 Part of fuel-library, which deploys cinder-node will be reverted to state
 before support of vmdk was enabled. New role deployment will be realized as an
-independent task for granular deployment according to [4].
+independent task for granular deployment according to [4]_.
 
 Implementation
 ==============
@@ -192,9 +192,9 @@ No strict dependencies.
 
 Possible dependencies are:
 
-* Granular deployment feature [1].
-* VMware: Dual hypervisor support (vCenter and KVM in one environment) [2].
-* VMware UI Settings Tab for FuelWeb [3].
+* Granular deployment feature [1]_.
+* VMware: Dual hypervisor support (vCenter and KVM in one environment) [2]_.
+* VMware UI Settings Tab for FuelWeb [3]_.
 
 
 Testing
@@ -205,7 +205,7 @@ this tests depend on ostf tests, which know nothing about availability zones.
 Therefore OSTF tests can't test how cinder works in multiple availability zones
 environment. And surely tests, which based on OSTF, are also useless.
 
-This problem will be fixed in blueprint [3]. When it happens, system tests
+This problem will be fixed in blueprint [3]_. When it happens, system tests
 should be changed for using with availability zones.
 
 Before it the QA team may perform manual testing of declared features.
@@ -221,13 +221,13 @@ There are several changes in Users' Guide:
 References
 ==========
 
-[1] Granular deployment feature
-  (https://blueprints.launchpad.net/fuel/+spec/granular-deployment-based-on-tasks)
-[2] VMware: Dual hypervisor support (vCenter and KVM in one environment)
-  (https://blueprints.launchpad.net/fuel/+spec/vmware-dual-hypervisor)
-[3] VMware UI Settings Tab for FuelWeb
-  (https://blueprints.launchpad.net/fuel/+spec/vmware-ui-setting)
-[4] Modify Fuel Library to become more modular
-  (https://blueprints.launchpad.net/fuel/+spec/fuel-library-modularization)
-[5] VMware: Add a separate role for Cinder with VMDK backend
-  (https://blueprints.launchpad.net/fuel/+spec/cinder-vmdk-role)
+.. [1] Granular deployment feature
+       (https://blueprints.launchpad.net/fuel/+spec/granular-deployment-based-on-tasks)
+.. [2] VMware: Dual hypervisor support (vCenter and KVM in one environment)
+       (https://blueprints.launchpad.net/fuel/+spec/vmware-dual-hypervisor)
+.. [3] VMware UI Settings Tab for FuelWeb
+       (https://blueprints.launchpad.net/fuel/+spec/vmware-ui-setting)
+.. [4] Modify Fuel Library to become more modular
+       (https://blueprints.launchpad.net/fuel/+spec/fuel-library-modularization)
+.. [5] VMware: Add a separate role for Cinder with VMDK backend
+       (https://blueprints.launchpad.net/fuel/+spec/cinder-vmdk-role)

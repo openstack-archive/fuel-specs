@@ -175,5 +175,6 @@ References
 
 * InternJS library - https://theintern.github.io
 * ChaiJS assertion library - http://chaijs.com
-* Leadfoot library for consistency with Selenium WebDriver API - https://theintern.github.io/leadfoot
+* Leadfoot library for consistency with Selenium WebDriver API -
+  https://theintern.github.io/leadfoot
 * Spec for UI unit-tests - https://review.openstack.org/#/c/195666

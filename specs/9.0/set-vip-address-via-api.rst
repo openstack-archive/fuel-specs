@@ -91,9 +91,9 @@ There will be GET and PUT(PATCH) requests for both single object and
 collection and POST requests for collection only.
 
 Only `ip_addr`, `vip_namespace` and `is_user_defined` fields can be changed via
-PUT requests. It should be possible to pass full output of GET request to the input of
-PUT request (as for other handlers). Check for read-only fields should be done
-in API validator.
+PUT requests. It should be possible to pass full output of GET request to the
+input of PUT request (as for other handlers). Check for read-only fields should
+be done in API validator.
 
 Post requests will allow to create
 (allocate) VIPs in data base with user defined IP. `ip_addr`, `vip_namespace`,

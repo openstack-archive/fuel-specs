@@ -143,8 +143,8 @@ that are implemented in terms of Dockerfile. That makes it difficult
 If you try to implement docker-free mode compatible with docker one,
 you are likely to go through several test fix iterations
 (including update the ISO on the test environment). Besides if you build
-this new ISO with a patch and this patch will pass tests, other tests are likely
-to become broken.
+this new ISO with a patch and this patch will pass tests, other tests are
+likely to become broken.
 
 It also could be important from the deprecation perspective. Having this
 separate module we have two working schemes at the same time. We just need

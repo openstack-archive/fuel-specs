@@ -50,7 +50,8 @@ On agent side (OVS):
 Web UI
 ======
 
-In Neutron Advanced Configuration section a checkbox will be added to enable QoS.
+In Neutron Advanced Configuration section a checkbox will be added to enable
+QoS.
 
 Nailgun
 =======

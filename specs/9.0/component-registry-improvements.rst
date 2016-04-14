@@ -36,12 +36,12 @@ them:
 
     .. code-block:: yaml
 
-    - name: hypervisor:vmware
-        compatible:
-          - name: hypervisor:libvirt:*
-        requires:
-          - name: network:neutron:NSX
-          - name: network:neutron:DVS
+       - name: hypervisor:vmware
+           compatible:
+             - name: hypervisor:libvirt:*
+           requires:
+             - name: network:neutron:NSX
+             - name: network:neutron:DVS
 
     In this case both NSX and DVS are required for vmware, but vCenter needs
     only one of them.

@@ -219,8 +219,9 @@ Graph external relation is cascade deleted when external model is removed or
 graph is removed.
 
 Every graph is related only to one external model when parent model is
-removed, this graph is removed automatically. It is not possible to create graph shared
-between different models due artificial limitation that could be removed in future.
+removed, this graph is removed automatically. It is not possible to create
+graph shared between different models due artificial limitation that could be
+removed in future.
 
 REST API
 --------
@@ -311,31 +312,31 @@ Operations with graph via different models
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * Get all graphs for release
-  `GET /releases/<release_id>/deployment_graphs/`
+  ``GET /releases/<release_id>/deployment_graphs/``
 
 * Operate specific type for Release
-  `GET/POST/PUT/PATCH/DELETE /releases/<release_id>/deployment_graphs/<graph_type>/`
+  ``GET/POST/PUT/PATCH/DELETE /releases/<release_id>/deployment_graphs/<graph_type>/``
 
 * Get deployment tasks for the Release
-  Existing `GET /releases/<release_id>/deployment_tasks/`
+  Existing ``GET /releases/<release_id>/deployment_tasks/``
   Should be extended with `graph_type` parameter for the consistency with
-  cluster `/deployment_tasks` handler (see below)
+  cluster ``/deployment_tasks`` handler (see below)
 
 * Get all graphs for Cluster
-  `GET /clusters/<cluster_id>/deployment_graphs/`
+  ``GET /clusters/<cluster_id>/deployment_graphs/``
 
 * Get merged tasks for the environment
-  Existing `GET /clusters/<cluster_id>/deployment_tasks/`
-  Should be extended with `graph_type` parameter
+  Existing ``GET /clusters/<cluster_id>/deployment_tasks/``
+  Should be extended with ``graph_type`` parameter
 
 * Operate specific type related to Cluster
-  `GET/POST/PUT/PATCH/DELETE /clusters/<cluster_id>/deployment_graphs/<graph_type>/`
+  ``GET/POST/PUT/PATCH/DELETE /clusters/<cluster_id>/deployment_graphs/<graph_type>/``
 
 * Get all graphs for Plugin
-  `GET /plugins/<cluster_id>/deployment_graphs/`
+  ``GET /plugins/<cluster_id>/deployment_graphs/``
 
 * Operate specific type related to plugin
-  `GET/POST/PUT/PATCH/DELETE /plugins/<plugin_id>/deployment_graphs/<graph_type>/`
+  ``GET/POST/PUT/PATCH/DELETE /plugins/<plugin_id>/deployment_graphs/<graph_type>/``
 
 
 Run custom graph
@@ -355,6 +356,12 @@ Other API changes
 
 * Existing `GET /clusters/<cluster_id>/deploy_tasks/graph.gv`
   Should be extended with `graph_type` parameter.
+
+
+Orchestration
+=============
+
+None
 
 RPC Protocol
 ------------

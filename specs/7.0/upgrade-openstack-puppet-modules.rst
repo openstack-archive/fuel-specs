@@ -295,6 +295,7 @@ Commit changes for Ironic module sync and adapt should have DocImpact tag.
 References
 ==========
 
-1. Blueprint https://blueprints.launchpad.net/fuel/+spec/upgrade-openstack-puppet-modules
+1. Blueprint
+   https://blueprints.launchpad.net/fuel/+spec/upgrade-openstack-puppet-modules
 2. Trello board https://trello.com/b/epRiNHz6/mos-puppets
 3. Etherpad https://etherpad.openstack.org/p/fuel_puppet_modules_upgrade

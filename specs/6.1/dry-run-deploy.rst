@@ -207,7 +207,10 @@ mirrored into corresponding documentation.
 References
 ==========
 
-* initial discussion: https://www.mail-archive.com/fuel-dev%40lists.launchpad.net/msg01515.html;
-* initial blueprint: https://blueprints.launchpad.net/fuel/+spec/upload-astute-yaml-only;
-* related blueprint: https://blueprints.launchpad.net/fuel/+spec/blank-role-node.
+* initial discussion:
+  https://www.mail-archive.com/fuel-dev%40lists.launchpad.net/msg01515.html;
+* initial blueprint:
+  https://blueprints.launchpad.net/fuel/+spec/upload-astute-yaml-only;
+* related blueprint:
+  https://blueprints.launchpad.net/fuel/+spec/blank-role-node.
 

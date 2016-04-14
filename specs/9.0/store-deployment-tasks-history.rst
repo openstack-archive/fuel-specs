@@ -196,6 +196,12 @@ Fuel Library
 
 None
 
+------------
+Alternatives
+------------
+
+None
+
 --------------
 Upgrade impact
 --------------

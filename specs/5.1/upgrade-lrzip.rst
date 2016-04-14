@@ -133,4 +133,5 @@ Upgrade guide must be updated with new command line for unpacking of tarball.
 References
 ==========
 
-Discussion in openstack-dev: https://www.mail-archive.com/openstack-dev@lists.openstack.org/msg32837.html
+Discussion in openstack-dev:
+https://www.mail-archive.com/openstack-dev@lists.openstack.org/msg32837.html

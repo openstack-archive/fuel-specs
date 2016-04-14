@@ -10,6 +10,7 @@ Provide api to download serialized graph
 
 API for downloading serialized graph, that is used for task-based deployment,
 can be usefull in next scenarios:
+
 - Manual pre-deployment verification
 - Consumption of fuel composition layer in 3rd party applications
 
@@ -19,9 +20,10 @@ This specification is concerned with latter usage scenario.
 Problem description
 --------------------
 
-In solar we want to regenerate fuel resource composition, and take into account -
-role allocation, conditions based on fuel settings, and other misc logic that
-are used to build deployment composition. And all of those actions are executed during graph compilation procedure.
+In solar we want to regenerate fuel resource composition, and take into
+account - role allocation, conditions based on fuel settings, and other misc
+logic that are used to build deployment composition. And all of those actions
+are executed during graph compilation procedure.
 
 Instead of fetching deployment graph we could fetch other configuration
 options exposed by fuel API, like role allocation and settings. And write
@@ -33,10 +35,22 @@ component and nailgun.
 Proposed changes
 ----------------
 
+Web UI
+======
+
+None
+
+
 Nailgun
 =======
 
 New handler that will expose already existing logic.
+
+
+Data model
+----------
+
+None
 
 REST API
 --------
@@ -52,15 +66,38 @@ On request it will use task_based_deployment.TaskSerializer.serialize method
 with all provided by user parameters.
 
 Additional validations provided by handler:
-- If node is not present in cluster request will be invalidated with 400 Bad Request
+
+- If node is not present in cluster request will be invalidated with
+  400 Bad Request
 - Cluster or node is not found in database - 404 Not Found
 - If task based deployment is not allowed - 400 Bad Request
+
+
+Orchestration
+=============
+
+None
+
+RPC Protocol
+------------
+
+None
 
 Fuel Client
 ===========
 
 Exposing handler data with fuel client is out of scope for this
 specification.
+
+Plugins
+=======
+
+None
+
+Fuel Library
+============
+
+None
 
 ------------
 Alternatives
@@ -78,6 +115,12 @@ No impact
 ---------------
 Security impact
 ---------------
+
+No impact
+
+--------------------
+Notifications impact
+--------------------
 
 No impact
 
@@ -163,3 +206,10 @@ exposed by TasksSerializer, including:
 - choose cluster
 - select subset of nodes in cluster
 - select list of tasks that will be included in tasks serialization
+
+
+----------
+References
+----------
+
+None

@@ -277,7 +277,9 @@ Work Items
   connection on the storage interface parent / probbed interface
   (OVS bridge/LB does not support RDMA).
 
-4. Example code can be found in `Mellanox fuel-web fork <https://github.com/Mellanox/fuel-web/commit/3386c6cc787d2d0ae48a386023b8b5c1998c0eeb>`_ (serializers and UI code are not relevant in this link).
+4. Example code can be found in
+   `Mellanox fuel-web fork <https://github.com/Mellanox/fuel-web/commit/3386c6cc787d2d0ae48a386023b8b5c1998c0eeb>`_
+   (serializers and UI code are not relevant in this link).
 
 
 Dependencies
@@ -313,7 +315,8 @@ Documentation Impact
 #. Instructions for "Network drivers identification" will be added to the
    User guide.
 #. Instructions for "How to install Mirantis Openstack with Infiniband Network"
-   will be added to the Mellanox community, similarly to `this post <https://community.mellanox.com/docs/DOC-2036>`_
+   will be added to the Mellanox community, similarly to
+   `this post <https://community.mellanox.com/docs/DOC-2036>`_
    that has been made to the 5.1 based Fuel IB POC.
 
 

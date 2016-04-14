@@ -108,15 +108,15 @@ For example, we faced the following issues while switching to CentOS-7.2:
   issue but it is not. This issue is common for many distributions, there
   are bugs in CentOS, RedHat, Ubuntu, Novell, some of them are several years
   old and some of them even open. There is a workaround to solve this issue -
-  disable TSO offloading [2], and it looks suitable solution for master node.
+  disable TSO offloading [2]_, and it looks suitable solution for master node.
   Another solution is to use virtio drivers, but it requires a bit more work
   and significantly more testing.
 
-* libxml2 regression [3] that prevents postgresql to be built.
+* libxml2 regression [3]_ that prevents postgresql to be built.
 
 * upstream docker images were updated with a delay that caused several
   builds to fail because of transition from systemd-container-\* packages
-  to actual systemd [1].
+  to actual systemd [1]_.
 
 
 --------------
@@ -195,7 +195,7 @@ February:
   * Critical - 1
 
 So, 24 bug for just 2 months. For those who interested in details there is
-an etherpad [0] with links to every bug I've counted here.
+an etherpad [0]_ with links to every bug I've counted here.
 
 
 --------------------
@@ -340,7 +340,7 @@ Fuel ISO uses CentOS-7.2 when deploying master node.
 References
 ----------
 
-[0] https://etherpad.openstack.org/p/r.a7fe0b575d891ed81206765fa5be6630
-[1] http://seven.centos.org/2015/12/fixing-centos-7-systemd-conflicts-with-docker/
-[2] https://bugs.launchpad.net/mos/+bug/1534638
-[3] https://review.openstack.org/#/c/285306/
+.. [0] https://etherpad.openstack.org/p/r.a7fe0b575d891ed81206765fa5be6630
+.. [1] http://seven.centos.org/2015/12/fixing-centos-7-systemd-conflicts-with-docker/
+.. [2] https://bugs.launchpad.net/mos/+bug/1534638
+.. [3] https://review.openstack.org/#/c/285306/

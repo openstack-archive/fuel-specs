@@ -251,7 +251,8 @@ Work Items
 
 * Prepare Aodh packages
 * Implement fuel modular manifests to deploy the Aodh services
-* Implement migration script for migrating alarms from Ceilometer to Aodh storage.
+* Implement migration script for migrating alarms from Ceilometer to Aodh
+  storage.
 
 Dependencies
 ============

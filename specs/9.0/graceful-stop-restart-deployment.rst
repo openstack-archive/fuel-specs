@@ -80,6 +80,11 @@ Nailgun
 New node status 'stopped' is going to be introduced. Also, Nailgun rpc
 receiver is going to be altered to support 'stopped' task status.
 
+Data model
+----------
+
+None
+
 REST API
 --------
 
@@ -146,6 +151,13 @@ Ability to stop the cluster without ruining it
 ------------------
 Performance impact
 ------------------
+
+None
+
+
+-----------------
+Deployment impact
+-----------------
 
 None
 

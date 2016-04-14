@@ -35,7 +35,7 @@ of network configuration objects.
 Nailgun
 =======
 
-Data Model
+Data model
 ----------
 
 Database calls will all be moved into the appropriate object classes.
@@ -125,11 +125,12 @@ None
 Developer impact
 ----------------
 
-In NetworkManager developers must use object methods instead of direct database queries.
+In NetworkManager developers must use object methods instead of direct
+database queries.
 
---------------------------------
-Infrastructure/operations impact
---------------------------------
+---------------------
+Infrastructure impact
+---------------------
 
 None
 
