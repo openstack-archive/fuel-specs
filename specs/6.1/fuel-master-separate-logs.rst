@@ -43,7 +43,8 @@ intended result is the following breakdown of disk space:
 * 1GB for Docker metadata*
 * Greater of 8gb or 30% of remaining disk space for Docker main data*
 
-(* Docker changes tracked in https://blueprints.launchpad.net/fuel/+spec/dedicated-docker-volume-on-master)
+(* Docker changes tracked in
+ https://blueprints.launchpad.net/fuel/+spec/dedicated-docker-volume-on-master)
 
 This change will not be made available to existing installations and will
 not be applied during Fuel Master upgrade.
@@ -131,7 +132,8 @@ Work Items
 Dependencies
 ============
 
-* Related blueprint https://blueprints.launchpad.net/fuel/+spec/dedicated-docker-volume-on-master
+* Related blueprint
+  https://blueprints.launchpad.net/fuel/+spec/dedicated-docker-volume-on-master
 
 Testing
 =======

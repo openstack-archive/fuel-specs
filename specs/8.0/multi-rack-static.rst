@@ -319,7 +319,8 @@ In order to verify the quality of new features, automatic system tests will be
 expanded by the cases listed below:
 
 1. Environment is deployed using slaves from non-default nodegroup as
-controller nodes. See https://blueprints.launchpad.net/fuel/+spec/test-custom-nodegroup-controllers
+controller nodes. See
+https://blueprints.launchpad.net/fuel/+spec/test-custom-nodegroup-controllers
 
 2. New nodegroup is added to operational environment.
 See https://blueprints.launchpad.net/fuel/+spec/test-nodegroup-add
@@ -328,16 +329,19 @@ See https://blueprints.launchpad.net/fuel/+spec/test-nodegroup-add
 See https://blueprints.launchpad.net/fuel/+spec/test-custom-default-gw
 
 4. Deploy environment with few nodegroups and shared network parameters between
-them. See https://blueprints.launchpad.net/fuel/+spec/test-nodegroups-share-networks
+them. See
+https://blueprints.launchpad.net/fuel/+spec/test-nodegroups-share-networks
 
 5. Default IP range is changed for admin/pxe network.
 See https://bugs.launchpad.net/fuel/+bug/1513154
 
 6. Slave nodes are bootstrapped and successfully deployed using non-eth0
-interface for admin/pxe network. See https://bugs.launchpad.net/fuel/+bug/1513159
+interface for admin/pxe network.
+See https://bugs.launchpad.net/fuel/+bug/1513159
 
 Also there is a need to align existing tests for multiple cluster networks with
-new features. See https://blueprints.launchpad.net/fuel/+spec/align-nodegroups-tests
+new features. See
+https://blueprints.launchpad.net/fuel/+spec/align-nodegroups-tests
 
 Acceptance criteria
 ===================

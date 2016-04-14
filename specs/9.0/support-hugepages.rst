@@ -39,8 +39,8 @@ improved libvirt driver [2]_.
 
 Also, Huge Pages configuration can be applied per NUMA node, for more
 description about support NUMA node take a look [3]_. Operator will have an
-ability to specify configuration for whole compute node. Distribution of Huge Pages
-on NUMA nodes will be processed by Nailgun.
+ability to specify configuration for whole compute node. Distribution of
+Huge Pages on NUMA nodes will be processed by Nailgun.
 
 Enabling of Huge Pages requires:
 
@@ -79,8 +79,8 @@ system possesses.
 Data model
 ----------
 
-`numa_topology` section of node.metadata will contain information about available
-Huge Pages and RAM per NUMA node [3]_:
+`numa_topology` section of node.metadata will contain information about
+available Huge Pages and RAM per NUMA node [3]_:
 
 Huge Pages User's configuration will be stored in node.attributes as:
 
@@ -235,9 +235,9 @@ Developer impact
 
 None
 
---------------------------------
-Infrastructure/operations impact
---------------------------------
+---------------------
+Infrastructure impact
+---------------------
 
 None
 
@@ -312,8 +312,8 @@ Testing, QA
 Acceptance criteria
 ===================
 
-* User is provided with interface (Web UI/CLI/API) to enable and set Huge Pages in Fuel
-  per compute node or compute NUMA node
+* User is provided with interface (Web UI/CLI/API) to enable and set
+  Huge Pages in Fuel per compute node or compute NUMA node
 * New test cases are executed succesfully
 
 ----------

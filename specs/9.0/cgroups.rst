@@ -17,10 +17,10 @@ Support daemon resource control by means of cgroups kernel feature.
 Problem description
 --------------------
 
-General OS doesn't activate any protection by default against taking all hardware's memory
-or CPU. So there is a necessity to allocate resources between competing processes,
-e.g. at the peak time CPU computing resources should be distributed by the
-specified rules.
+General OS doesn't activate any protection by default against taking all
+hardware's memory or CPU. So there is a necessity to allocate resources
+between competing processes, e.g. at the peak time CPU computing resources
+should be distributed by the specified rules.
 
 
 ----------------
@@ -41,8 +41,8 @@ Service set what is supposed to be moved under cgroups control:
         - ceph services
 
 User will be able to move all services described above under cgroups resources
-control(we specified only openstack related set of services in provided list, but,
-user is able to move any service what he want under the cgroup control).
+control(we specified only openstack related set of services in provided list,
+but, user is able to move any service what he want under the cgroup control).
 User should prepare special configuration JSON string for each service
 what supposed to be moved under the cgroups control(cgroups utils will be
 installed even if no cgroup's settings are specified).
@@ -96,13 +96,13 @@ None
 Data model
 ----------
 
-New hidden section `cgroups` should be added into openstack.yaml file under 'general' group
-to make cgroups settings configurable after the cluster is deployed. User will be able to
-download/upload cluster's settings file to override default cgroups settings(add new services
-and settings).
+New hidden section `cgroups` should be added into openstack.yaml file under
+'general' group to make cgroups settings configurable after the cluster is
+deployed. User will be able to download/upload cluster's settings file to
+override default cgroups settings(add new services and settings).
 
-Example of a new structure what's supposed to be added into openstack.yaml file by
-( the nesting level - ['editable']['additional_components']):
+Example of a new structure what's supposed to be added into openstack.yaml
+file by (the nesting level - ['editable']['additional_components']):
 
 .. code-block:: yaml
 
@@ -143,8 +143,8 @@ Example of services what should be added under cgroups control:
       value: '{"memory":{"memory.soft_limit_in_bytes":"%total, min, max"}}'
     ...
 
-Cgroups limits per service will be described in json format into 'text' fields. Format will be
-explicitly described in feature's documentation.
+Cgroups limits per service will be described in json format into 'text' fields.
+Format will be explicitly described in feature's documentation.
 
 
 REST API
@@ -179,10 +179,11 @@ None
 Fuel Library
 ============
 
-Cloud operator should add services that are supposed to be moved under cgroups control into
-cluster's settings file via CLI(into cgroups section), data from corresponding section
-will be included into node's astute yaml file automatically during the serialization
-process.
+Cloud operator should add services that are supposed to be moved under cgroups
+control into cluster's settings file via CLI(into cgroups section), data from
+corresponding section will be included into node's astute yaml file
+automatically during the serialization process.
+
 A new cgroups puppet module should be implemented which will be used by
 main task to configure given limits for services on the cluster nodes.
 Module should be able to get input data from hiera structure
@@ -243,9 +244,10 @@ End user impact
 ---------------
 
 User will be able to configure cgroups for set of services using:
-    * API - PUT api call - http://FUEL_IP:8000/api/v1/clusters/CLUSTER_ID/attributes
-    * CLI - download, introduce `cgroups` section and upload cluster's settings via
-            `fuel --env CLUSTER_ID settings -d/-u` command
+    * API - PUT api call -
+      http://FUEL_IP:8000/api/v1/clusters/CLUSTER_ID/attributes
+    * CLI - download, introduce `cgroups` section and upload cluster's
+      settings via `fuel --env CLUSTER_ID settings -d/-u` command
 
 
 ------------------

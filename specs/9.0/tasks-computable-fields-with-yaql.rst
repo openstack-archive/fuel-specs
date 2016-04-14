@@ -334,9 +334,8 @@ It should be enough to have simple unit and integration tests in Nailgun
 to verify sanity of the feature as the main deployment scenarios output
 will remain intact.
 
--------------------
 Acceptance criteria
--------------------
+===================
 
 User should be able to specify a YAQL expression in any task field except for
 id (or it subfields) and get this YAQL expression evaluated correctly with

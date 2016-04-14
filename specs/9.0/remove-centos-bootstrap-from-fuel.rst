@@ -191,11 +191,13 @@ Primary assignee:
 Work Items
 ==========
 
-* Remove CentOS bootstrap image selection from `fuel-menu <https://github.com/openstack/fuel-menu>`_
-* Switch to Ubuntu bootstrap in `fuel-library <https://github.com/openstack/fuel-library>`_
+* Remove CentOS bootstrap image selection from
+  `fuel-menu <https://github.com/openstack/fuel-menu>`_
+* Switch to Ubuntu bootstrap in
+  `fuel-library <https://github.com/openstack/fuel-library>`_
 * Remove fuel-bootstrap-image [2]_
-* Remove related code from `fuel-qa <https://github.com/openstack/fuel-qa>`_ and
-  `fuel-devops <https://github.com/openstack/fuel-devops>`_
+* Remove related code from `fuel-qa <https://github.com/openstack/fuel-qa>`_
+  and `fuel-devops <https://github.com/openstack/fuel-devops>`_
 
 
 Dependencies
@@ -208,8 +210,9 @@ None
 Testing, QA
 ------------
 
-Related changes should be made in `fuel-devops <https://github.com/openstack/fuel-devops>`_
-and `fuel-qa <https://github.com/openstack/fuel-qa>`_ since `bootstrap.rsa`
+Related changes should be made in
+`fuel-devops <https://github.com/openstack/fuel-devops>`_ and
+`fuel-qa <https://github.com/openstack/fuel-qa>`_ since `bootstrap.rsa`
 key file will no longer exist
 
 

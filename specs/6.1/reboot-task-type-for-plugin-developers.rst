@@ -40,7 +40,7 @@ It should acts as other type tasks actions:
 * the fact of the operation and its result should be logged in Astute
   log, e.g.:
 
-.. code-block:: none
+.. code:: text
 
     Run hook
     ---
@@ -56,12 +56,12 @@ It should acts as other type tasks actions:
     type: reboot
     diagnostic_name: <plugin name>
 
-.. code-block:: none
+.. code-block:: text
 
   Reboot command failed for nodes ["<node id>"]. Check debug output
   for details
 
-.. code-block:: none
+.. code-block:: text
 
   Time detection (<timeout> sec) for node reboot has expired
 

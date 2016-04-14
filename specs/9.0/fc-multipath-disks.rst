@@ -132,6 +132,10 @@ Orchestration
 
 None
 
+RPC Protocol
+------------
+
+None
 
 Fuel Client
 ===========
@@ -162,8 +166,8 @@ provide parsed output from commands
     `dmsetup info -c --nameprefixes --noheadings --rows -o name,uuid,blkdevname,blkdevs_used`
     `udevadm info --query=property --export --name=#{device_name}`
 
-as for discovered block devices. It should be enough to determingite the multipath
-configuration on server side.
+as for discovered block devices. It should be enough to determingite the
+multipath configuration on server side.
 
 New version of fuel-nailgun-agent report will look this:
 
@@ -247,10 +251,10 @@ All others impact can be related only with FC HBA multipath system itself.
 Deployment impact
 -----------------
 
-We propose to add possibility to attach disk via multipath and FC HBA for nodes.
-Disks will be available on fuel ui, and normally processed like physical disks.
-This feature don't have any impact on previous installations, only extend
-disks support.
+We propose to add possibility to attach disk via multipath and FC HBA for
+nodes. Disks will be available on fuel ui, and normally processed like
+physical disks. This feature don't have any impact on previous installations,
+only extend disks support.
 
 ----------------
 Developer impact
@@ -305,7 +309,8 @@ Work Items
 - extend fuel-ui to show multipath disks
 - add packages related to multipath support into default ubuntu-bootstrap image
 - add fuel-nailgun-agent support for correct multipath disk discovery
-- add to nailgun support for correct serialization of disks delivered by multipath
+- add to nailgun support for correct serialization of disks delivered by
+  multipath
 
 
 Dependencies

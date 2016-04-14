@@ -71,7 +71,8 @@ The following validation is needed in UI only:
   or plugin. Fuel will just configure appropriate `pci_passthrough_whitelist`
   option in nova.conf for such interface and physical networks
 
-The proposed change to Node Interfaces configuration screen will look like this:
+The proposed change to Node Interfaces configuration screen will look like
+this:
 
   .. image:: ../../images/9.0/support-sriov/sriov-ui.png
       :scale: 75 %

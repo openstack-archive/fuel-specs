@@ -49,4 +49,4 @@ class TestTitles(base.BaseDocTest):
     }
 
     files = ['specs/template.rst']
-    versions = ('8.0',)
+    versions = ('8.0', '9.0', )

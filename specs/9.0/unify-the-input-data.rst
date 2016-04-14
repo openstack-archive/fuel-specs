@@ -271,6 +271,11 @@ Work Items
 
 * Implement search by priority
 
+Dependencies
+============
+
+None
+
 ------------
 Testing, QA
 ------------
