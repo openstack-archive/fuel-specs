@@ -84,32 +84,32 @@ available Huge Pages and RAM per NUMA node [3]_:
 
 Huge Pages User's configuration will be stored in node.attributes as:
 
-.. code-block:: json
+.. code-block:: yaml
 
-  node.attributes = {
-    ...
-    'nova_hugepages': {
-      'weight': 20,
-      'description': "Nova Huge Pages configuration",
-      'label': "Nova Huge Pages",
-      'type': 'custom_hugepages',
-      'value': {
-        '<size>': <count>,
-        '1G': 10
-      }
-    },
-    'dpdk_hugepages': {
-      'weight': 20,
-      'description': "DPDK Huge Pages per NUMA node in MB",
-      'label': "DPDK Huge Pages",
-      'type': 'text',
-      'value': '128',
-      'regex': {
-        'source': "^\d+$",
-        'error': "Incorrect value"
-      }
-    ...
-   }
+  node_attributes:
+    hugepages:
+      metadata:
+        group: "nfv"
+        label: "Huge Pages"
+        weight: 20
+        restrictions:
+          - condition: "settings:common.libvirt_type.value != 'kvm'"
+            action: "hide"
+      nova:
+        weight: 10
+        description: "Nova Huge Pages configuration"
+        label: "Nova Huge Pages"
+        type: "custom_hugepages"
+        value: {}
+      dpdk:
+        weight: 20
+        description: "DPDK Huge Pages per NUMA node in MB"
+        label: "DPDK Huge Pages"
+        type: "text"
+        value: "0"
+        regex:
+          source: '^\d+$'
+          error: "Incorrect value"
 
 Where `<size>` can only be one of the available Huge Pages sizes. For all
 remaining memory will be used default 4K page size.
@@ -123,6 +123,11 @@ astute.yaml will be extended as
 
 .. code-block:: yaml
 
+  network_metadata:
+    nodes:
+      node-1:
+        nova_hugepages_enabled: True
+  ...
   nova:
     ...
     enable_hugepages: true
@@ -130,8 +135,12 @@ astute.yaml will be extended as
     ...
     ovs_socket_mem: 128,128,128,128
   hugepages:
-  - {count: 512, numa_id: 0, size: 2M}
-  - {count: 8, numa_id: 1, size: 1G}
+  - {count: 512, numa_id: 0, size: 2048}
+  - {count: 8, numa_id: 1, size: 1048576}
+
+Section of `nodes` will be moved from `network_metadata` out to root in the
+next releases. `nova_hugepages_enabled` will be used by controllers to
+know whether appropriate filter should be enabled for nova-scheduler.
 
 `ovs_socket_mem` contains information about Huge Pages size in MB per
 NUMA node. DPDK driver needs only total amount of memory on each NUMA
