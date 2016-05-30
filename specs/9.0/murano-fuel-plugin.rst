@@ -227,8 +227,9 @@ Work Items
   Fuel 8.0 environment which is going to be upgraded to 9.0 with Murano
   from plugin.
 
-* Murano OSTF tests will be kept in Fuel 9.0, without any changes and will
-  be removed in Fuel 10.0 release.
+* Murano OSTF tests will be kept in Fuel 9.0, with plugin support adding.
+  In 10.0 release tests should be reworked to support only Murano
+  plugin installation.
 
 * Murano tests in CI: these tests should verify base Murano plugin
   deployment on Fuel 9.0 and should run on every commit to Murano plugin
