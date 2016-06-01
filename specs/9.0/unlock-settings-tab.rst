@@ -96,9 +96,9 @@ REST API
   `/clusters/(?P<cluster_id>\d+)/attributes/deployed/?$`
 
   This handler allows to load last deployed attributes for the cluster.
-- New NeutronNetworkConfigurationDeployedHandler should be introduced:
+- New NetworkConfigurationDeployedHandler should be introduced:
 
-  `/clusters/(?P<cluster_id>\d+)/network_configuration/neutron/deployed?$`
+  `/clusters/(?P<cluster_id>\d+)/network_configuration/deployed?$`
 
   This handler allows to load last deployed network configuration
   for the cluster.
