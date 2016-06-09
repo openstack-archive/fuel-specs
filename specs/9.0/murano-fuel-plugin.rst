@@ -54,8 +54,10 @@ way:
 * Fuel 9.0 should support same Murano deployment as it was supported in
   Fuel 8.0 without any new features;
 
-* It will not be possible to install Murano plugin with Murano enabled from
-  the box.
+* It will be possible to install Murano plugin with Murano enabled from
+  the box: Murano services from base Fuel ISO will be stopped (in case when
+  user wants to install Murano on another node) or will be updated Murano
+  codebase on current nodes and Murano services will be restarted.
 
 * All Murano codebase will be removed in Fuel 10.0 release.
 
@@ -178,9 +180,15 @@ each commit to Murano plugin repository.
 Documentation impact
 --------------------
 
-Murano can be used as built in Fuel and as plugin. It will be impossible
-to deploy Murano as plugin in the same time with Murano from box.
-It should be noted: Murano deployment as built in Fuel is deprecated.
+Murano can be used as built in Fuel and as plugin. It will be possible
+to deploy Murano as plugin in the same time with Murano from box. 
+In case when Murano has new dependencies, which can not be installed
+on existing node (controller nodes), it must be noted in plugin release
+notes, because there is no way to prevent deploy Murano plugin with
+updated requirements on controller nodes with base Murano. But it can
+broke whole environment.
+
+Also should be noted: Murano deployment as built in Fuel is deprecated.
 
 
 --------------
@@ -223,9 +231,21 @@ Work Items
   plugin Web UI.
 
 * Upgrade script for plugin: this script should be able to update Murano
-  plugin to newer version. Also it should be possible to upgrade Murano from
-  Fuel 8.0 environment which is going to be upgraded to 9.0 with Murano
-  from plugin.
+  plugin to newer version. Also it should be possible to update base
+  Murano codebase from Fuel ISO: in this case all base Murano Fuel task
+  will be skipped, Murano services will be stopped on controller node
+  (in case of using separate Murano node) or Murano codebase will be
+  updated and Murano services will be restarted (in case when Murano
+  plugin is installed on same controller nodes as base Murano). For last
+  case Murano plugin release notes should contain information is it
+  possible to install current plugin version on top of existing Murano
+  installation or impossible, if it has new dependencies, which can
+  break whole environment.
+
+* Also it should be possible to upgrade Murano from Fuel 8.0 environment
+  which is going to be upgraded to 9.0 with Murano from plugin. In this
+  case Fuel should be upgraded first and then Murano will be upgraded
+  via plugin.
 
 * Support for plugin installation would be added in OSTF tests for 9.0.
   Support for non-plugin installation would be left in 9.0 tests.
