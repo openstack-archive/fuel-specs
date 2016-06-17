@@ -1,0 +1,365 @@
+..
+ This work is licensed under a Creative Commons Attribution 3.0 Unported
+ License.
+
+ http://creativecommons.org/licenses/by/3.0/legalcode
+
+============================================
+Deployment task execution history in Fuel UI
+============================================
+
+https://blueprints.launchpad.net/fuel/+spec/ui-deployment-history
+
+Show deployment execution graphs for all cluster deployments in Fuel UI.
+This would allow End User to perform maintenance of a cluster with
+an ability to do troubleshooting and audit of things happening in the cluster.
+
+
+--------------------
+Problem description
+--------------------
+
+Currently, it is almost impossible for Fuel UI user to see and understand
+details of the deployment execution processes happened to his cluster.
+User has no information about running processes on nodes during deployment,
+the tasks sequence and their statuses, just a total result of successful or
+failed environment deployment.
+It makes maintenance and troubleshooting of a cluster difficult and prolonged
+in Fuel UI.
+
+This change proposes to show all the information about particular deployments
+for each particular cluster and it's nodes.
+
+
+----------------
+Proposed changes
+----------------
+
+
+Web UI
+======
+
+#. Deployment progress bar on a cluster Dashboard should be clickable if
+   'deployment' task is running in the cluster. By click on the progress bar,
+   a graph with the deployment data should appear.
+
+#. Cluster page should be extended with the new 'History' tab that displays
+   'Deployment History' section with data of finished cluster deployments.
+   Use should be able to choose a particular deployment on the tab
+   (deployments in the list are distinguished by their id and the start time
+   attributes) and get the process details and see graphs for all the deployed
+   nodes.
+
+Deployment graph is a set of timelines and each timeline represents a sequence
+of deployment tasks for each deployed cluster node.
+An additional timeline shows execution of tasks on the master node.
+Node timelines are grouped by node roles.
+
+Each deployment task is an area on a node timeline, which should reflect the
+following data about the task:
+
+* the start time
+* the end time
+* status (failed tasks should have a special layout)
+
+A task area should be clickable and display a popover with the following task
+attributes:
+
+* name
+* node ID
+* node roles
+* the start time
+* the end time
+* status
+* message (for failed tasks with 'error' status)
+
+Timelines should be scalable and support zooming for better UX.
+
+A timeline does not include tasks with 'skipped' status because they don't
+participate in the deployment.
+The same for tasks with 'pending' status. They are not presented in a timeline
+because they are not started yet.
+
+Deployment timeline should have a control to switch to its table
+representation.
+It is a set of tables (a table per deployed node), that display a list of
+deployment tasks on a particular node.
+
+The table should be titled by the node name that it had during this particular
+deployment.
+
+The table columns are:
+
+* task name
+* node ID
+* node roles
+* task status
+* the start time
+* the end time
+* details (link to a full list of the task properties)
+
+The list of tasks in the table should be sorted by the start time attribute.
+
+Link in the 'Details' column should open a pop-up with all the task
+attributes. A special case is 'custom' task attribute, it's content should be
+merged to the set of core task atributes when rendering the pop-up.
+
+All tasks, including skipped and pending, should be shown in a table view.
+
+Deployment tasks table should support filtering by:
+
+* task name
+* node ID
+* node roles
+* task status
+
+These filters should support multiple values choice (user may want to see
+tasks for a several nodes and with a specific set of statuses).
+The filters panel should have 'Reset' button to reset applied filters by
+single-click action.
+
+When switcching to a table view for current cluster deployment on
+the Dashboard, filter by 'ready', 'running', and 'error' task statuses is
+applied by default.
+
+[TBD] Ability to download history data in CSV format from UI.
+
+History of a particular cluster deployment comes from
+`GET /api/transactions/<deployment_id>/deployment_history/` response.
+The response is a list of deployment tasks in the following format (only
+attributes used in Fuel UI are described):
+
+.. code-block:: json
+
+  {
+    "task_name": "upload_configuration",
+    "node_id": "6",
+    "node_roles": ["compute", "cinder"],
+    "node_name": "Node X",
+    "status": "running",
+    "time_start": "2016-06-24T06:37:51.735185",
+    "time_end": null,
+    "custom": {
+      "message": ""
+    },
+    ...
+  }
+
+where
+
+* `task_name` is a name of a deployment task
+* `node_id` is id of node where a task was executed OR 'master' string if
+  a task was executed on the master node
+* `node_roles` is a list of the deployed node roles (an empty list in case of
+  master node)
+* `node_name` is a name that the node had at the moment of a the deployment
+  start (should be 'Master Node' in case of master node)
+* `status` is a status of a task and has one of the following values:
+  'pending', 'ready', 'running', 'error', or 'skipped'
+* `time_start` is a timestamp when a task was started (Null if a task is not
+  started yet)
+* `time_end` is a timestamp when a task was finished (Null if a task is not
+  started or not finished yet)
+* `custom` is a set of additional task attributes and it used by Fuel UI
+  to get failed task message
+
+`node_id` attribute can also have `null` value. Such tasks represent
+synchronization processes on nodes and refer to Virtual Sync Node. Fuel UI
+should not display a timeline for this node, timelines of cluster nodes or
+the master node should be shown only.
+
+Ids of all cluster deployments come from the response of
+`GET /api/transactions?cluster_id=<cluster_id>&tasks_names=deployment` API
+call.
+
+`GET /api/transactions/?cluster_id=<cluster_id>&tasks_names=deployment&
+statuses=running` API call should be used on the cluster Dashboard to get id
+of the running deployment.
+
+
+Nailgun
+=======
+
+
+Data model
+----------
+
+#. Model of a cluster deployment (named 'transaction') should be extended with
+   `time_start` attribute, that will be used in Fuel UI to distinguish cluster
+   deployments.
+
+#. Model of a deployment task from a deployment history should be extended
+   with `node_name` and 'node_roles 'attributes.
+
+#. Attribute `custom` of a deployment task from a deployment history should
+   contain `message` property at least for a task with 'error' status.
+
+
+REST API
+--------
+
+#. Need to add filtering of results by task names or/and statuses for
+   `GET /api/transactions/` method. The following API calls should be
+   supported:
+
+   * `GET /api/transactions/?cluster_id=<cluster_id>&tasks_names=deployment`
+   * `GET /api/transactions/?cluster_id=<cluster_id>&tasks_names=deployment&
+     statuses=running`
+
+
+Orchestration
+=============
+
+
+RPC Protocol
+------------
+
+No changes required.
+
+
+Fuel Client
+===========
+
+None.
+
+
+Plugins
+=======
+
+No changes required.
+
+
+Fuel Library
+============
+
+No changes required.
+
+
+------------
+Alternatives
+------------
+
+None.
+
+
+--------------
+Upgrade impact
+--------------
+
+Migration should be prepared according to the changes in data models.
+
+
+---------------
+Security impact
+---------------
+
+None.
+
+
+--------------------
+Notifications impact
+--------------------
+
+None.
+
+
+---------------
+End user impact
+---------------
+
+Ability to easier troubleshoot and perform maintenance of a cluster.
+
+
+------------------
+Performance impact
+------------------
+
+None.
+
+
+-----------------
+Deployment impact
+-----------------
+
+None.
+
+
+----------------
+Developer impact
+----------------
+
+None.
+
+
+---------------------
+Infrastructure impact
+---------------------
+
+None.
+
+
+--------------------
+Documentation impact
+--------------------
+
+Fuel UI user guide should be updated to include information about the feature.
+
+
+--------------
+Implementation
+--------------
+
+Assignee(s)
+===========
+
+Primary assignee:
+  jkirnosova
+
+Other contributors:
+  bdudko (visual design)
+  ikutukov (Nailgun)
+  dguryanov (Nailgun)
+
+Mandatory design review:
+  vkramskikh
+  ashtokolov
+
+
+Work Items
+==========
+
+* Display a deployment graph of a current deployment on the Dashboard tab.
+* Display history graphs of all finished cluster deployments in a new
+  Deployment History tab.
+* Support both display modes for a deployment graph: a timeline view and
+  a table view.
+* Add filters toolar for a table representation of a deployment history.
+
+
+Dependencies
+============
+
+None.
+
+
+------------
+Testing, QA
+------------
+
+* Manual testing.
+* UI functional tests should cover the changes.
+
+Acceptance criteria
+===================
+
+Fuel UI user should be able to run several deployments for a cluster and see
+the deployment tasks history in the cluster page, including real-time
+information about a current deployment.
+
+
+----------
+References
+----------
+
+* Store Deployment Tasks Execution History in DB
+  https://blueprints.launchpad.net/fuel/+spec/store-deployment-tasks-history
