@@ -282,17 +282,17 @@ The response format for GET ``/nodes/:id/bonds/attributes/defaults``:
 .. code-block:: json
 
   {
-    "additional_attributes": {
+    "plugin_a": {
       "metadata": {
-        "label": "Plugins attributes section for bonds",
-        "weight": 50
+        "label": "Plugin A",
+        "weight": 10
       },
       "attribute_a": {
         "label": "BOND attribute A",
         "weight": 10
         "description": "Some description",
         "type": "text",
-        "value": "test"
+        "value": "test1"
       },
       "attribute_b": {
         "label": "BOND attribute B",
@@ -300,6 +300,19 @@ The response format for GET ``/nodes/:id/bonds/attributes/defaults``:
         "description": "Some description",
         "type": "checkbox",
         "value": False
+      }
+    },
+    "plugin_b": {
+      "metadata": {
+        "label": "Plugin B",
+        "weight": 10
+      },
+      "attribute_a": {
+        "label": "BOND attribute A",
+        "weight": 10
+        "description": "Some description",
+        "type": "text",
+        "value": "test2"
       }
     }
   }
@@ -326,11 +339,13 @@ structure:
       "meta": {
         "sriov": {
           "available": true,
-          "pci_id": "12345"
+          "pci_id": "12345",
+          "totalvfs": '10'
         },
         "dpdk": {
           'available': true,
         },
+        "pci_id": "12345",
         "offloading_modes" : [
           {
             "state": null,
@@ -351,13 +366,13 @@ structure:
             "label": "Offloading",
             "weight": 10
           },
-          "disable_offloading": {
+          "disable": {
             "label": "Disable offloading",
             "weight": 10,
             "type": "checkbox",
             "value": False,
           },
-          "offloading_modes": {
+          "modes": {
             "label": "Offloading modes"
             "weight": 20
             "description": "Offloading modes"
@@ -373,7 +388,7 @@ structure:
             "label": "MTU",
             "weight": 20,
           },
-          "mtu_value": {
+          "value": {
             "label": "MTU",
             "weight": 10,
             "type": "text",
@@ -386,17 +401,16 @@ structure:
             "label": "SRIOV",
             "weight": 30
           },
-          "sriov_enabled": {
+          "enabled": {
             "label": "SRIOV enabled",
             "type": "checkbox",
-            "enabled": True,
+            "value": True,
             "weight": 10
           },
-          "sriov_numvfs": {
+          "numvfs": {
             "label": "virtual_functions"
             "type": "number",
             "min": "0",
-            "max": "10", // taken from sriov_totalvfs
             "value": "5",
             "weight": 20
           },
@@ -413,33 +427,46 @@ structure:
             "label": "DPDK",
             "weight": 40
           },
-          "dpdk_enabled": {
+          "enabled": {
             "label": "DPDK enabled",
             "type": "checkbox",
-            "enabled": False,
+            "value": False,
             "weight": 10
           },
         }
-        "additional_attributes": {
+        "plugin_a": {
           "metadata": {
-            "label": "All plugins attributes section",
-            "weight": 50
+            "label": "Plugin A",
+            "weight": 50,
+            "nic_plugin_id": 1
           },
           "attribute_a": {
             "label": "NIC attribute A",
             "weight": 10
             "description": "Some description",
             "type": "text",
-            "value": "test",
-            "nic_plugin_id": 1
+            "value": "test1"
           },
           "attribute_b": {
             "label": "NIC attribute B",
             "weight": 20
             "description": "Some description",
             "type": "checkbox",
-            "value": False,
-            "nic_plugin_id": 1
+            "value": False
+          }
+        },
+        "plugin_b": {
+          "metadata": {
+            "label": "Plugin B",
+            "weight": 60,
+            "nic_plugin_id": 2
+          },
+          "attribute_a": {
+            "label": "NIC attribute A",
+            "weight": 10
+            "description": "Some description",
+            "type": "text",
+            "value": "test2"
           }
         }
       }
@@ -479,13 +506,13 @@ structure:
             "label": "Offloading",
             "weight": 20
           },
-          "disable_offloading": {
+          "disable": {
             "label": "Disable offloading",
             "weight": 10,
             "type": "checkbox",
             "value": False,
           },
-          "offloading_modes": {
+          "modes": {
             "label": "Offloading modes"
             "weight": 20
             "description": "Offloading modes"
@@ -501,33 +528,46 @@ structure:
             "label": "MTU",
             "weight": 30,
           },
-          "mtu_value": {
+          "value": {
             "label": "MTU",
             "weight": 10,
             "type": "text",
             "value": ""
           }
         },
-        "additional_attributes": {
+        "plugin_a": {
           "metadata": {
-            "label": "All plugins attributes section",
+            "label": "Plugin A",
             "weight": 40
+            "bond_plugin_id": 2
           },
           "attribute_a": {
             "label": "BOND attribute A",
             "weight": 10,
             "description": "Some description",
             "type": "text",
-            "value": "test",
-            "bond_plugin_id": 1
+            "value": "test1"
           },
           "attribute_b": {
             "label": "BOND attribute B",
             "weight": 20,
             "description": "Some description",
             "type": "checkbox",
-            "value": False,
-            "bond_plugin_id": 1
+            "value": False
+          }
+        },
+        "plugin_b": {
+          "metadata": {
+            "label": "Plugin B",
+            "weight": 60,
+            "bond_plugin_id": 2
+          },
+          "attribute_a": {
+            "label": "BOND attribute A",
+            "weight": 10
+            "description": "Some description",
+            "type": "text",
+            "value": "test2"
           }
         }
       }
