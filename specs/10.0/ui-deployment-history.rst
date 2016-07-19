@@ -166,6 +166,11 @@ call.
 statuses=running` API call should be used on the cluster Dashboard to get id
 of the running deployment.
 
+Deployment history view should also have 'Export CSV' button for User to be
+able to download a full history of particular deployment in CSV format.
+Exported CSV data should include all deployment history tasks with all their
+attributes.
+
 
 Nailgun
 =======
@@ -195,6 +200,10 @@ REST API
    * `GET /api/transactions/?cluster_id=<cluster_id>&tasks_names=deployment`
    * `GET /api/transactions/?cluster_id=<cluster_id>&tasks_names=deployment&
      statuses=running`
+
+#. `GET /api/transactions/<transaction_id>/deployment_history/` should return
+   data in CSV format if it was called with
+   `{'Content-Type': 'application/csv'}` header.
 
 
 Orchestration
@@ -323,6 +332,7 @@ Work Items
 * Support both display modes for deployment information: a timeline graph and
   table view.
 * Add filters toolbar for table representation of deployment history.
+* Support CSV export of deployment history.
 
 
 Dependencies
