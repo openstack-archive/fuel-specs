@@ -1,0 +1,449 @@
+..
+ This work is licensed under a Creative Commons Attribution 3.0 Unported
+ License.
+
+ http://creativecommons.org/licenses/by/3.0/legalcode
+
+==========================================
+Role decomposition
+==========================================
+
+https://blueprints.launchpad.net/fuel/+spec/role-decomposition
+
+
+--------------------
+Problem description
+--------------------
+
+Currently a role encompasses many tasks that cannot be separated from each
+other. Deployers should have the flexibility to distribute services across
+nodes in any combination they see fit.
+
+----------------
+Proposed changes
+----------------
+
+Task placement will be determined based on a node's tag. Task definitions
+will contain a list of tags which will be used to match them to nodes.
+This requires a new task resolver on nailgun side and work on decoupling of
+tasks on fuel-library side.
+
+Web UI
+======
+
+UI part should be extended to display set of tags for particular node.
+
+Nailgun
+=======
+
+A new resolver which supports role's tags should be introduced.
+Initially, when we assign role to the node, full set of tags produced by this
+role will be assigned to the node automatically and then user is able to
+configure assignment of tags for the node(remove tag from the node,
+assign tag to the node, etc.) via API/CLI/UI. For example, if you assign
+'controller' role to the specific node, then all its tags 'mysql', 'neutron',
+'keystone', 'rabbitmq' will be assigned to the node.
+Tags may be assigned or removed from a node regardless of the defaults
+inherited by role assignment. It means that we have no strong restriction
+between roles and tags to allow user to decide what set of tags is needed
+for particular role.
+For example, controller role producing tags neutron and rabbitmq. So, new
+resolver should collect tasks using these `tags` (all tasks and groups with
+'neutron' and 'rabbitmq' tags should be collected).
+
+For example:
+
+- 'controller' role is assigned to the node and user does not change tag's
+  assignment - tasks with any of tags produced by 'controller' role should
+  be applied on the node
+- 'controller' role is assigned to the node and user removed all tags from the
+  node except for 'rabbitmq' tag - only tasks with 'rabbitmq' tag should be
+  applied on the node
+
+New task's processing workflow:
+
+- if task has `tags` field - task should be resolved by tags(resolver should
+  check intersection between node's tags and task's tags)
+- if task has no `tags` field - resolver should resolve task by role as
+  it works previously
+- if group of tasks has `tags` field - tasks what are storing in this group
+  ('tasks' field) should be appended to task's list for execution on node with
+  corresponding `tags` (should be checked intersection between node's tags and
+  task's tags)
+
+There are two approaches for providing backward compatibility with role-based
+engine.
+
+Approach #1
+-----------
+
+Tags should be added to existing core tasks what are supposed to be detached
+from controller. 'controller-common' tag should be introduced to represent
+remaining set of tasks(this set does not include detached `tags`) to allow
+user to leave this remaining part of tasks only for specific nodes.
+
+  .. code:: python
+
+    resolver = tags_resolver if task.get('tags') else role_resolver
+    resolver.resolve(node, task)
+
+
+Advantage: we are not messing up resolving by tags and roles.
+Disadvantage: we should mark ALL controller-common tasks(remaining part of
+tasks what was not bound to any tag) with 'controller-common' tag to exclude
+it from task's serialization for `tags`.
+
+Example:
+
+We have following set of tasks:
+
+  .. code-block:: yaml
+
+    - id: mysql
+      role: [controller]
+      tags: [mysql]
+    - id: haproxy 
+      role: [controller]
+      tags: [controller-common]
+    - id: globals
+      role: ['/.*/']
+
+And following set of nodes:
+
+  .. code-block:: yaml
+
+    - id: node-1
+      roles: [controller]
+      tags: [mysql]
+
+Task 'haproxy' should be marked with 'controller-common' tag to not be applied
+for nodes with other tags(for example 'mysql').
+
+Approach #2
+-----------
+
+When we are assigning role to the node this role should be automatically
+added as tag in node's tags list so that we can resolve task using only
+TagsResolver. Also, this resolver should use regular expressions for roles
+as regular expressions for tags.
+
+  .. code:: python
+
+    class TagsResolver(object):
+
+        def resolve(task, node):
+            for tag in (task.get('tags') or task.get('role')):
+                if tag.startswith('/') and tag.endswith('/'):
+                    if regex_resolver(tag.strip('/'), node.get('tags')):
+                        return True
+                if tag in node.get('tags'):
+                    return True
+            return False
+
+        def regex_resolver(regex, tags):
+            pattern = re.compile(regex.strip('/'))
+            for tag in tags:
+                if pattern.match(tag):
+                    return True
+            return False
+
+    resolver = tags_resolver
+    resolver.resolve(node, task)
+
+Advantage: it's not necessary to add 'common-controller' tag into each task
+what should not be run for other tags as we are using task's 'role' field like
+a tag.
+Disadvantage: we are messing up tags and roles entities. 
+
+Example:
+
+We have following set of tasks:
+
+  .. code-block:: yaml
+
+    - id: mysql
+      role: [controller]
+      tags: [mysql]
+    - id: haproxy 
+      role: [controller]
+    - id: globals
+      role: ['/.*/']
+
+And following set of nodes:
+
+  .. code-block:: yaml
+
+    - id: node-1
+      roles: [controller]
+      tags: [mysql]
+
+It's not necessary to mark 'haproxy' task with any tag as it's expecting
+'controller' tag in node's tags.
+
+Common part
+-----------
+
+Plugin's tasks will be processed in old way(by role) if plugin's tasks have no
+`tags` field.
+
+Serialization logic should be extended to support 'primary' tags assignment.
+
+Pre-deployment checker should check that all role's tags have been assigned
+to nodes and show info message to the user. Anyway, user will be able to
+proceed without assigning of full set of tags.
+
+Number of nodes with detached roles does not depend on number of pure
+controller nodes. Anyway, even if we have only one node with assigned `tag`
+it will be configured in HA manner (pacemaker with one cluster node will be
+brought up, etc.) to make it ready for scaling in the future.
+
+Also, cross-dependency task's resolution should be introduced for tags.
+
+Data model
+----------
+
+An additional field named ``tags`` will be added to release metadata.
+`Tag` should have the similar properties with role:
+- count of the nodes for tag's assignment
+- `has_primary` property
+- etc.
+
+This list of tags will be used during task serialization.
+New field ``tag`` should be introduced into node's data model.
+Data about role assignment needs to be serialized as a cluster attribute
+because other nodes need to be able to look up another node's tag(s).
+
+REST API
+--------
+
+Nailgun API should be extended to support assigning of `tags`.
+Proposed workflow:
+
+* user should assign some of roles to the node(set of tags provided by assigned
+  role will be added to node's tags automatically)
+* user is able to manipulate with tag's assignment via API:
+    - user is able to manipulate with predefined set of tags(assign, unassign)
+    - user should have an ability to create his own tags
+
+Note: User is not able to remove any of predefined tags.
+
+Available operations with tag via API:
+* add new tag(to node)
+* modify tag metadata
+* list all tags
+* delete tag(from node)
+
+Example of API request for assigning `tag` to node:
+*  ${API_URL}/?node_id=${node_id}&tags=['neutron', 'mysql']
+
+It should be allowed to create custom tags via API.
+
+Orchestration
+=============
+
+None
+
+RPC Protocol
+------------
+
+None
+
+Fuel Client
+===========
+
+Additional work should be done in fuel client component for pretty output of
+`tags` and its manipulation.
+
+Available operations with tag via CLI:
+* add new tag(to node)
+* modify tag metadata
+* list all tags
+* delete tag(from node)
+
+Plugins
+=======
+
+It's expected that changes in fuel-library and nailgun components
+may lead to failing for some of fuel-plugins.
+
+Mandatory plugins list:
+- aic-fuel-plugin
+- fuel-plugin-contrail
+- LMA (ES, Influx, collector & alerting)
+- zabbix-database
+- zabbix-mon
+
+Fuel Library
+============
+
+Blueprint's scope includes detaching of following components:
+- Neutron (incl. L3 agents, LBaaS, etc)
+- Keystone
+- MySQL DB
+- RabbitMQ
+
+`tags` will be introduced for controller role:
+- neutron
+- keystone
+- mysql
+- rabbitmq
+- controller-common
+
+Fuel-library tasks part should be re-written for corresponding components to
+support new approach with tags.
+All tasks related only to specific tag should be marked with this tag(
+additional field `tags`).
+
+Example:
+
+  keystone task to be changed:
+
+  .. code-block:: yaml
+
+    - id: keystone
+      type: puppet
+      groups: [controller]
+
+  .. code-block:: yaml
+
+    - id: keystone
+      type: puppet
+      groups: [controller]
+      tags: [keystone]
+
+As we have a lot of places in fuel-library code where we are collecting
+set of ip address for particular component by node's role we should
+re-write this data access methods to work with `tags` and
+provide fallback mechanism to support old style role based approach.
+
+Initially, we are going to have one pacemaker cluster for all nodes
+with assigned `tags` what need in it. For example, if we have 'node-1'
+with tag 'mysql' and 'node-2' with tag 'rabbitmq' then single pacemaker
+cluster with resources 'rabbitmq' and 'mysql' acting on corresponding
+nodes will be created.
+
+There is no detached plugin for neutron. So, additional efforts should
+be spent to collect mandatory tasks for neutron task group and test it.
+
+------------
+Alternatives
+------------
+
+None
+
+--------------
+Upgrade impact
+--------------
+
+None
+
+---------------
+Security impact
+---------------
+
+None
+
+--------------------
+Notifications impact
+--------------------
+
+None
+
+---------------
+End user impact
+---------------
+
+User will be able to detach set of components described in the specification
+from controller node.
+User can change set of tags for any role using nailgun API and CLI for particular
+environment or release.
+If user don't assign some of mandatory tags(tags what are declared in release
+information) warning message should be provided to user.
+
+------------------
+Performance impact
+------------------
+
+None
+
+-----------------
+Deployment impact
+-----------------
+
+None
+
+----------------
+Developer impact
+----------------
+
+None
+
+---------------------
+Infrastructure impact
+---------------------
+
+None
+
+--------------------
+Documentation impact
+--------------------
+
+Describe how to decompose roles using node tags.
+
+It should be possible to move detached services to separate node after the
+deployment process. We are not planning to prepare automated procedure for
+cleaning services what are supposed to be detached from nodes where it was
+placed initially. So, corresponding document should be prepared.
+
+--------------
+Implementation
+--------------
+
+Assignee(s)
+===========
+
+Primary assignee:
+  * Viacheslav Valyavskiy <vvalyavskiy@mirantis.com>
+
+Other contributors:
+  * Ivan Ponomarev <iponomarev@mirantis.com>
+
+Mandatory design review:
+  * Vladimir Kuklin <vkuklin@mirantis.com>
+  * Stanislaw Bogatkin <sbogatkin@mirantis.com>
+
+Work Items
+==========
+
+ #. Introduce operations with tags via nailgun API
+ #. New tags based resolver in nailgun
+ #. Role/Tag decomposition in Fuel-library
+ #. Update composition data access methods in fuel-library
+ #. Decouple Neutron component
+ #. Prepare documentation for cluster scaling
+ #. Update mandatory fuel plugins
+
+Dependencies
+============
+
+None
+
+------------
+Testing, QA
+------------
+
+* Create new test cases for the new operations with tags
+* Extend fuel-qa test suite with new API tests for the operations with tags
+
+Acceptance criteria
+===================
+
+User is able to deploy services currently tied to the controller (e.g. Keystone,
+Neutron, Mysql) on separate nodes via API(Web UI and CLI have a nice to have
+priority).
+
+----------
+References
+----------
+
+None
