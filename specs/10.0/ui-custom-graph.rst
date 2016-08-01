@@ -40,52 +40,48 @@ Cluster page in Fuel UI should be extended with new 'Workflows' tab.
 
 The 'Workflows' tab should contain a table with all graphs available for
 the cluster.
-Rows in a workflows table should be grouped by graph level that can be
-'release', 'plugin' or 'cluster'.
+Rows in a workflows table should be grouped by graph type attribute.
 
 Workflows table should have the following columns:
 
 * graph name
-* graph type
-* 'Download' button (to download the graph tasks in JSON format)
-* 'Delete' button (to remove the graph; available for graphs of 'cluster only)
+* graph level
+* 'Download' button (to download the graph tasks JSON)
+* 'Delete' button (to remove the graph; available for cluster-level graphs
+  only)
 
 +-------------------+-------------+-----------+-----------+
-| Graph Name        | Graph Type  |           |           |
+| Name              | Level       |           |           |
 +===================+=============+===========+===========+
-| RELEASE           |             |           |           |
+| Type "default"    |             |           | Download  |
 +-------------------+-------------+-----------+-----------+
-|                   | default     | Download  |           |
+| -                 | release     |           | Download  |
 +-------------------+-------------+-----------+-----------+
-| mu-1-release      | 9.0-mu-1    | Download  |           |
+| -                 | cluster     | Delete    | Download  |
 +-------------------+-------------+-----------+-----------+
+| Type "9.0-mu-1"   |             |           | Download  |
 +-------------------+-------------+-----------+-----------+
-| PLUGIN "LMA"      |             |           |           |
+| mu-1-release      | cluster     | Delete    | Download  |
 +-------------------+-------------+-----------+-----------+
-| lma-plugin        | default     | Download  |           |
+| mu-1-plugin       | plugin      |           | Download  |
+|                   | (Contrail)  |           |           |
 +-------------------+-------------+-----------+-----------+
-| lma-plugin        | upgrade     | Download  |           |
+| Type "upgrade"    |             |           | Download  |
 +-------------------+-------------+-----------+-----------+
+| -                 | release     |           | Download  |
 +-------------------+-------------+-----------+-----------+
-| PLUGIN "CONTRAIL" |             |           |           |
+| upgrade-graph     | cluster     | Delete    | Download  |
 +-------------------+-------------+-----------+-----------+
-| contrail-graph    | default     | Download  |           |
-+-------------------+-------------+-----------+-----------+
-+-------------------+-------------+-----------+-----------+
-| CLUSTER           |             |           |           |
-+-------------------+-------------+-----------+-----------+
-|                   | default     | Download  |  Delete   |
-+-------------------+-------------+-----------+-----------+
-| mu-1-cluster      | 9.0-mu-1    | Download  |  Delete   |
-+-------------------+-------------+-----------+-----------+
-| my new graph      | 9.0-mu-1    | Download  |  Delete   |
+| my-plugin-graph   | plugin      |           | Download  |
+|                   | (LMA)       |           |           |
 +-------------------+-------------+-----------+-----------+
 
 Note that workflows table should not include graphs of not enabled cluster
 plugins.
 
-Graph should be sorted by type in the table and graphs with 'default' type
-should go first.
+Graphs of 'default' type should go first in the table. Inside each group
+graphs should be sorted by its level (release, cluster, and then plugin
+graphs).
 
 Workflows table should support filtering by deployment graph level and by
 graph type. Both filters should support multiple values selection.
