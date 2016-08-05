@@ -308,9 +308,11 @@ The ISO should pass the same set of system and deployment tests.
 Acceptance criteria
 ===================
 
-1. Build script should use Packetary as a tool to download packages during ISO build.
+1. Build script should use Packetary as a tool to download packages during
+   ISO build.
 2. ISO build when using Packetary should not be longer than it is now.
-3. It should be possible to define repos during ISO build using a flat prioritized list.
+3. It should be possible to define repos during ISO build using a flat
+   prioritized list.
 4. It should be possible to use several custom repos at the same time.
 
 ----------
