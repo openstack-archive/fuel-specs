@@ -1,0 +1,9 @@
+Code-Review+2: Bulat Gaifullin <bgaifullin@mirantis.com>
+Code-Review+2: Vladimir Kuklin <vkuklin@mirantis.com>
+Workflow+1: Vladimir Kuklin <vkuklin@mirantis.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Mon, 22 Aug 2016 17:46:24 +0000
+Reviewed-on: https://review.openstack.org/346248
+Project: openstack/fuel-specs
+Branch: refs/heads/master
