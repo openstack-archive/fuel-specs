@@ -23,199 +23,38 @@ nodes in any combination they see fit.
 Proposed changes
 ----------------
 
-Task placement will be determined based on a node's tags. Task definitions
-will contain a list of tags which will be used to match them to nodes.
+Task placement will be determined based on new unit - `tag`. Each release or
+plugin role will contain specific set of tags. Task definitions will contain
+a list of tags which will be used to match them to nodes.
 This requires a new task resolver on nailgun side and work on decoupling of
 tasks on fuel-library side.
 
 Web UI
 ======
 
-UI part should be extended to allow to:
-* create new tag(for cluster or release)
-* delete user-defined tags(for cluster or release)
-* modify user-defined tags metadata
-* list all tags(for cluster or release)
-* assign tag to the node
-* unassign tag from the node
-
-This part has a nice to have priority for current BP.
+None
 
 Nailgun
 =======
 
-A new resolver which supports tags should be introduced.
-Initially, when we assign role to the node, full set of tags produced by this
-role will be assigned to the node automatically and then user is able to
-configure assignment of tags for the node(remove tag from the node,
-assign tag to a node, etc.) via API/CLI/UI. For example, if you assign
-'controller' role to the specific node, then all its tags 'mysql', 'neutron',
-'keystone', 'rabbitmq' will be assigned to the node. It should possible to
-remove all tags from a node. In this case no tasks will be resolved for this
-node, except as defined by the implicit role name tag.
-Tags may be assigned or removed from a node regardless of the defaults
-inherited by role assignment. It means that we have no strong restriction
-between roles and tags to allow user to decide what set of tags is needed
-for particular role.
-For example, controller role producing tags neutron and rabbitmq. So, new
-resolver should collect tasks using these `tags` (all tasks and groups with
-'neutron' and 'rabbitmq' tags should be collected).
-
-For example:
-
-- 'controller' role is assigned to the node and user does not change tag's
-  assignment - tasks with any of tags produced by 'controller' role should
-  be applied on the node
-- 'controller' role is assigned to the node and user removed all tags from the
-  node except for 'rabbitmq' tag - only tasks with 'rabbitmq' tag should be
-  applied on the node
-
-We have decided to introduce extension's support for automatic tag's
-assignment(when we are assigning role what's providing tags).
-Callback, to the nailgun's extensions will be performed when user assign
-role to the node. So, developer will be able to embed his own piece of logic
-into assignment group of tags to the node.
-
-For example extension may produce following tag's assignment for the controller
-role:
-
-  .. code-block:: yaml
-
-    - node_id: 1
-      node_roles: [controller]
-      tags: [cluster:2, mysql:1]
-    - node_id: 2
-      node_roles: [controller]
-      tags: [cluster:1, mysql:2]
-
-
-New task's processing workflow:
-
-- when a role is assigned to node, the tags will automatically be extracted
-  from the role metadata and assigned to the node
-- any role assigned to node should be automatically copied into its tags
-- if task has only `tags` field - task should be resolved by tags(resolver
-  should check intersection between node's tags and task's tags)
-- if task has only `role` field - resolver should check intersection between
-  node's tags and task's `roles` field(or lookup task's roles from its group)
-- user is able to unassign automatically added tags via API/CLI/UI
-
-When we are assigning role to the node this role should be automatically
-added as tag in node's tags list so that we can resolve task using only
-TagsResolver. Also, this resolver should use regular expressions for roles
-as regular expressions for tags.
-
-  .. code:: python
-
-    class TagsResolver(object):
-
-        def resolve(task, node):
-            for tag in (task.get('tags') or task.get('role')):
-                if tag.startswith('/') and tag.endswith('/'):
-                    if regex_resolver(tag.strip('/'), node.get('tags')):
-                        return True
-                if tag in node.get('tags'):
-                    return True
-            return False
-
-        def regex_resolver(regex, tags):
-            pattern = re.compile(regex.strip('/'))
-            for tag in tags:
-                if pattern.match(tag):
-                    return True
-            return False
-
-    resolver = tags_resolver
-    resolver.resolve(node, task)
-
-Advantage: it's not necessary to add 'common-controller' tag into each task
-what should not be run for other tags as we are using task's 'role' field like
-a tag.
-
-Example:
-
-We have following set of tasks:
-
-  .. code-block:: yaml
-
-    - id: mysql
-      tags: [controller, mysql]
-    - id: haproxy
-      role: [controller]
-    - id: globals
-      role: ['/.*/']
-
-And following set of nodes:
-
-  .. code-block:: yaml
-
-    - id: node-1
-      roles: [controller]
-      tags: [mysql]
-
-It's not necessary to mark 'haproxy' task with any tag as it's expecting
-'controller' tag in node's tags.
-
-'role' and 'roles' fields should be deprecated.
-
-To be prepared for deploying several instances of mysql, rabbitmq, corosync,
-etc., the following workflow is proposed:
-
-- instance tags like 'tag:instance'(example 'mysql:1') may be added via API
-  by user or third party application
-- these tags will not be used during the task's resolving process(no tasks
-  will be resolved using these tags and it's expected behavior)
-- if you add tasks with tags 'corosync:1' or 'corosync*' what are completely
-  matching with explicitly added tag then it will work
-- special parser function on the puppet side should be written to identify
-  node's belonging to the one or another mysql, etc. instances based on node's
-  'instances' tags
-
-For example:
-
-  .. code-block:: yaml
-
-    node-1:
-      tags: ['corosync:1', 'mysql:2']
-    node-2:
-      tags: ['corosync:2', 'mysql:1']
-    node-3:
-      tags: ['corosync:2', 'mysql:2']
-
-So, when function trying to collect nodes belonging to the same 'mysql'
-instance and puppet compiling catalogs for 'node-1' it should return 'node-1'
-and 'node-3'(mysql nodes placed in one cluster).
-
-Plugin's tasks will be processed in old way(by role) if plugin's tasks have no
-`tags` field.
-
-Serialization logic should be extended to support 'primary' tags assignment.
-
-Pre-deployment checker should check that all pre-defined tags have been
-assigned to nodes and show info message to the user. Anyway, user will be
-able to proceed without assigning of full set of tags.
-
-Number of nodes with detached roles does not depend on number of pure
-controller nodes. Anyway, even if we have only one node with assigned `tag`
-it will be configured in HA manner (pacemaker with one cluster node will be
-brought up, etc.) to make it ready for scaling in the future.
-
-Cross-dependency task's resolution should be introduced for tags.
-
-It should be possible to change set of tags for a node after the deployment to
-make moving of components from old node to new one easier.
-
-Initially, tags based task's resolution should be optional for user and may be
-enabled by option 'Tags resolution engine'.
+A new tags based resolver which supports tags should be introduced. Tags are
+simple entities what should be used for tasks resolution(in opposite to old
+role driven resolution approach) only. User is not able to operate with node's
+tags directly, but, he should create new role containing tags what he is
+interested in and assign created role to the node.
+``primary-tags`` field should be introduced for node model to store primary
+set of tags for the node.
+Tags will be fetched from roles metadata during serialization process and
+will not be stored for each node directly(we have no `tags` field in node db
+model).
 
 Data model
 ----------
 
 An additional field named ``tags`` will be added to release metadata to
-provide ability to specify set of `core` tags for release.
-`Tag` should have the similar properties with role:
-- `has_primary` property(is obligatory now)
-- etc.
+provide ability to specify set of tags for release roles.
+`Tag` should have only one field:
+- `has_primary` property
 
 Example:
 
@@ -236,65 +75,20 @@ Example:
         has_primary: true
 
 
-This list of tags will be uploaded on the release api with release package.
+New JSON fields ``volumes_metadata`` and ``roles_metadata`` should be
+introduced for cluster model.
 
-Add new table `tags` with the following scheme:
-* FK owner_id - (release | cluster | plugin) id
-* owner_class - Enum(release | cluster | plugin)
-* read_only: boolean
-* has_primary: boolean
+New JSON field ``tags_metadata`` should be introduced for cluster, release,
+plugin models.
 
-Add new table `tag_node_assignment` with the following scheme to link
-tag with nodes:
-* FK node_id
-* FK tag_id
-
-New field ``tags`` should be introduced into node data model.
-New field ``tags`` should be introduced into cluster data model.
-New field ``tags`` should be introduced into release data model.
-New field ``tags`` should be introduced into plugin data model.
-
-Column `roles` should be renamed to `tags` in 'deployment_graph_tasks' table.
+``primary_roles`` column should be renamed to ``primary_tags`` for node model.
 
 REST API
 --------
 
-Nailgun API should be extended to support assigning of `tags`.
-Proposed workflow:
-
-* user should assign some of roles to the node(set of tags provided by assigned
-  role will be added to node's tags automatically)
-* user is able to manipulate with tag's assignment via API:
-    - user is able to manipulate with pre-defined set of tags(assign, unassign)
-    - user should have an ability to create his own tags(for cluster and
-      release) and assign them
-
-Note: User is not able to delete tags stuck to the role(tags mentioned in
-roles_metadata in field 'tags'). We are supposing that only pre-defined tags
-should be there.
-
-Available operations with tag via API:
-* create new tag(for cluster or release)
-* delete user-defined tags(for cluster or release)
-* modify user-defined tags metadata
-* list all tags(for cluster or release)
-* assign tag to the node
-* unassign tag from the node
-
-Example of API request for `tag` creation for the cluster:
-*  ${API_URL}/?cluster_id=1&tag_name='swift'&role='swift'&meta=${tag_metadata}
-
-Note: If user-defined tag will be introduced for the cluster tags will be
-available only for this cluster.
-
-Example of API request for `tag` creation for the release:
-*  ${API_URL}/?release_id=1&tag_name='swift'&role='swift'&meta=${tag_metadata}
-
-Note: If user-defined tag will be introduced for the release tags will be
-available in all cluster created with this release.
-
-Example of API request for assigning `tag` to node:
-*  ${API_URL}/?node_id=${node_id}&tags=['neutron', 'mysql']
+Nailgun API should be extended to support role's creation for clusters to
+make cluster's specific roles not visible for other clusters and avoid
+mishmash.
 
 Orchestration
 =============
@@ -309,29 +103,12 @@ None
 Fuel Client
 ===========
 
-Additional work should be done in fuel client component for pretty output of
-`tags` and its manipulation.
-
-Available operations with tag via CLI:
-* create new tag(for cluster or release)
-* delete user-definded tags(for cluster or release)
-* modify user-defined tags metadata
-* list all tags(for cluster or release)
-* assign tag to the node
-* unassign tag from the node
+Fuel Client should be extended to support role's creation for clusters.
 
 Plugins
 =======
 
-It's expected that changes in fuel-library and nailgun components
-may lead to failing for some of fuel-plugins.
-
-Mandatory plugins list:
-- aic-fuel-plugin
-- fuel-plugin-contrail
-- LMA (ES, Influx, collector & alerting)
-- zabbix-database
-- zabbix-mon
+None
 
 Fuel Library
 ============
@@ -401,7 +178,6 @@ Upgrade impact
 We should consider changes in tag's assignment between minor releases.
 For example, it may be embedded into db migration process.
 
-
 ---------------
 Security impact
 ---------------
@@ -418,18 +194,12 @@ None
 End user impact
 ---------------
 
-Initially, tags based task's resolution should be optional for user and may be
-enabled by option 'Tags resolution engine'.
-User will be able to detach set of components described in the specification
-from controller node.
-User can change set of tags for any role using nailgun API and CLI for
-particular environment or release.
-If user don't assign some of mandatory tags(tags what are declared in release
-information) warning message should be provided to user.
-
-Workflow:
-- user assigning role to the node
-- user is able to configure set of tags for this node
+User will be able to create roles with specific set of tags.
+Initially, user has only default set of roles and its tags. If he wants,
+for example, create detached role with 'mysql', he should create new cluster
+role containing only 'mysql' tag.
+User is able to modify roles(and its set of tags) in any moment except of
+deployment process.
 
 ------------------
 Performance impact
@@ -459,12 +229,7 @@ None
 Documentation impact
 --------------------
 
-Describe how to decompose roles using node tags.
-
-It should be possible to move detached services to separate node after the
-deployment process. We are not planning to prepare automated procedure for
-cleaning services what are supposed to be detached from nodes where it was
-placed initially. So, corresponding document should be prepared.
+Describe how to create custom roles(with custom set of tag).
 
 --------------
 Implementation
@@ -477,7 +242,7 @@ Primary assignee:
   * Viacheslav Valyavskiy <vvalyavskiy@mirantis.com>
 
 Other contributors:
-  * Ivan Ponomarev <iponomarev@mirantis.com>
+  * Mikhail Zhnichkov <mzhnichkov@mirantis.com>
 
 Mandatory design review:
   * Vladimir Kuklin <vkuklin@mirantis.com>
@@ -486,13 +251,13 @@ Mandatory design review:
 Work Items
 ==========
 
- #. Introduce operations with tags via nailgun API
+ #. Introduce operations with roles for cluster(API, DB)
  #. New tags based resolver in nailgun
+ #. Extend fuel-client to support operations with roles
+    for cluster
  #. Role/Tag decomposition in Fuel-library
  #. Update composition data access methods in fuel-library
- #. Decouple Neutron component
- #. Prepare documentation for cluster scaling
- #. Update mandatory fuel plugins
+ #. Decouple Neutron component in fuel-library
 
 Dependencies
 ============
@@ -510,7 +275,7 @@ Acceptance criteria
 ===================
 
 User is able to deploy services currently tied to the controller (e.g.
-Keystone, Neutron, Mysql) on separate nodes via API(Web UI and CLI have a
+Keystone, Neutron, Mysql) on separate nodes via CLI(Web UI have a
 nice to have priority).
 
 ----------
