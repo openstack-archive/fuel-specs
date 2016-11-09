@@ -51,25 +51,42 @@ entity within a deployed environment. This provides an opportunity to manage
 an environment without introducing the sophisticated deployment procedures
 such as creating plugins or custom graphs.
 
-To implement this solution, we need to change the configuration data format
-to support any Puppet resource defined by ``fuel-library``. The new data format
-should be recognized by the ``override_resources`` Puppet type and should
-allow a user to create a new resource of a given type. The new data structure
-should have the following format:
+To implement this solution, we need to extend ``override_resources`` Puppet
+type implementation to support any Puppet resource defined by ``fuel-library``.
+``override_resources`` Puppet type should allow a user to create a new
+resource of a given type or just modify resources' parameters. The new data
+structure should have the following format:
 
 .. code-block:: yaml
 
     configuration:
       <puppet_resource_type>:
-        data:
-          <puppet_resource_title>:
-            <puppet_resource_param1>: value1
-            <puppet_resource_param2>: value2
-            ...
-        create_res: <True|False>
+        <puppet_resource_title>:
+          <puppet_resource_param1>: value1
+          <puppet_resource_param2>: value2
+          ...
+    configuration_options:
+        create: <True|False>
+        types_filter:
+          - <type1>
+          - <type2>
+          ...
+        titles_filter:
+          - <title1>
+          - <title2>
+          ...
+        types_create_exception:
+          - <type1>
+          - <type2>
+          ...
+        titles_create_exception:
+          - <title1>
+          - <title2>
+          ...
 
-This structure should be transformed into parameters for the
-``override_resources`` type.
+``configuration_options`` hash is optional and is intended to be used by
+advancedusers only. This structure should be transformed into parameters
+for the ``override_resources`` type.
 
 The ``override_resources`` Puppet type has following logic:
 
@@ -83,13 +100,55 @@ The ``override_resources`` Puppet type has following logic:
    it updates the resource parameters with the values from
    ``<puppet_resource_paramX>``.
 
-#. If the result from the step 2 is empty, ``create_res`` defines the
-   following behavior:
+#. If the result from the step 2 is empty, it creates resource in catalog.
 
-    a. If ``create_res = True``, the new ``<puppet_resource_type>`` resource
-       with the title ``<puppet_resource_title>`` and parameters
-       ``<puppet_resource_param1>...<puppet_resource_paramN>`` is created.
-    b. If ``create_res = False``, the resource is not be created.
+Logic described above can be overridden by ``configuration_options`` hash
+using following set of parameters
+
+.. code-block:: yaml
+
+   types_filter: []
+   titles_filter: []
+
+These two options allow to provide a list of resource types and/or resource
+titles which should be processed by this override_resources instance.
+If the lists are missing or empty no filtering will be used and all resources
+types and titles will be processed.
+
+Default values ``[]``
+
+.. code-block:: yaml
+
+    create: true/false
+
+Enable the creation of all resources. New instances will be added to the
+catalog if no instances of this resource have been found there.
+
+Default value ``True``
+
+.. code-block:: yaml
+
+    types_create_exception: []
+    titles_create_exception: []
+
+These two options allow to set the exception lists for the new resource
+creation. If "create" option is set to true, these lists of types and
+titles are used as the list of resources that should not be created.
+If "create" option is set to false, these lists of types and titles are
+used as the list of resources that should be created.
+
+Default values ``[]``
+
+.. code-block:: yaml
+
+    defaults:
+      <type>:
+        <parameter>: <value>
+
+This structure allows to set the default parameters for every Puppet
+type (e.g. ensure: present). The value will be added to every updated or
+created resource of this type unless the other value is provided for a
+resource in the configuration data.
 
 The resource generator raises an error if the resource defined in data
 structure is not found within ``modulepath``.
@@ -105,24 +164,22 @@ For example, the following construction:
 
     configuration:
       package:
-        data:
-          fontconfig-config:
-              ensure: latest
-          mc:
-              ensure: absent
-        create_res: true
+        fontconfig-config:
+            ensure: latest
+        mc:
+            ensure: absent
 
-will be transformed into the following Puppet resource definition:
+will be used in the following block of ``fuel-library``:
 
 .. code-block:: puppet
 
     override_resources {'package':
-      data => { 'fontconfig-config' =>
-                    {'ensure' => 'latest'},
-                'mc' =>
-                    {'ensure' => 'latest'}
-              },
-      create_res => true,
+      configuration => {
+                         'fontconfig-config' =>
+                           {'ensure' => 'latest'},
+                         'mc' =>
+                           {'ensure' => 'latest'}
+                       },
     }
 
 The new approach allows overriding any Puppet resource in a catalog or add
@@ -171,10 +228,8 @@ None
 Fuel Library
 ============
 
-The static ``override_recources`` definition in the Fuel library
-will be replaced with the dynamic one based on the data in Hiera.
-The ``override_resources`` type should be created using the
-``create_resources`` function.
+Execution of ``override_resources`` will be added for each task in
+deployment graph. Parameters for will be taken from ``hiera``
 
 ------------
 Alternatives
@@ -187,7 +242,7 @@ Upgrade impact
 --------------
 
 All data uploaded to an environment by using the old configuration format
-should be converted to the new format.
+may be extended with nesessary configuration options.
 
 ---------------
 Security impact
