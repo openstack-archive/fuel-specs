@@ -1,0 +1,11 @@
+Code-Review+2: Vladimir Kuklin <vkuklin@mirantis.com>
+Code-Review+1: Pavel Chechetin <pchechetin@mirantis.com>
+Code-Review+1: Ilya Kharin <akscram@gmail.com>
+Code-Review+2: Alexey Shtokolov <ashtokolov@gmail.com>
+Workflow+1: Alexey Shtokolov <ashtokolov@gmail.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Wed, 09 Nov 2016 16:31:49 +0000
+Reviewed-on: https://review.openstack.org/386009
+Project: openstack/fuel-specs
+Branch: refs/heads/master
