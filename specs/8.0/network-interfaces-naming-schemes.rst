@@ -284,7 +284,7 @@ driver E1000, but not VMXNET2 or VMXNET3, using by default in most cases.
 
 
 The main impact is to create interfaces in predictable way. Currently we
-create interfaces based on infomation from fuel-devops/devops/settings.py,
+create interfaces based on information from fuel-devops/devops/settings.py,
 lines are like: ::
 
   DEFAULT_INTERFACE_ORDER = 'admin,public,management,private,storage'
