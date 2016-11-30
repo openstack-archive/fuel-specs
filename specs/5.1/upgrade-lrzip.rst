@@ -65,7 +65,7 @@ Performance Impact
 ------------------
 
 It takes about 15 minutes on a VirtualBox environment to unpack the LRZ
-archive. It does not have a noticable impact on build time.
+archive. It does not have a noticeable impact on build time.
 
 The upgrade process will be faster because there is no need to unpack
 fuel-images.tar.lrz file
