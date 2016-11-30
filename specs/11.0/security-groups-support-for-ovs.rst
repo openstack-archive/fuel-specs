@@ -55,13 +55,13 @@ Data model
       editable:
         common:
           security_groups:
-            value: "iptables_firewall"
+            value: "iptables_hybrid"
             values:
-              - data: "ovs_firewall"
+              - data: "openvswitch"
                 label: "Open vSwitch Firewall Driver"
                 description: "Choose this driver for OVS based security groups implementation."
-              - data: "iptables_firewall"
-                label: "IPTables-based Firewall Driver"
+              - data: "iptables_hybrid"
+                label: "IPTables-based Firewall Driver (No firewall for DPDK case)"
                 description: "Choose this driver for iptables/linux bridge based security groups implementation."
             label: "Security Groups"
             group: "security"
@@ -96,12 +96,11 @@ None
 Fuel Library
 ============
 
-Fuel-library should apply firewall settings in neutron and nova configs.
+Fuel-library should apply firewall settings in neutron config.
 * neutron/plugins/ml2/openvswitch_agent.ini: set OVS firewall driver in the
 `securitygroup` section.
-* nova/nova.conf: adjust linuxnet_interface_driver for non-dpdk case.
-**Attribute `security_groups` impacts only non-dpdk case.**
-**In dpdk case, `Open vSwitch Firewall Driver` should be used.**
+**If IPTables-based Firewall Driver was chosen in dpdk case,**
+**security groups should be disabled.**
 
 ------------
 Alternatives
