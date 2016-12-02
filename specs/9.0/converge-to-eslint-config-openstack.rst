@@ -206,7 +206,7 @@ Acceptance criteria
 ===================
 
 The following rules need to be used from eslint-config-openstack (i.e. they
-shouldn't be overriden in Fuel's .eslintrc):
+shouldn't be overridden in Fuel's .eslintrc):
 
 * complexity
 

@@ -163,7 +163,7 @@ The task shall perform the following operations using ConfigDB API:
   client.
 
 The latter function ensures that the deployment process accounts for data
-overriden in ConfigDB. This is required for 2nd day operations based on
+overridden in ConfigDB. This is required for 2nd day operations based on
 the Fuel workflow, specifically for scale-out opertaions (adding a node
 to the cluster) and replacement of failed nodes.
 

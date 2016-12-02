@@ -57,7 +57,7 @@ change as this will lead to quorum loss and service degradation. As an example,
 we could create an expression for task policy to be 'parallel' for new
 deployment and 'one-by-one' when operating with the existing cluster.
 
-Another benefit of this approach is that these expressions can be overriden
+Another benefit of this approach is that these expressions can be overridden
 with Fuel Pluggable Framework within plugins **.yaml** files bringing Fuel
 onto new level of flexibility.
 
