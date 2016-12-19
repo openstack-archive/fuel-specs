@@ -447,7 +447,7 @@ Acceptance criteria
    options after cloud is deployed
  * User is provided with interface (CLI + API calls) to modify OpenStack
    options before cloud is deployed
- * New test cases are executed succesfully
+ * New test cases are executed successfully
  * The testing report is provided
 
 ----------
