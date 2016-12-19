@@ -576,7 +576,7 @@ decide to invent a method to run them.
 There is olso another popular rspec framework for acceptace testing
 https://github.com/puppetlabs/beaker that look similiar to serverspec but is
 more popular in the OpenStack community. It uses either KVM or Docker
-environment to test the manifests and includes means to apply tests automaticly
+environment to test the manifests and includes means to apply tests automatically
 so it’s fit for both local developer testing and centralized CI Gate testing.
 Unfortunately, it cannot work with local environments and cannot be used for
 production system testing without modifications.
