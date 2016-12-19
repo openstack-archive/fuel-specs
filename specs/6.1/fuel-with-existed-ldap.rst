@@ -207,7 +207,7 @@ Documentation Impact
   accounts(eg their passwords should nerver expire).
 
 * The documentation should warn user to make sure LDAP/AD read connection
-  available from openstack keystone service and no futher authorize granted.
+  available from openstack keystone service and no further authorize granted.
 
 
 References
