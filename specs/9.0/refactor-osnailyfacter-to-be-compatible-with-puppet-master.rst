@@ -39,12 +39,12 @@ The contents of the modular manifests will be left alone but will be
 re-organized into wrapper/profile classes under the 'osnailyfacter/manifests'
 directory.
 
-The configuration logic from the the manifests in 'osnailyfacter/modular' will
-be moved into consumable profile classes by copying their contents to a file
-of the same name, located in the 'osnailyfacter/manifests' directory.  We
-will also wrap them in a class declaration, making them essentially profile
-classes.  The manifest inside of 'osnailyfacter/modular/<manifest name>.pp
-will be updated to simply include the new profile class.  For example:
+The configuration logic from the manifests in 'osnailyfacter/modular' will be
+moved into consumable profile classes by copying their contents to a file of
+the same name, located in the 'osnailyfacter/manifests' directory.  We will
+also wrap them in a class declaration, making them essentially profile classes.
+The manifest inside of 'osnailyfacter/modular/<manifest name>.pp will be
+updated to simply include the new profile class.  For example:
 
   osnailyfacter/modular/ceph/ceph_pools.pp would have its contents copied to
   'osnailyfacter/manifests/ceph/ceph_pools.pp' and be wrapped inside of a
