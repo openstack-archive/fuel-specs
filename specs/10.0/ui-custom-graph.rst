@@ -4,9 +4,9 @@
 
  http://creativecommons.org/licenses/by/3.0/legalcode
 
-=================================
-Manage Custom Graphs from Fuel UI
-=================================
+====================================
+Manage Custom Workflows from Fuel UI
+====================================
 
 https://blueprints.launchpad.net/fuel/+spec/ui-custom-graph
 
@@ -44,43 +44,46 @@ Rows in a workflows table should be grouped by graph type attribute.
 
 Workflows table should have the following columns:
 
-* graph name
-* graph level
-* 'Download' button (to download the graph tasks JSON)
-* 'Delete' button (to remove the graph; available for cluster-level graphs
-  only)
+* 'Name' - to display a graph name
+* 'Level' - to display a graph level
+* 'Actions' - contains 'Delete' button to remove a graph
+  (this action available for cluster-level graphs only)
+* 'Download' - contains 'JSON' and 'YAML' buttons
+  (to download graph tasks in JSON or YAML format)
 
-+-------------------+-------------+-----------+-----------+
-| Name              | Level       |           |           |
-+===================+=============+===========+===========+
-| Type "default"    |             |           | Download  |
-+-------------------+-------------+-----------+-----------+
-| -                 | release     |           | Download  |
-+-------------------+-------------+-----------+-----------+
-| -                 | cluster     | Delete    | Download  |
-+-------------------+-------------+-----------+-----------+
-| Type "9.0-mu-1"   |             |           | Download  |
-+-------------------+-------------+-----------+-----------+
-| mu-1-release      | cluster     | Delete    | Download  |
-+-------------------+-------------+-----------+-----------+
-| mu-1-plugin       | plugin      |           | Download  |
-|                   | (Contrail)  |           |           |
-+-------------------+-------------+-----------+-----------+
-| Type "upgrade"    |             |           | Download  |
-+-------------------+-------------+-----------+-----------+
-| -                 | release     |           | Download  |
-+-------------------+-------------+-----------+-----------+
-| upgrade-graph     | cluster     | Delete    | Download  |
-+-------------------+-------------+-----------+-----------+
-| my-plugin-graph   | plugin      |           | Download  |
-|                   | (LMA)       |           |           |
-+-------------------+-------------+-----------+-----------+
++-------------------+---------------+-----------+-----------+
+| Name              | Level         |  Actions  | Download  |
++===================+===============+===========+===========+
+| Type "default"    |               |           | JSON/YAML |
++-------------------+---------------+-----------+-----------+
+| -                 | Release       |           | JSON/YAML |
++-------------------+---------------+-----------+-----------+
+| -                 | Environment   | Delete    | JSON/YAML |
++-------------------+---------------+-----------+-----------+
+| Type "9.0-mu-1"   |               |           | JSON/YAML |
++-------------------+---------------+-----------+-----------+
+| mu-1-plugin       | Plugin        |           | JSON/YAML |
+|                   | Fuel Contrail |           |           |
+|                   | plugin        |           |           |
++-------------------+---------------+-----------+-----------+
+| mu-1-release      | Environment   | Delete    | JSON/YAML |
++-------------------+---------------+-----------+-----------+
+| Type "upgrade"    |               |           | JSON/YAML |
++-------------------+---------------+-----------+-----------+
+| -                 | Release       |           | JSON/YAML |
++-------------------+---------------+-----------+-----------+
+| my-plugin-graph   | Plugin        |           | JSON/YAML |
+|                   | Fuel Contrail |           |           |
+|                   | plugin        |           |           |
++-------------------+---------------+-----------+-----------+
+| upgrade-graph     | Environment   | Delete    | JSON/YAML |
++-------------------+---------------+-----------+-----------+
 
 Note that workflows table should not include graphs of not enabled cluster
 plugins.
 
 Graphs of 'default' type should go first in the table. Inside each group
-graphs should be sorted by its level (release, cluster, and then plugin
+graphs should be sorted by its level (release, plugin, and then environment
 graphs).
 
 Workflows table should support filtering by deployment graph level and by
@@ -89,19 +92,21 @@ graph type. Both filters should support multiple values selection.
 To delete a graph User have to confirm the action in confirmation pop-up by
 entering the graph type.
 
-User should also be able to download JSON file with merged tasks of
+User should also be able to download JSON or YAML file with merged tasks of
 resulting graph by its type (tasks of graphs that have this type and related
 to different levels are merged together).
 
 
-The 'Workflows' tab should also display a form for uploading a new graph for
-the current cluster (the new graph level will be 'cluster').
+The 'Workflows' tab should also have 'Upload New Workflow' button to launch
+a pop-up with a form for uploading a new graph for the current cluster
+(the new graph level will be 'cluster', it is shown on UI as 'Environment').
 To do this User should fill the following fields:
 
-* graph verbose name (optional; graph can have an empty verbose name)
-* graph type (mandatory; should be unique within graphs of 'cluster' level and
+* graph verbose name (optional; graph can have an empty verbose name;
+  if not empty, then graph name should be limited by 255 symbols)
+* graph type (mandatory; should be unique within graphs of cluster level and
   related to current cluster; the input should be validated across
-  `^[a-zA-Z0-9-_]+$` regexp)
+  `^[a-zA-Z0-9-_]+$` regexp and limited by 255 symbols)
 * file with graph tasks data in JSON format (optional; graph can be empty)
 
 
