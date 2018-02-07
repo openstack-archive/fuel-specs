@@ -168,7 +168,7 @@ We are planning to add provision method radio button on "Settings" tab of
 Fuel web interface, so as to make it possible for user to choose between two
 provisioning methods "Classic" (anaconda or debian-installer) or "Image"
 (copying images on a hard drive). It is also planned to extend cluster
-attributes with the the information about available OS images
+attributes with the information about available OS images
 which are supposed to be built and put on ISO.
 
 
