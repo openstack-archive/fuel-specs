@@ -630,7 +630,7 @@ Following CLI parameters shall be supported for ``config`` subcommand:
 
   * individual node
 
-  ConifgDB service shall (in future) allow to create custom levels and
+  ConfigDB service shall (in future) allow to create custom levels and
   hierarchies if needed, but in version 9.0 it only will work with global
   (i.e. environment-wide) and a node-level data.
 
