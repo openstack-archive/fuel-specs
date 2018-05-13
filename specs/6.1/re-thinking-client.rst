@@ -76,7 +76,7 @@ Major steps of the proposed refactoring
 
   Now a lot of code in Fuel Client re-invents the wheel and doesn't always do
   that in a very efficient way. Using
-  `Cliff <https://pypi.python.org/pypi/cliff>`_ it's possible to re-use
+  `Cliff <https://pypi.org/project/cliff>`_ it's possible to re-use
   its features for generating command line interface, parsing parameters and
   for rendering result in different formats. Cliff provides clean and simple
   interfaces for those tasks and is widely used in OpenStack community as a
@@ -400,7 +400,7 @@ References
 ==========
 
 #. https://blueprints.launchpad.net/fuel/+spec/refactoring-for-fuelclient
-#. https://pypi.python.org/pypi/cliff
+#. https://pypi.org/project/cliff
 #. https://etherpad.openstack.org/p/fuelclient-fuelclient-3rdparty-libs
 #. http://lists.openstack.org/pipermail/openstack-dev/2014-November/050775.html
 #. https://etherpad.openstack.org/p/fuelclient-redesign

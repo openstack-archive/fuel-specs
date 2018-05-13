@@ -62,7 +62,7 @@ Current test coverage
 ---------------------
 
 Test coverage procedure is performed using
-`py.test-cov <https://pypi.python.org/pypi/pytest-cov>`_ utility by running
+`py.test-cov <https://pypi.org/project/pytest-cov>`_ utility by running
 the following command:
 
 .. code:: bash
